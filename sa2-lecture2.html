@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SA2 - المحاضرة الثانية | SDLC & Agile</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --bg2: #090c15;
+  --bg3: #0d1020;
+  --card: #111827;
+  --card2: #161f33;
+  --border: rgba(120,180,255,0.1);
+  --border2: rgba(120,180,255,0.2);
+  --a1: #38bdf8;   /* sky */
+  --a2: #22d3ee;   /* cyan */
+  --a3: #34d399;   /* emerald */
+  --a4: #f472b6;   /* pink */
+  --a5: #fb923c;   /* orange */
+  --a6: #a78bfa;   /* violet */
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Cairo','Tajawal',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+  overflow-x:hidden;
+}
+
+/* ── GRID BG ── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px);
+  background-size:50px 50px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.wrap{position:relative;z-index:1;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:3rem 1.5rem;
+  position:relative;
+  background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(56,189,248,0.08) 0%,transparent 70%);
+}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(56,189,248,0.08);
+  border:1px solid rgba(56,189,248,0.3);
+  color:var(--a1);
+  padding:0.4rem 1.2rem;border-radius:50px;
+  font-size:0.82rem;font-weight:700;letter-spacing:1px;
+  margin-bottom:1.5rem;
+  animation:slideDown .6s ease both;
+}
+.hero h1{
+  font-size:clamp(2rem,7vw,4.8rem);
+  font-weight:900;line-height:1.15;
+  margin-bottom:1.2rem;
+  animation:slideDown .7s ease .1s both;
+}
+.hero h1 .gr{
+  background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  color:var(--text2);font-size:1.05rem;
+  max-width:560px;margin:0 auto 2.5rem;
+  animation:slideDown .7s ease .2s both;
+}
+.hero-pills{
+  display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;
+  animation:slideDown .7s ease .3s both;
+}
+.hero-pills a{
+  background:var(--card);border:1px solid var(--border2);
+  color:var(--text2);padding:.5rem 1.1rem;border-radius:8px;
+  text-decoration:none;font-size:.82rem;font-weight:600;
+  transition:all .25s;
+}
+.hero-pills a:hover{
+  background:var(--card2);border-color:var(--a1);color:var(--a1);
+  transform:translateY(-2px);box-shadow:0 6px 20px rgba(56,189,248,0.15);
+}
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  color:var(--text3);font-size:.75rem;
+  display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  animation:pulse 2s infinite;
+}
+
+/* ── STICKY NAV ── */
+#sNav{
+  position:fixed;top:0;right:0;left:0;z-index:200;
+  background:rgba(6,8,15,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:.7rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  transform:translateY(-100%);transition:transform .3s;
+}
+#sNav.show{transform:translateY(0);}
+#sNav .brand{font-size:.85rem;font-weight:800;color:var(--a1);}
+#sNav .links{display:flex;gap:.9rem;flex-wrap:wrap;}
+#sNav .links a{color:var(--text2);text-decoration:none;font-size:.76rem;font-weight:600;transition:color .2s;}
+#sNav .links a:hover{color:var(--a1);}
+
+/* ── CONTAINER ── */
+.ct{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+
+/* ── SECTION ── */
+section{padding:5rem 0;}
+.sec-label{font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:.5rem;}
+.sec-title{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;margin-bottom:.7rem;}
+.sec-sub{color:var(--text2);font-size:.95rem;max-width:500px;margin:0 auto;}
+.sec-head{text-align:center;margin-bottom:3rem;}
+
+.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);}
+
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+
+/* ── SDLC TIMELINE ── */
+.sdlc-timeline{
+  position:relative;padding-right:2rem;margin-top:2.5rem;
+}
+.sdlc-timeline::before{
+  content:'';position:absolute;right:0;top:0;bottom:0;
+  width:2px;
+  background:linear-gradient(to bottom,var(--a1),var(--a2),var(--a3),var(--a4));
+}
+.sdlc-item{
+  position:relative;margin-bottom:1.5rem;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem 1.8rem;
+  transition:all .3s;
+}
+.sdlc-item:hover{
+  border-color:var(--border2);
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+  transform:translateX(-4px);
+}
+.sdlc-item::before{
+  content:'';position:absolute;
+  top:1.6rem;right:-2.5rem;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--a1);
+  box-shadow:0 0 12px rgba(56,189,248,.5);
+}
+.sdlc-num{
+  font-size:.72rem;font-weight:700;letter-spacing:2px;
+  color:var(--a1);margin-bottom:.3rem;
+}
+.sdlc-item h3{font-size:1.1rem;font-weight:800;margin-bottom:.5rem;}
+.sdlc-item p{color:var(--text2);font-size:.88rem;}
+.tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem;}
+.tag{
+  padding:.2rem .7rem;border-radius:50px;font-size:.72rem;font-weight:700;
+}
+.tag.sky{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);color:var(--a1);}
+.tag.cyan{background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--a2);}
+.tag.em{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:var(--a3);}
+.tag.pink{background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25);color:var(--a4);}
+.tag.or{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:var(--a5);}
+.tag.vi{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);color:var(--a6);}
+
+/* maintenance types */
+.maint-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.8rem;
+}
+@media(max-width:500px){.maint-grid{grid-template-columns:1fr;}}
+.maint-card{
+  background:rgba(56,189,248,.04);border:1px solid var(--border);
+  border-radius:8px;padding:.7rem .9rem;font-size:.8rem;
+}
+.maint-card strong{color:var(--a1);display:block;margin-bottom:.2rem;}
+.maint-card span{color:var(--text2);}
+
+/* ── PROCESS MODELS TABLE ── */
+.models-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;margin-top:1.5rem;}
+.models-table th{background:var(--card2);padding:.9rem 1.2rem;text-align:right;font-size:.85rem;font-weight:700;color:var(--a1);border-bottom:1px solid var(--border2);}
+.models-table td{background:var(--card);padding:.8rem 1.2rem;font-size:.85rem;color:var(--text2);border-bottom:1px solid var(--border);}
+.models-table tr:last-child td{border-bottom:none;}
+.models-table tr:hover td{background:var(--card2);}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+
+.model-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:1.8rem;
+  transition:all .3s;
+}
+.model-card:hover{transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.35);}
+.model-card .mc-icon{font-size:2rem;margin-bottom:1rem;}
+.model-card h3{font-size:1.15rem;font-weight:800;margin-bottom:.7rem;}
+.model-card p{color:var(--text2);font-size:.88rem;margin-bottom:.8rem;}
+
+/* code block */
+.cb{
+  background:#040608;border:1px solid rgba(56,189,248,.12);
+  border-radius:8px;padding:.9rem 1rem;
+  font-family:'Courier New',monospace;font-size:.8rem;
+  color:#7dd3fc;white-space:pre;overflow-x:auto;
+  margin:.8rem 0;line-height:1.7;
+}
+
+/* pros cons */
+.pc{margin-top:1rem;}
+.pc-row{display:flex;gap:.4rem;align-items:flex-start;margin-bottom:.35rem;font-size:.85rem;}
+.pc-row.p{color:#bbf7d0;} .pc-row.p .ic{color:var(--a3);}
+.pc-row.c{color:#fecdd3;} .pc-row.c .ic{color:var(--a4);}
+.pc-row .ic{flex-shrink:0;margin-top:2px;}
+
+/* ── TRIPLE CONSTRAINT ── */
+#triple{ background:var(--bg2); }
+.tc-visual{
+  display:flex;justify-content:center;align-items:center;
+  margin:2.5rem 0;
+}
+.triangle-wrap{
+  position:relative;width:340px;height:300px;
+}
+.tc-node{
+  position:absolute;text-align:center;
+  background:var(--card2);border:2px solid var(--border2);
+  border-radius:12px;padding:.8rem 1.2rem;min-width:100px;
+}
+.tc-node .ic2{font-size:1.5rem;display:block;margin-bottom:.3rem;}
+.tc-node .nm{font-size:.82rem;font-weight:800;color:var(--text);}
+.tc-node .desc{font-size:.7rem;color:var(--text2);}
+/* top */
+.tc-node:nth-child(1){top:0;left:50%;transform:translateX(-50%);border-color:rgba(56,189,248,.4);}
+/* bottom-right */
+.tc-node:nth-child(2){bottom:0;right:0;border-color:rgba(52,211,153,.4);}
+/* bottom-left */
+.tc-node:nth-child(3){bottom:0;left:0;border-color:rgba(244,114,182,.4);}
+/* center */
+.tc-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-40%);
+  background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);
+  border-radius:50px;padding:.4rem 1rem;
+  font-size:.72rem;font-weight:700;color:var(--a1);text-align:center;
+  white-space:nowrap;
+}
+.tc-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  margin-top:1.5rem;
+}
+@media(max-width:650px){.tc-grid{grid-template-columns:1fr;}}
+.tc-case{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem;
+  font-size:.84rem;transition:all .3s;
+}
+.tc-case:hover{border-color:var(--border2);transform:translateY(-3px);}
+.tc-case h4{font-size:.88rem;font-weight:800;margin-bottom:.5rem;}
+.tc-case p{color:var(--text2);font-size:.82rem;}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;}
+@media(max-width:650px){.stats-grid{grid-template-columns:1fr;}}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem;text-align:center;
+  transition:all .3s;
+}
+.stat-card:hover{transform:translateY(-3px);border-color:var(--border2);}
+.stat-num{font-size:2.4rem;font-weight:900;margin-bottom:.3rem;}
+.stat-label{color:var(--text2);font-size:.82rem;}
+
+/* ── TRADITIONAL vs AGILE ── */
+#compare{background:var(--bg2);}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;}
+@media(max-width:650px){.comp-grid{grid-template-columns:1fr;}}
+.comp-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:1.8rem;
+  transition:all .3s;
+}
+.comp-card:hover{transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.35);}
+.comp-card.bad{border-top:3px solid var(--a4);}
+.comp-card.good{border-top:3px solid var(--a3);}
+.comp-card h3{font-size:1.1rem;font-weight:800;margin-bottom:1rem;}
+.comp-item{
+  display:flex;align-items:flex-start;gap:.5rem;
+  margin-bottom:.6rem;font-size:.85rem;
+}
+.comp-item .dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:.55rem;
+}
+.bad .dot{background:var(--a4);}
+.good .dot{background:var(--a3);}
+.comp-item span{color:var(--text2);}
+
+/* ── AGILE MANIFESTO ── */
+.manifesto-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;
+  margin-top:2rem;
+}
+@media(max-width:650px){.manifesto-grid{grid-template-columns:1fr;}}
+.m-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.m-card::before{
+  content:'';position:absolute;top:0;right:0;
+  width:60px;height:60px;border-radius:0 0 0 100%;
+  opacity:.08;
+}
+.m-card:nth-child(1)::before{background:var(--a1);}
+.m-card:nth-child(2)::before{background:var(--a3);}
+.m-card:nth-child(3)::before{background:var(--a4);}
+.m-card:nth-child(4)::before{background:var(--a5);}
+.m-card:hover{transform:translateY(-3px);border-color:var(--border2);}
+.m-num{font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--a1);margin-bottom:.4rem;}
+.m-card h4{font-size:.95rem;font-weight:800;margin-bottom:.4rem;}
+.m-over{color:var(--a3);font-size:.82rem;font-weight:700;margin:.3rem 0;}
+.m-card p{color:var(--text2);font-size:.82rem;}
+
+/* ── PRINCIPLES ── */
+#principles{background:var(--bg2);}
+.prin-tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;}
+.p-tab{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text2);padding:.45rem .95rem;border-radius:8px;
+  cursor:pointer;font-size:.8rem;font-weight:700;
+  font-family:inherit;transition:all .25s;
+}
+.p-tab:hover,.p-tab.on{
+  background:var(--a1);border-color:var(--a1);color:#fff;
+}
+.p-panel{display:none;animation:fadeUp .35s ease;}
+.p-panel.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.prin-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.3rem;
+  transition:all .3s;
+}
+.prin-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.prin-card .p-icon{font-size:1.4rem;margin-bottom:.5rem;}
+.prin-card h4{font-size:.9rem;font-weight:800;margin-bottom:.4rem;}
+.prin-card p{color:var(--text2);font-size:.82rem;}
+
+/* ── SCRUM ── */
+.scrum-cycle{
+  display:flex;justify-content:center;flex-wrap:wrap;
+  gap:0;margin:2.5rem 0;position:relative;
+}
+.cycle-step{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.2rem;
+  text-align:center;min-width:120px;
+  transition:all .3s;cursor:default;
+}
+.cycle-step:hover{border-color:var(--border2);transform:scale(1.04);}
+.cycle-step .cs-icon{font-size:1.3rem;margin-bottom:.3rem;}
+.cycle-step .cs-name{font-size:.75rem;font-weight:700;}
+.cycle-arrow{
+  display:flex;align-items:center;color:var(--a1);
+  font-size:.9rem;padding:0 .3rem;align-self:center;
+}
+
+.roles-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;
+  margin-top:1.5rem;
+}
+@media(max-width:650px){.roles-grid{grid-template-columns:1fr;}}
+.role-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.4rem;
+  text-align:center;transition:all .3s;
+}
+.role-card:hover{transform:translateY(-3px);border-color:var(--border2);}
+.role-card .r-icon{font-size:2rem;margin-bottom:.6rem;}
+.role-card h4{font-size:.9rem;font-weight:800;margin-bottom:.5rem;}
+.role-card li{
+  list-style:none;color:var(--text2);
+  font-size:.78rem;margin-bottom:.2rem;
+  display:flex;align-items:flex-start;gap:.3rem;
+  text-align:right;
+}
+.role-card li::before{content:'•';color:var(--a1);flex-shrink:0;}
+
+.backlogs-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  margin-top:1.5rem;
+}
+@media(max-width:650px){.backlogs-grid{grid-template-columns:1fr;}}
+.bl-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem;transition:all .3s;
+}
+.bl-card:hover{border-color:var(--a5);transform:translateY(-2px);}
+.bl-card .bl-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--a5);margin-bottom:.6rem;
+}
+.bl-card h4{font-size:.88rem;font-weight:800;margin-bottom:.4rem;}
+.bl-card p{color:var(--text2);font-size:.8rem;}
+
+.daily-box{
+  background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.25);
+  border-radius:14px;padding:1.5rem 2rem;margin-top:1.5rem;
+}
+.daily-box h4{font-size:1rem;font-weight:800;margin-bottom:1rem;color:var(--a3);}
+.daily-q{
+  display:flex;align-items:flex-start;gap:.7rem;
+  margin-bottom:.6rem;font-size:.88rem;color:var(--text2);
+}
+.daily-q .qnum{
+  background:rgba(52,211,153,.15);color:var(--a3);
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;flex-shrink:0;
+}
+
+/* ── SUMMARY / FINAL ── */
+#summary{background:var(--bg2);}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin-top:2rem;}
+.sum-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem;
+  transition:all .3s;
+}
+.sum-card:hover{transform:translateY(-3px);border-color:var(--border2);}
+.sum-card h4{font-size:.95rem;font-weight:800;margin-bottom:.6rem;}
+.sum-card .flow-code{
+  background:#030507;border:1px solid rgba(56,189,248,.1);
+  border-radius:8px;padding:.7rem .9rem;
+  font-family:'Courier New',monospace;font-size:.75rem;
+  color:#7dd3fc;line-height:1.8;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  padding:2rem;text-align:center;
+  color:var(--text3);font-size:.82rem;
+}
+footer span{color:var(--a1);font-weight:700;}
+
+/* ── ANIMATIONS ── */
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+</style>
+</head>
+<body>
+
+<nav id="sNav">
+  <div class="brand">SA2 — المحاضرة الثانية</div>
+  <div class="links">
+    <a href="#sdlc">SDLC</a>
+    <a href="#models">Process Models</a>
+    <a href="#waterfall">Waterfall</a>
+    <a href="#triple">Triple Constraint</a>
+    <a href="#agile">Agile</a>
+    <a href="#manifesto">Manifesto</a>
+    <a href="#principles">Principles</a>
+    <a href="#scrum">Scrum</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <div>
+    <div class="hero-chip">📗 SA2 — المحاضرة الثانية</div>
+    <h1><span class="gr">SDLC · Agile</span><br>ونماذج تطوير البرمجيات</h1>
+    <p class="hero-sub">من دورة حياة البرنامج لـ Waterfall لـ Agile Manifesto وكل Scrum roles</p>
+    <div class="hero-pills">
+      <a href="#sdlc">SDLC</a>
+      <a href="#models">Process Models</a>
+      <a href="#waterfall">Waterfall & Code&Fix</a>
+      <a href="#triple">Triple Constraint</a>
+      <a href="#agile">Agile vs Traditional</a>
+      <a href="#manifesto">Agile Manifesto</a>
+      <a href="#principles">12 Principles</a>
+      <a href="#scrum">Scrum</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    ابدأ
+  </div>
+</section>
+
+<!-- ════ SDLC ════ -->
+<div class="divider"></div>
+<section id="sdlc">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a1)">أولًا</div>
+    <h2 class="sec-title">Software Development Life Cycle</h2>
+    <p class="sec-sub">SDLC هو خريطة الطريق لتطوير أي برنامج — من أول فكرة لحد ما يشتغل ويُدعم</p>
+  </div>
+
+  <div class="sdlc-timeline rv">
+
+    <!-- 1 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الأولى</div>
+      <h3>💡 Concept / Initiation — الفكرة وبدء المشروع</h3>
+      <p>نحدد الحاجة أو المشكلة اللي البرنامج هيحلها. نعمل دراسة أولية.</p>
+      <div class="tags">
+        <span class="tag sky">Scope — حجم المشروع وحدوده</span>
+        <span class="tag cyan">Cost Benefit — هل المشروع يستاهل؟</span>
+        <span class="tag em">Risk Management Plan — تحديد المخاطر</span>
+      </div>
+      <div style="margin-top:.9rem;background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:.8rem 1rem;">
+        <p style="font-size:.82rem;color:var(--text2)">🧠 <strong style="color:var(--a1)">سؤال للحفظ:</strong> إيه أول خطوة قبل أي برنامج؟ — تعريف الحاجة + دراسة جدوى</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الثانية</div>
+      <h3>📋 Planning — التخطيط</h3>
+      <p>نعمل خطة شاملة.</p>
+      <div class="tags">
+        <span class="tag sky">جدول زمني</span>
+        <span class="tag cyan">الموارد المطلوبة</span>
+        <span class="tag em">تقسيم المهام</span>
+      </div>
+      <p style="margin-top:.7rem;font-size:.82rem;color:var(--text2)">مثال: تحديد موعد بداية المشروع + من المسؤول عن كل مرحلة</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الثالثة</div>
+      <h3>📝 Requirements — المتطلبات</h3>
+      <p>نحدد وظائف البرنامج بالضبط. نكتب functional requirements: ماذا يجب أن يفعل البرنامج؟ ماذا لا يفعل؟</p>
+      <div style="margin-top:.8rem;background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.15);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--text2)">مثال: برنامج بنك → "يجب أن يسمح بتحويل الأموال بين الحسابات"</p>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الرابعة</div>
+      <h3>🎨 Design — التصميم</h3>
+      <p>نترجم المتطلبات إلى تصميم نظامي.</p>
+      <div class="tags">
+        <span class="tag sky">Architecture — شكل البرنامج</span>
+        <span class="tag cyan">Data Model — قاعدة البيانات</span>
+        <span class="tag vi">UI/UX — واجهة المستخدم</span>
+      </div>
+      <p style="margin-top:.7rem;font-size:.82rem;color:var(--text2)">مثال: نرسم مخطط تدفق البرنامج + نرسم قاعدة البيانات</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الخامسة</div>
+      <h3>💻 Development — التطوير / البناء</h3>
+      <p>نكتب الكود الحقيقي. نبني كل مكون من مكونات البرنامج.</p>
+      <div style="margin-top:.7rem;background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--text2)">ملاحظة: هنا يبدأ المطورون يطبقوا التصميم</p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة السادسة</div>
+      <h3>🧪 Integration & Test — الدمج والاختبار</h3>
+      <p>ندمج كل المكونات مع بعض ونختبر لو البرنامج يحقق المتطلبات.</p>
+      <div class="maint-grid">
+        <div class="maint-card"><strong style="color:var(--a1)">Unit Testing</strong><span>اختبار كل مكون لوحده</span></div>
+        <div class="maint-card"><strong style="color:var(--a2)">Integration Testing</strong><span>اختبار المكونات معًا</span></div>
+        <div class="maint-card" style="grid-column:span 2"><strong style="color:var(--a3)">System Testing</strong><span>اختبار النظام كامل</span></div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة السابعة</div>
+      <h3>🚀 Implement — التنفيذ / التركيب</h3>
+      <p>تثبيت البرنامج في البيئة الفعلية. تدريب المستخدمين على استخدامه.</p>
+      <div style="margin-top:.7rem;background:rgba(251,146,60,.05);border:1px solid rgba(251,146,60,.15);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--text2)">مثال: تثبيت برنامج البنك في فروع البنك + تدريب الموظفين على استخدامه</p>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة الثامنة</div>
+      <h3>🔧 Maintenance — الصيانة</h3>
+      <p>دعم البرنامج بعد التنفيذ. إصلاح الأخطاء. تحديث النظام مع الوقت.</p>
+      <div class="maint-grid" style="margin-top:.8rem">
+        <div class="maint-card"><strong>Corrective</strong><span>إصلاح الأخطاء</span></div>
+        <div class="maint-card"><strong>Adaptive</strong><span>تعديل حسب التغيرات</span></div>
+        <div class="maint-card"><strong>Perfective</strong><span>تحسين الأداء</span></div>
+        <div class="maint-card"><strong>Preventive</strong><span>منع المشاكل المستقبلية</span></div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="sdlc-item">
+      <div class="sdlc-num">المرحلة التاسعة</div>
+      <h3>🗄️ Disposition — نهاية دورة البرنامج</h3>
+      <p>لو البرنامج انتهى أو استبدل → نعمل حذف أو أرشفة. نراجع كل الوثائق والدعم.</p>
+    </div>
+  </div>
+
+  <!-- مراحل SDLC ملخص -->
+  <div class="rv" style="margin-top:2rem">
+    <div style="background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:12px;padding:1.2rem 1.5rem;">
+      <p style="font-size:.82rem;color:var(--text2);text-align:center;">
+        <strong style="color:var(--a1)">مراحل SDLC بالترتيب:</strong><br>
+        Concept → Planning → Requirements → Design → Development → Integration & Test → Implement → Maintenance → Disposition
+      </p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ PROCESS MODELS ════ -->
+<div class="divider"></div>
+<section id="models" style="background:var(--bg2)">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a2)">ثانيًا</div>
+    <h2 class="sec-title">Software Process Model</h2>
+    <p class="sec-sub">طريقة منظمة لتطبيق SDLC — مكونات أي Software Process</p>
+  </div>
+
+  <div class="two-col rv" style="margin-top:0">
+    <div class="model-card">
+      <div class="mc-icon">⚙️</div>
+      <h3>مكونات أي Software Process</h3>
+      <div class="tags">
+        <span class="tag sky">Specification — تحديد ما يجب أن يفعله</span>
+        <span class="tag cyan">Design & Implementation — تصميم وبناء</span>
+        <span class="tag em">Validation — التحقق أن البرنامج يلبي المتطلبات</span>
+        <span class="tag vi">Evolution — تعديل حسب التغيرات المستقبلية</span>
+      </div>
+    </div>
+    <div class="model-card">
+      <div class="mc-icon">📌</div>
+      <h3>نقطة مهمة جدًا</h3>
+      <div class="pc">
+        <div class="pc-row p"><span class="ic">✔</span><span>معظم المشاريع العملية تمزج بين الاثنين</span></div>
+        <div class="pc-row p"><span class="ic">✔</span><span>لا يوجد نموذج صحيح أو خاطئ</span></div>
+        <div class="pc-row p"><span class="ic">✔</span><span>يعتمد على طبيعة المشروع</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rv" style="margin-top:1.5rem">
+    <table class="models-table">
+      <thead>
+        <tr>
+          <th>النوع</th>
+          <th>الوصف</th>
+          <th>أمثلة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--a1)">Plan-driven</strong></td>
+          <td>كل شيء مخطط مسبقًا</td>
+          <td>Waterfall, Incremental, Spiral, Reuse-oriented</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--a3)">Agile</strong></td>
+          <td>التخطيط Incremental، سهل التغيير حسب العميل</td>
+          <td>Scrum, XP, Lean, Crystal, Kanban</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ════ CODE&FIX + WATERFALL ════ -->
+<div class="divider"></div>
+<section id="waterfall">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a4)">ثالثًا</div>
+    <h2 class="sec-title">Software Process Models — أمثلة</h2>
+    <p class="sec-sub">من أسوأ نموذج لأشهر نموذج كلاسيكي</p>
+  </div>
+
+  <div class="two-col rv">
+    <!-- Code and Fix -->
+    <div class="model-card" style="border-color:rgba(244,114,182,.2)">
+      <div class="mc-icon">⚠️</div>
+      <h3>Code and Fix Model<br><small style="color:var(--a4);font-size:.8rem">(أسوأ نموذج تقريبًا 😅)</small></h3>
+      <p>مفيش تخطيط. مفيش Design. نبدأ نكتب كود على طول.</p>
+      <div class="cb">Code → Test → Fix → Code → Fix → ...</div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:.7rem">يعني إيه ده عمليًا؟<br>
+      المبرمج يبدأ يكتب كود مباشرة → يكتشف Bugs → يصلحها → تظهر Bugs تانية → يفضل في loop</p>
+      <div class="pc">
+        <div class="pc-row c"><span class="ic">✘</span><span>مفيش Structure</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>صعب جدًا تكبر المشروع</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>Bugs كتير</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>مفيش Documentation</span></div>
+      </div>
+      <div style="margin-top:.8rem;background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.8rem;color:var(--a3)">✅ إمتى ممكن يستخدم؟<br>
+        <span style="color:var(--text2)">مشاريع صغيرة جدًا — Prototype سريع</span></p>
+      </div>
+    </div>
+
+    <!-- Waterfall -->
+    <div class="model-card" style="border-color:rgba(56,189,248,.2)">
+      <div class="mc-icon">🌊</div>
+      <h3>Waterfall Model<br><small style="color:var(--a1);font-size:.8rem">(أشهر نموذج كلاسيكي)</small></h3>
+      <p>المشروع ماشي خطوة خطوة بشكل خطي — مينفعش ترجع لورا بسهولة.</p>
+      <div class="cb">1. Requirements
+2. Design
+3. Implementation
+4. Verification (Testing)
+5. Maintenance</div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:.7rem">
+        1️⃣ Requirements → نفهم النظام هيعمل إيه<br>
+        2️⃣ Design → نرسم شكل السيستم<br>
+        3️⃣ Implementation → نكتب الكود<br>
+        4️⃣ Verification → نختبر<br>
+        5️⃣ Maintenance → نصلح ونطور بعد التشغيل
+      </p>
+      <div class="pc">
+        <div class="pc-row p"><span class="ic">✔</span><span>سهل الفهم</span></div>
+        <div class="pc-row p"><span class="ic">✔</span><span>واضح جدًا</span></div>
+        <div class="pc-row p"><span class="ic">✔</span><span>منظم (Discipline عالي)</span></div>
+        <div class="pc-row p"><span class="ic">✔</span><span>مناسب لما كل حاجة واضحة من البداية</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>مفيش رجوع (Linear)</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>صعب تغير Requirements</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>كل مرحلة فريق مختلف</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>مفيش Collaboration كفاية</span></div>
+        <div class="pc-row c"><span class="ic">✘</span><span>لازم تخطط كل حاجة من الأول</span></div>
+      </div>
+      <div style="margin-top:.8rem;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--a1)">💡 أهم جملة تحفظها:<br>
+        <span style="color:var(--text2)">Waterfall ينفع فقط لما Requirements ثابتة وواضحة جدًا</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ TRIPLE CONSTRAINT ════ -->
+<div class="divider"></div>
+<section id="triple">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a5)">Triple Constraints</div>
+    <h2 class="sec-title">أهم فكرة في المشاريع 🔥🔥</h2>
+    <p class="sec-sub">أي مشروع فيه 3 عناصر — مستحيل تثبت التلاتة مع بعض</p>
+  </div>
+
+  <div class="tc-visual rv">
+    <div class="triangle-wrap">
+      <div class="tc-node">
+        <span class="ic2">📐</span>
+        <div class="nm">Scope</div>
+        <div class="desc">حجم الشغل</div>
+      </div>
+      <div class="tc-node">
+        <span class="ic2">⏳</span>
+        <div class="nm">Time</div>
+        <div class="desc">الوقت</div>
+      </div>
+      <div class="tc-node">
+        <span class="ic2">💰</span>
+        <div class="nm">Cost</div>
+        <div class="desc">الفلوس</div>
+      </div>
+      <div class="tc-center">❗ مستحيل تثبت التلاتة مع بعض<br>لازم واحد منهم يبقى Flexible</div>
+    </div>
+  </div>
+
+  <div class="tc-grid rv">
+    <div class="tc-case">
+      <h4 style="color:var(--a1)">📐 عايز تزود Features (Scope ↑)</h4>
+      <p>هتحتاج:<br>• وقت أكتر ⏳<br>• أو فلوس أكتر 💰</p>
+    </div>
+    <div class="tc-case">
+      <h4 style="color:var(--a2)">⏳ عايز تخلص بسرعة (Time ↓)</h4>
+      <p>هتحتاج:<br>• فلوس أكتر 💰 (توظف ناس أكتر)<br>• أو تقلل Scope</p>
+    </div>
+    <div class="tc-case">
+      <h4 style="color:var(--a3)">💰 عايز تقلل التكلفة (Cost ↓)</h4>
+      <p>هتحتاج:<br>• وقت أطول ⏳<br>• أو تقلل Scope</p>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="sec-head rv" style="margin-top:4rem;margin-bottom:1.5rem">
+    <h2 class="sec-title" style="font-size:1.8rem">نتائج المشاريع — Statistics 😬</h2>
+    <p class="sec-sub">الدراسات بتقول...</p>
+  </div>
+
+  <div class="stats-grid rv">
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--a4)">86%</div>
+      <div class="stat-label">من المشاريع بتفشل أو تواجه مشاكل ❌</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--a5)">30%</div>
+      <div class="stat-label">بس اللي بتكمل زي ما مخطط ❌</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--a4)">~30%</div>
+      <div class="stat-label">بتتلغي قبل ما تبدأ ❌</div>
+    </div>
+  </div>
+  <div class="rv" style="margin-top:1.2rem">
+    <div style="background:rgba(244,114,182,.06);border:1px solid rgba(244,114,182,.2);border-radius:12px;padding:1rem 1.4rem;">
+      <p style="font-size:.85rem;color:var(--text2)"><strong style="color:var(--a4)">💥 ليه ده بيحصل؟</strong><br>
+      سوء التخطيط — Requirements مش واضحة — تغيير مستمر — اختيار Model غلط (زي Waterfall في مشروع متغير)</p>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="rv" style="margin-top:2rem">
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:1.5rem 2rem;">
+      <h4 style="font-weight:800;margin-bottom:1rem;font-size:1rem;color:var(--a1)">🧠 الخلاصة اللي تتحفظ حرفيًا</h4>
+      <div class="cb">🔸 Code and Fix
+ابدأ كود مباشرة → Bugs → Fix → Loop (مش عملي)
+
+🔸 Waterfall
+Requirements → Design → Implementation → Testing → Maintenance
+✔ منظم   ❌ مش مرن
+
+🔸 Triple Constraint
+Scope + Time + Cost
+❗ مستحيل تثبت التلاتة</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ TRADITIONAL vs AGILE ════ -->
+<div class="divider"></div>
+<section id="agile" style="background:var(--bg2)">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a3)">رابعًا</div>
+    <h2 class="sec-title">Traditional vs Agile</h2>
+    <p class="sec-sub">الطريقة القديمة مقابل الحل الحديث</p>
+  </div>
+
+  <div class="comp-grid rv">
+    <!-- Traditional -->
+    <div class="comp-card bad">
+      <h3>🔴 Traditional Software Development</h3>
+      <p style="color:var(--text2);font-size:.85rem;margin-bottom:1rem">بنمشي بخطة ثابتة من الأول للآخر — شبه Waterfall</p>
+      <div class="comp-item"><div class="dot"></div><span>Less communication — التواصل قليل بين التيم والعميل</span></div>
+      <div class="comp-item"><div class="dot"></div><span>العميل يقول المتطلبات مرة واحدة وخلاص</span></div>
+      <div class="comp-item"><div class="dot"></div><span>Requirements ثابتة من الأول — بنحدد كل حاجة قبل ما نبدأ</span></div>
+      <div class="comp-item"><div class="dot"></div><span>مفيش تغيير بعد كده</span></div>
+      <div class="comp-item"><div class="dot"></div><span>بياخد وقت وفلوس أكتر — لأن أي تغيير = كارثة</span></div>
+      <div class="comp-item"><div class="dot"></div><span>لازم نرجع نعيد مراحل كتير</span></div>
+      <div style="margin-top:.8rem;background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.2);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--a4)">💥 المشكلة الكبيرة:<br>
+        <span style="color:var(--text2)">❗ العالم بيتغير، لكن الخطة ثابتة</span></p>
+      </div>
+    </div>
+
+    <!-- Agile -->
+    <div class="comp-card good">
+      <h3>🟢 Agile — الحل الحديث 🔥</h3>
+      <p style="color:var(--text2);font-size:.85rem;margin-bottom:.5rem">Agile = طريقة تفكير + أسلوب شغل مش مجرد Model</p>
+      <p style="font-size:.84rem;color:var(--text2);margin-bottom:.8rem">بدل ما نعمل السيستم كله مرة واحدة → نعمله على أجزاء صغيرة (Iterations)</p>
+      <div class="cb">كل Iteration:
+Plan → Design → Develop → Test → Deploy → Review
+↓ نكرر تاني
+Iteration 1 → Iteration 2 → Iteration 3</div>
+      <div style="margin-top:.8rem;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:.7rem 1rem;">
+        <p style="font-size:.82rem;color:var(--a3)">🧠 الفكرة العبقرية:<br>
+        <span style="color:var(--text2)">بدل ما تستنى سنة عشان تشوف النتيجة → تشوف جزء شغال كل شوية</span></p>
+      </div>
+      <div style="margin-top:.8rem">
+        <p style="font-size:.82rem;color:var(--text2)"><strong style="color:var(--text)">🔥 مثال بسيط جدًا</strong><br>
+        Traditional: تعمل تطبيق كامل مرة واحدة → بعد 6 شهور العميل يقول: مش عايز كده 😅<br><br>
+        Agile: تعمل جزء صغير (Login) → تعرضه على العميل → تاخد Feedback → تطور عليه</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="rv" style="margin-top:2rem">
+    <table class="models-table">
+      <thead>
+        <tr><th>Traditional</th><th>Agile</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>خطة ثابتة</td><td style="color:var(--a3)">خطة مرنة</td></tr>
+        <tr><td>تسليم مرة واحدة</td><td style="color:var(--a3)">تسليم متكرر</td></tr>
+        <tr><td>مفيش تغيير</td><td style="color:var(--a3)">التغيير مرحب به</td></tr>
+        <tr><td>العميل بعيد</td><td style="color:var(--a3)">العميل مشارك</td></tr>
+        <tr><td>بطيء</td><td style="color:var(--a3)">سريع</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rv" style="margin-top:1.5rem">
+    <div style="background:var(--card);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1rem 1.4rem;">
+      <p style="font-size:.85rem;text-align:center">
+        <strong style="color:var(--a3)">💡 جملة ذهبية تحفظها:<br></strong>
+        <span style="color:var(--text2)">Agile بيقول: "التغيير مش مشكلة… ده جزء من اللعبة"</span>
+      </p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ AGILE MANIFESTO ════ -->
+<div class="divider"></div>
+<section id="manifesto">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a4)">خامسًا</div>
+    <h2 class="sec-title">Agile Manifesto</h2>
+    <p class="sec-sub">أهم 4 مبادئ في Agile 🔥🔥</p>
+  </div>
+
+  <div class="manifesto-grid rv">
+    <div class="m-card">
+      <div class="m-num">المبدأ الأول</div>
+      <h4>Individuals & Interactions</h4>
+      <div class="m-over">↑ أهم من ↓ Processes & Tools</div>
+      <p>الناس أهم من الأدوات. التواصل أهم من النظام.</p>
+    </div>
+    <div class="m-card">
+      <div class="m-num">المبدأ الثاني</div>
+      <h4>Working Software</h4>
+      <div class="m-over">↑ أهم من ↓ Documentation</div>
+      <p>برنامج شغال أهم من ورق كتير. أهم حاجة: السيستم يشتغل.</p>
+    </div>
+    <div class="m-card">
+      <div class="m-num">المبدأ الثالث</div>
+      <h4>Customer Collaboration</h4>
+      <div class="m-over">↑ أهم من ↓ Contract Negotiation</div>
+      <p>اشتغل مع العميل مش ضده. Feedback مستمر.</p>
+    </div>
+    <div class="m-card">
+      <div class="m-num">المبدأ الرابع</div>
+      <h4>Respond to Change</h4>
+      <div class="m-over">↑ أهم من ↓ Following a Plan</div>
+      <p>التغيير طبيعي. لازم تكون مرن.</p>
+    </div>
+  </div>
+
+  <!-- Agile Mindset -->
+  <div class="rv" style="margin-top:3rem">
+    <div class="sec-head" style="margin-bottom:1.5rem">
+      <h2 class="sec-title" style="font-size:1.7rem">Agile Mindset — طريقة التفكير</h2>
+      <p class="sec-sub">Agile مش Steps بس… ده Mindset</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem">
+      <div class="model-card" style="text-align:center;padding:1.2rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">⚡</div>
+        <div style="font-size:.88rem;font-weight:800;margin-bottom:.3rem;color:var(--a3)">Deliver Fast</div>
+        <div style="font-size:.78rem;color:var(--text2)">نطلع حاجة بسرعة</div>
+      </div>
+      <div class="model-card" style="text-align:center;padding:1.2rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">🔄</div>
+        <div style="font-size:.88rem;font-weight:800;margin-bottom:.3rem;color:var(--a3)">Deliver Frequently</div>
+        <div style="font-size:.78rem;color:var(--text2)">نكرر التسليم</div>
+      </div>
+      <div class="model-card" style="text-align:center;padding:1.2rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">📈</div>
+        <div style="font-size:.88rem;font-weight:800;margin-bottom:.3rem;color:var(--a3)">Continuous Improvement</div>
+        <div style="font-size:.78rem;color:var(--text2)">نحسن طول الوقت</div>
+      </div>
+      <div class="model-card" style="text-align:center;padding:1.2rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">👥</div>
+        <div style="font-size:.88rem;font-weight:800;margin-bottom:.3rem;color:var(--a3)">Team Ownership</div>
+        <div style="font-size:.78rem;color:var(--text2)">التيم كله مسؤول</div>
+      </div>
+      <div class="model-card" style="text-align:center;padding:1.2rem">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">🎯</div>
+        <div style="font-size:.88rem;font-weight:800;margin-bottom:.3rem;color:var(--a3)">Adapt</div>
+        <div style="font-size:.78rem;color:var(--text2)">نغير الخطة حسب الظروف</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary code -->
+  <div class="rv" style="margin-top:2rem">
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:1.5rem 2rem;">
+      <h4 style="font-weight:800;margin-bottom:1rem;font-size:1rem;color:var(--a1)">🧠 الخلاصة اللي تتحفظ</h4>
+      <div class="cb">Traditional:
+Fixed plan + no change + slow delivery
+
+Agile:
+Iterative + flexible + fast delivery + customer feedback</div>
+    </div>
+  </div>
+
+  <!-- Frameworks -->
+  <div class="rv" style="margin-top:2rem">
+    <div style="background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.2);border-radius:12px;padding:1.2rem 1.5rem;">
+      <p style="font-size:.85rem;font-weight:700;color:var(--a2);margin-bottom:.5rem">🟢 How to Implement Agile؟<br>
+      <span style="color:var(--text2);font-weight:400">Agile مش حاجة واحدة، ده مجموعة frameworks:</span></p>
+      <div class="tags">
+        <span class="tag cyan">Scrum 🔥 (أهم واحد)</span>
+        <span class="tag sky">XP (Extreme Programming)</span>
+        <span class="tag em">Kanban</span>
+        <span class="tag vi">Lean</span>
+        <span class="tag or">Crystal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agile Advantages -->
+  <div class="rv" style="margin-top:2rem">
+    <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:1.2rem;text-align:center">🟢 Advantages of Agile</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Continuous Delivery</strong><br><span style="color:var(--text2)">software شغال طول الوقت</span></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Customer Satisfaction</strong><br><span style="color:var(--text2)">العميل بيشوف progress</span></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Welcome Changes</strong><br><span style="color:var(--text2)">مرونة عالية</span></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Inspect & Adapt</strong><br><span style="color:var(--text2)">نراجع ونحسن باستمرار</span></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Daily Interaction</strong><br><span style="color:var(--text2)">تواصل مستمر</span></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem">
+        <span style="color:var(--a3);font-size:1rem;flex-shrink:0">✅</span>
+        <div><strong>Design Matters</strong><br><span style="color:var(--text2)">الجودة مهمة</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ 12 PRINCIPLES ════ -->
+<div class="divider"></div>
+<section id="principles">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a6)">سادسًا</div>
+    <h2 class="sec-title">12 Principles behind Agile Manifesto</h2>
+    <p class="sec-sub">دي القوانين الحقيقية اللي Agile ماشي عليها</p>
+  </div>
+
+  <div class="prin-tabs rv">
+    <button class="p-tab on" onclick="showPrin('g1',this)">🧩 Customer & Delivery</button>
+    <button class="p-tab" onclick="showPrin('g2',this)">👥 Team & Communication</button>
+    <button class="p-tab" onclick="showPrin('g3',this)">⭐ Quality & Progress</button>
+    <button class="p-tab" onclick="showPrin('g4',this)">🧠 Smart Work</button>
+  </div>
+
+  <!-- Group 1 -->
+  <div class="p-panel on" id="pg1">
+    <div class="prin-card">
+      <div class="p-icon">😊</div>
+      <h4>1️⃣ Customer Satisfaction</h4>
+      <p>أهم هدف = إرضاء العميل. ندي له software شغال بدري وباستمرار.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">🔄</div>
+      <h4>2️⃣ Welcome Change</h4>
+      <p>التغيير مرحب بيه حتى لو متأخر. التغيير = ميزة مش مشكلة.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">📦</div>
+      <h4>3️⃣ Frequent Delivery</h4>
+      <p>نسلم software كل فترة قصيرة. كل أسبوعين مثلًا.</p>
+    </div>
+  </div>
+
+  <!-- Group 2 -->
+  <div class="p-panel" id="pg2">
+    <div class="prin-card">
+      <div class="p-icon">🤝</div>
+      <h4>4️⃣ Business + Developers Together</h4>
+      <p>العميل + المطورين يشتغلوا سوا يوميًا.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">💪</div>
+      <h4>5️⃣ Motivated Team</h4>
+      <p>اختار تيم كويس واديله ثقة. متعملش micromanage.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">🗣️</div>
+      <h4>6️⃣ Face-to-Face Communication</h4>
+      <p>أحسن تواصل = مباشر. أسرع + أوضح.</p>
+    </div>
+  </div>
+
+  <!-- Group 3 -->
+  <div class="p-panel" id="pg3">
+    <div class="prin-card">
+      <div class="p-icon">✅</div>
+      <h4>7️⃣ Working Software = Progress</h4>
+      <p>التقدم الحقيقي = برنامج شغال.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">⚖️</div>
+      <h4>8️⃣ Sustainable Development</h4>
+      <p>الشغل يكون ثابت مش ضغط مرة واحدة. لا burnout.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">💎</div>
+      <h4>9️⃣ Technical Excellence</h4>
+      <p>الكود لازم يكون نظيف. design مهم.</p>
+    </div>
+  </div>
+
+  <!-- Group 4 -->
+  <div class="p-panel" id="pg4">
+    <div class="prin-card">
+      <div class="p-icon">✂️</div>
+      <h4>🔟 Simplicity</h4>
+      <p>اعمل أقل شغل ممكن يحقق الهدف. متعملش over-engineer.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">🌀</div>
+      <h4>11️⃣ Self-Organizing Teams</h4>
+      <p>التيم ينظم نفسه. مش لازم manager يقول كل حاجة.</p>
+    </div>
+    <div class="prin-card">
+      <div class="p-icon">🔍</div>
+      <h4>12️⃣ Continuous Improvement</h4>
+      <p>كل فترة نراجع نفسنا ونحسن. Retrospective.</p>
+    </div>
+  </div>
+
+  <div class="rv" style="margin-top:2rem">
+    <div style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1.2rem 1.5rem;text-align:center;">
+      <p style="font-size:.85rem;color:var(--a6);font-weight:700;margin-bottom:.3rem">🔥 طريقة تحفظهم بسهولة</p>
+      <p style="font-size:.85rem;color:var(--text2)">Customer → Delivery → Team → Quality → Simplicity → Improvement</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ SCRUM ════ -->
+<div class="divider"></div>
+<section id="scrum" style="background:var(--bg2)">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a5)">سابعًا</div>
+    <h2 class="sec-title">SCRUM 🔥</h2>
+    <p class="sec-sub">أشهر Framework في Agile — أهم جزء جدًا جدًا</p>
+  </div>
+
+  <div class="rv">
+    <div style="background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.2);border-radius:12px;padding:1.2rem 1.5rem;text-align:center;margin-bottom:2rem">
+      <p style="font-size:.9rem;font-weight:700;color:var(--a5)">💡 Scrum = أشهر Framework في Agile</p>
+      <p style="font-size:.85rem;color:var(--text2)">نقسم الشغل إلى Sprints &nbsp;|&nbsp; 🕐 Sprint = من 2 إلى 4 أسابيع</p>
+    </div>
+  </div>
+
+  <!-- Cycle -->
+  <div class="rv">
+    <h3 style="text-align:center;margin-bottom:1.2rem;font-size:1rem;color:var(--text2)">دورة Scrum</h3>
+    <div class="scrum-cycle">
+      <div class="cycle-step"><div class="cs-icon">📝</div><div class="cs-name">Sprint Planning</div></div>
+      <div class="cycle-arrow">→</div>
+      <div class="cycle-step"><div class="cs-icon">💻</div><div class="cs-name">Development</div></div>
+      <div class="cycle-arrow">→</div>
+      <div class="cycle-step"><div class="cs-icon">☀️</div><div class="cs-name">Daily Scrum</div></div>
+      <div class="cycle-arrow">→</div>
+      <div class="cycle-step"><div class="cs-icon">🔍</div><div class="cs-name">Review</div></div>
+      <div class="cycle-arrow">→</div>
+      <div class="cycle-step"><div class="cs-icon">💡</div><div class="cs-name">Retrospective</div></div>
+    </div>
+    <div class="cb" style="text-align:center;font-size:.78rem">نخطط → نشتغل → نختبر → نعرض → نحسن → نكرر 🔁</div>
+  </div>
+
+  <!-- Backlogs -->
+  <div class="rv" style="margin-top:2.5rem">
+    <h3 style="font-size:1rem;font-weight:800;margin-bottom:1rem;color:var(--text2)">🧠 مكونات Scrum</h3>
+    <div class="backlogs-grid">
+      <div class="bl-card">
+        <div class="bl-dot" style="background:var(--a5)"></div>
+        <h4>Product Backlog</h4>
+        <p>قائمة بكل المطلوب في المشروع</p>
+      </div>
+      <div class="bl-card">
+        <div class="bl-dot" style="background:var(--a2)"></div>
+        <h4>Sprint Backlog</h4>
+        <p>الجزء اللي هنشتغل عليه في Sprint</p>
+      </div>
+      <div class="bl-card">
+        <div class="bl-dot" style="background:var(--a3)"></div>
+        <h4>Product Increment</h4>
+        <p>ناتج الشغل (software شغال)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roles -->
+  <div class="rv" style="margin-top:2.5rem">
+    <h3 style="font-size:1rem;font-weight:800;margin-bottom:1rem;color:var(--text2)">👥 Roles في Scrum</h3>
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="r-icon">🧑‍💼</div>
+        <h4>Product Owner</h4>
+        <ul>
+          <li>تحديد features</li>
+          <li>ترتيب الأولويات</li>
+          <li>قبول أو رفض الشغل</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="r-icon">🧑‍🔧</div>
+        <h4>Scrum Master</h4>
+        <ul>
+          <li>يساعد التيم</li>
+          <li>يشيل المشاكل</li>
+          <li>يضمن إن Scrum ماشي صح</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="r-icon">👨‍💻</div>
+        <h4>Team</h4>
+        <ul>
+          <li>Cross-functional</li>
+          <li>Self-organizing</li>
+          <li>حوالي 5–9 أفراد</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Scrum -->
+  <div class="rv" style="margin-top:2.5rem">
+    <div class="daily-box">
+      <h4>☀️ Daily Scrum — مهم جدًا<br><span style="font-size:.8rem;color:var(--text2);font-weight:400">🕐 كل يوم (15 دقيقة)</span></h4>
+      <div class="daily-q">
+        <div class="qnum">1</div>
+        <span>عملت إيه امبارح؟</span>
+      </div>
+      <div class="daily-q">
+        <div class="qnum">2</div>
+        <span>هتعمل إيه النهارده؟</span>
+      </div>
+      <div class="daily-q">
+        <div class="qnum">3</div>
+        <span>في مشاكل؟</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Burndown -->
+  <div class="rv" style="margin-top:1.5rem">
+    <div style="background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1.2rem 1.5rem;">
+      <p style="font-size:.88rem;font-weight:800;color:var(--a1);margin-bottom:.4rem">📉 Burndown Chart</p>
+      <p style="font-size:.84rem;color:var(--text2)">ده رسم بيبين قد إيه باقي شغل — هل التيم ماشي صح ولا متأخر</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════ FINAL SUMMARY ════ -->
+<div class="divider"></div>
+<section id="summary">
+<div class="ct">
+  <div class="sec-head rv">
+    <div class="sec-label" style="color:var(--a3)">الخلاصة</div>
+    <h2 class="sec-title">كل حاجة في جملتين 🧠</h2>
+  </div>
+
+  <div class="sum-grid rv">
+    <div class="sum-card">
+      <h4 style="color:var(--a1)">📋 SDLC</h4>
+      <div class="flow-code">Concept → Planning → Requirements
+→ Design → Development
+→ Integration & Test → Implement
+→ Maintenance → Disposition</div>
+    </div>
+    <div class="sum-card">
+      <h4 style="color:var(--a4)">🌊 Code & Fix / Waterfall</h4>
+      <div class="flow-code">Code & Fix: كود → Bug → Fix → Loop
+
+Waterfall:
+Requirements → Design → Implementation
+→ Testing → Maintenance
+✔ منظم   ❌ مش مرن</div>
+    </div>
+    <div class="sum-card">
+      <h4 style="color:var(--a5)">📐 Triple Constraint</h4>
+      <div class="flow-code">Scope + Time + Cost
+❗ مستحيل تثبت التلاتة
+لازم واحد Flexible</div>
+    </div>
+    <div class="sum-card">
+      <h4 style="color:var(--a2)">🟢 نماذج التطوير</h4>
+      <div class="flow-code">Plan-driven → Waterfall, Spiral
+Agile → Scrum, XP, Kanban
+
+كل نموذج يعالج نفس المراحل
+لكن بطريقة مختلفة</div>
+    </div>
+    <div class="sum-card">
+      <h4 style="color:var(--a3)">⚡ Agile Manifesto</h4>
+      <div class="flow-code">Individuals > Processes
+Working Software > Documentation
+Customer Collaboration > Contract
+Respond to Change > Following Plan</div>
+    </div>
+    <div class="sum-card">
+      <h4 style="color:var(--a6)">🔥 Agile Principles</h4>
+      <div class="flow-code">Customer + Flexibility
+Frequent Delivery + Teamwork
+Quality + Simplicity
++ Improvement</div>
+    </div>
+    <div class="sum-card" style="grid-column: 1 / -1">
+      <h4 style="color:var(--a5)">🏃 Scrum</h4>
+      <div class="flow-code">Sprints (2–4 weeks) + Roles (PO, SM, Team)
+Backlogs (Product, Sprint, Increment)
+Daily Scrum (15 min) + Burndown Chart
+Sprint Planning → Development → Daily Scrum → Review → Retrospective → 🔁</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <p>📗 <span>SA2 — Software Architecture</span> | المحاضرة الثانية</p>
+  <p style="margin-top:.4rem;font-size:.74rem;opacity:.5">SDLC · Process Models · Waterfall · Triple Constraint · Agile · Manifesto · 12 Principles · Scrum</p>
+</footer>
+
+</div><!-- end wrap -->
+
+<script>
+// ── STICKY NAV ──
+const sNav = document.getElementById('sNav');
+window.addEventListener('scroll', () => {
+  sNav.classList.toggle('show', window.scrollY > window.innerHeight * 0.7);
+});
+
+// ── REVEAL ──
+const rvEls = document.querySelectorAll('.rv');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.08 });
+rvEls.forEach(el => obs.observe(el));
+
+// ── PRINCIPLES TABS ──
+function showPrin(id, btn) {
+  document.querySelectorAll('.p-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p'+id).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
