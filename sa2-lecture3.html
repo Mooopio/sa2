@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrum - المحاضرة الثالثة | SA2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f1a;
+    --bg3: #13131f;
+    --card: #16161f;
+    --card2: #1c1c2e;
+    --border: #2a2a3f;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --text: #e8e8f0;
+    --text2: #9090b0;
+    --text3: #c0c0d8;
+    --glow: rgba(108,99,255,0.3);
+    --glow2: rgba(255,101,132,0.3);
+    --glow3: rgba(67,233,123,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 30% 50%, rgba(108,99,255,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 20%, rgba(255,101,132,0.1) 0%, transparent 50%),
+                var(--bg);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(108,99,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(60px); }
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 2;
+    padding: 2rem;
+    animation: fadeInUp 1s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(255,101,132,0.2));
+    border: 1px solid rgba(108,99,255,0.4);
+    border-radius: 50px;
+    padding: 0.4rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+  }
+
+  .hero h1 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .hero-sub {
+    font-size: 1.3rem;
+    color: var(--text2);
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-sub span {
+    color: var(--accent3);
+    font-weight: 700;
+  }
+
+  .scroll-hint {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text2);
+    font-size: 0.8rem;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-hint::after {
+    content: '▼';
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  nav a {
+    color: var(--text2);
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+  }
+
+  nav a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.1);
+  }
+
+  /* CONTAINER */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* SECTION */
+  section {
+    padding: 5rem 0;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .section-header p {
+    color: var(--text2);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* INTRO CARD */
+  .intro-card {
+    background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    animation: fadeIn 0.8s ease;
+  }
+
+  .intro-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(108,99,255,0.1), transparent 70%);
+    pointer-events: none;
+  }
+
+  .intro-card h3 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .intro-card p {
+    color: var(--text3);
+    font-size: 1.05rem;
+    line-height: 2;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(255,101,132,0.08));
+    border: 1px solid rgba(108,99,255,0.3);
+    border-right: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 1rem;
+    color: var(--text3);
+  }
+
+  .highlight.green {
+    background: linear-gradient(135deg, rgba(67,233,123,0.08), rgba(67,233,123,0.04));
+    border-color: rgba(67,233,123,0.3);
+    border-right-color: var(--accent3);
+  }
+
+  .highlight.orange {
+    background: linear-gradient(135deg, rgba(247,151,30,0.08), rgba(247,151,30,0.04));
+    border-color: rgba(247,151,30,0.3);
+    border-right-color: var(--accent4);
+  }
+
+  .highlight.red {
+    background: linear-gradient(135deg, rgba(255,101,132,0.08), rgba(255,101,132,0.04));
+    border-color: rgba(255,101,132,0.3);
+    border-right-color: var(--accent2);
+  }
+
+  .highlight strong {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .highlight.green strong { color: var(--accent3); }
+  .highlight.orange strong { color: var(--accent4); }
+  .highlight.red strong { color: var(--accent2); }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(108,99,255,0.15);
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: right;
+  }
+
+  .card:hover::after {
+    transform: scaleX(1);
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  .card p {
+    color: var(--text2);
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+
+  /* ROLE CARDS */
+  .role-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card:hover {
+    transform: translateX(-6px);
+    border-color: var(--accent);
+    box-shadow: 6px 0 30px rgba(108,99,255,0.1);
+  }
+
+  .role-card.red-role:hover { border-color: var(--accent2); box-shadow: 6px 0 30px var(--glow2); }
+  .role-card.green-role:hover { border-color: var(--accent3); box-shadow: 6px 0 30px var(--glow3); }
+  .role-card.orange-role:hover { border-color: var(--accent4); box-shadow: 6px 0 30px rgba(247,151,30,0.2); }
+
+  .role-card::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    border-radius: 0 24px 24px 0;
+  }
+
+  .role-card.red-role::before { background: linear-gradient(180deg, var(--accent2), #ff8fa3); }
+  .role-card.green-role::before { background: linear-gradient(180deg, var(--accent3), #80ffb4); }
+  .role-card.orange-role::before { background: linear-gradient(180deg, var(--accent4), #ffd460); }
+
+  .role-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .role-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .role-card.red-role .role-number { background: linear-gradient(135deg, var(--accent2), #ff8fa3); }
+  .role-card.green-role .role-number { background: linear-gradient(135deg, var(--accent3), #80ffb4); color: #0a0a0f; }
+  .role-card.orange-role .role-number { background: linear-gradient(135deg, var(--accent4), #ffd460); color: #0a0a0f; }
+
+  .role-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--text);
+  }
+
+  .role-subtitle {
+    color: var(--text2);
+    font-size: 0.9rem;
+  }
+
+  .resp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .resp-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    color: var(--text3);
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .resp-list li::before {
+    content: '◆';
+    color: var(--accent);
+    font-size: 0.6rem;
+    margin-top: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  .role-card.red-role .resp-list li::before { color: var(--accent2); }
+  .role-card.green-role .resp-list li::before { color: var(--accent3); }
+  .role-card.orange-role .resp-list li::before { color: var(--accent4); }
+
+  .resp-list li strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* CEREMONIES */
+  .ceremony-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    transition: all 0.4s;
+  }
+
+  .ceremony-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(108,99,255,0.1);
+  }
+
+  .ceremony-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(255,101,132,0.1));
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ceremony-header.green-h { background: linear-gradient(135deg, rgba(67,233,123,0.15), rgba(67,233,123,0.05)); }
+  .ceremony-header.orange-h { background: linear-gradient(135deg, rgba(247,151,30,0.15), rgba(247,151,30,0.05)); }
+  .ceremony-header.red-h { background: linear-gradient(135deg, rgba(255,101,132,0.15), rgba(255,101,132,0.05)); }
+
+  .ceremony-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .ceremony-header.green-h .ceremony-icon { background: linear-gradient(135deg, var(--accent3), #38f9d7); }
+  .ceremony-header.orange-h .ceremony-icon { background: linear-gradient(135deg, var(--accent4), #ffd460); }
+  .ceremony-header.red-h .ceremony-icon { background: linear-gradient(135deg, var(--accent2), #f093fb); }
+
+  .ceremony-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .ceremony-toggle {
+    color: var(--accent);
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+  }
+
+  .ceremony-card.open .ceremony-toggle {
+    transform: rotate(180deg);
+  }
+
+  .ceremony-body {
+    padding: 0 2rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.3s;
+  }
+
+  .ceremony-card.open .ceremony-body {
+    max-height: 2000px;
+    padding: 2rem;
+  }
+
+  /* 3 QUESTIONS */
+  .questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .question-box {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .question-box:hover {
+    border-color: var(--accent);
+    transform: scale(1.03);
+  }
+
+  .question-num {
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-family: 'Tajawal', sans-serif;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .question-text {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .question-sub {
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+
+  /* ARTIFACTS */
+  .artifact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .artifact-card:hover {
+    border-color: var(--accent);
+    transform: translateX(-4px);
+  }
+
+  .artifact-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  .artifact-content h3 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+
+  .artifact-content p {
+    color: var(--text2);
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+
+  /* TABLE */
+  .table-wrapper {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  th {
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(255,101,132,0.1));
+    color: var(--accent);
+    font-weight: 800;
+    padding: 1rem 1.5rem;
+    text-align: right;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  td {
+    padding: 0.9rem 1.5rem;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+  }
+
+  tr:hover td {
+    background: rgba(108,99,255,0.05);
+    color: var(--text);
+  }
+
+  /* BURNDOWN */
+  .burndown-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .burndown-chart {
+    width: 100%;
+    height: 250px;
+    position: relative;
+    margin-top: 1.5rem;
+  }
+
+  .burndown-chart svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* LOOP */
+  .loop-section {
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .loop-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 3rem;
+  }
+
+  .loop-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .loop-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .loop-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    position: relative;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .loop-circle:hover { transform: scale(1.15); }
+
+  .loop-circle.c1 { background: linear-gradient(135deg, #6c63ff, #8b80ff); box-shadow: 0 0 30px rgba(108,99,255,0.4); }
+  .loop-circle.c2 { background: linear-gradient(135deg, #43e97b, #38f9d7); box-shadow: 0 0 30px rgba(67,233,123,0.4); }
+  .loop-circle.c3 { background: linear-gradient(135deg, #f7971e, #ffd460); box-shadow: 0 0 30px rgba(247,151,30,0.4); }
+  .loop-circle.c4 { background: linear-gradient(135deg, #ff6584, #f093fb); box-shadow: 0 0 30px rgba(255,101,132,0.4); }
+
+  .loop-label {
+    font-weight: 800;
+    color: var(--text);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .loop-arrow {
+    font-size: 1.8rem;
+    color: var(--text2);
+    padding: 0 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* COMPARISON: Wrong vs Right */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .loop-flow { flex-direction: column; }
+    .loop-arrow { transform: rotate(90deg); }
+    .cards-grid { grid-template-columns: 1fr; }
+    .artifact-card { flex-direction: column; }
+  }
+
+  .compare-box {
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+  }
+
+  .compare-box.wrong {
+    background: rgba(255,101,132,0.08);
+    border: 1px solid rgba(255,101,132,0.3);
+  }
+
+  .compare-box.right {
+    background: rgba(67,233,123,0.08);
+    border: 1px solid rgba(67,233,123,0.3);
+  }
+
+  .compare-box .label {
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.6rem;
+  }
+
+  .wrong .label { color: var(--accent2); }
+  .right .label { color: var(--accent3); }
+
+  .compare-box p {
+    color: var(--text3);
+    font-size: 0.95rem;
+  }
+
+  /* SPRINT PLANNING INPUTS/OUTPUTS */
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .io-grid { grid-template-columns: 1fr; }
+  }
+
+  .io-box {
+    background: var(--card2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .io-box h4 {
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  .io-box.output h4 { color: var(--accent3); }
+
+  .io-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .io-list li {
+    color: var(--text3);
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(108,99,255,0.06);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .io-box.output .io-list li { background: rgba(67,233,123,0.06); }
+
+  /* START STOP CONTINUE */
+  .ssc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .ssc-grid { grid-template-columns: 1fr; }
+  }
+
+  .ssc-card {
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+
+  .ssc-card:hover { transform: scale(1.05); }
+
+  .ssc-card.start { background: linear-gradient(135deg, rgba(67,233,123,0.15), rgba(67,233,123,0.05)); border: 1px solid rgba(67,233,123,0.3); }
+  .ssc-card.stop { background: linear-gradient(135deg, rgba(255,101,132,0.15), rgba(255,101,132,0.05)); border: 1px solid rgba(255,101,132,0.3); }
+  .ssc-card.continue { background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(108,99,255,0.05)); border: 1px solid rgba(108,99,255,0.3); }
+
+  .ssc-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+
+  .ssc-title { font-weight: 900; font-size: 1.1rem; font-family: 'Tajawal', sans-serif; }
+  .start .ssc-title { color: var(--accent3); }
+  .stop .ssc-title { color: var(--accent2); }
+  .continue .ssc-title { color: var(--accent); }
+
+  .ssc-sub { color: var(--text2); font-size: 0.85rem; margin-top: 0.4rem; }
+
+  /* SUMMARY */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .summary-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .summary-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .summary-item .sum-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+  .summary-item h4 { font-weight: 800; color: var(--text); font-family: 'Tajawal', sans-serif; margin-bottom: 0.4rem; }
+  .summary-item p { color: var(--text2); font-size: 0.85rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  footer p {
+    color: var(--text2);
+    font-size: 0.9rem;
+  }
+
+  footer strong { color: var(--accent); }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 2rem 0;
+  }
+
+  /* PILL BADGES */
+  .pill {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 0.2rem;
+  }
+
+  .pill-purple { background: rgba(108,99,255,0.2); color: var(--accent); border: 1px solid rgba(108,99,255,0.3); }
+  .pill-green { background: rgba(67,233,123,0.2); color: var(--accent3); border: 1px solid rgba(67,233,123,0.3); }
+  .pill-red { background: rgba(255,101,132,0.2); color: var(--accent2); border: 1px solid rgba(255,101,132,0.3); }
+  .pill-orange { background: rgba(247,151,30,0.2); color: var(--accent4); border: 1px solid rgba(247,151,30,0.3); }
+
+  /* BACK TO TOP */
+  #backTop {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    font-size: 1.2rem;
+    z-index: 200;
+    border: none;
+    box-shadow: 0 5px 20px rgba(108,99,255,0.4);
+  }
+
+  #backTop.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #backTop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108,99,255,0.5);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* USER STORY */
+  .user-story {
+    background: linear-gradient(135deg, var(--card2), rgba(108,99,255,0.1));
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .user-story .us-label {
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .user-story .us-text {
+    font-size: 1.1rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">SA2 · المحاضرة الثالثة</div>
+    <h1>Scrum</h1>
+    <p class="hero-sub">إطار عمل Agile · من الفكرة للـ <span>Sprint</span></p>
+    <div class="scroll-hint">اسكرول للأسفل</div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav>
+  <a href="#intro">ما هو Scrum؟</a>
+  <a href="#roles">الأدوار</a>
+  <a href="#ceremonies">الاجتماعات</a>
+  <a href="#artifacts">Artifacts</a>
+  <a href="#planning">Sprint Planning</a>
+  <a href="#daily">Daily Scrum</a>
+  <a href="#review">Review</a>
+  <a href="#retro">Retrospective</a>
+  <a href="#backlog">Product Backlog</a>
+  <a href="#burndown">Burndown</a>
+  <a href="#summary">الخلاصة</a>
+</nav>
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🔥 أول حاجة</div>
+      <h2>يعني إيه Scrum أصلاً؟</h2>
+      <p>Framework بيُستخدم في إدارة المشاريع خصوصًا في تطوير البرمجيات</p>
+    </div>
+
+    <div class="intro-card">
+      <h3>⚙️ الفكرة الأساسية</h3>
+      <p>
+        👉 بدل ما نشتغل على المشروع كله مرة واحدة (زي Waterfall)،<br>
+        👉 بنقسم الشغل لـ <strong style="color:var(--accent)">أجزاء صغيرة اسمها Sprints</strong>
+      </p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <h3>مفهوم الـ Sprint</h3>
+        <p>Sprint = فترة زمنية ثابتة (مثلاً 2 أسبوع)</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔴</div>
+        <h3>أهم قاعدة</h3>
+        <p><strong>No changes during a sprint</strong><br>لما تبدأ Sprint → مفيش تغييرات تدخل عليه</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💡</div>
+        <h3>ليه نمنع التغييرات؟</h3>
+        <p>الفريق يركز · مفيش لخبطة · الشغل يخلص بجودة</p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      💡 الجملة دي بقى:<br>
+      <strong>"Plan sprint durations around how long you can commit to keeping change out of the sprint"</strong><br>
+      معناها: اختار مدة الـ Sprint على قد ما تقدر تمنع التغييرات فيها
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-box wrong">
+        <div class="label">❌ شركة بتغير رأيها كل شوية</div>
+        <p>Sprint = أسبوع واحد</p>
+      </div>
+      <div class="compare-box right">
+        <div class="label">✅ الدنيا مستقرة</div>
+        <p>ممكن 2 أو 3 أسابيع</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="intro-card">
+      <h3>⚙️ Scrum Framework بيتكون من 3 حاجات</h3>
+      <br>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">👥</div>
+          <h3>1️⃣ Roles</h3>
+          <p>الأدوار</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📅</div>
+          <h3>2️⃣ Ceremonies</h3>
+          <p>الاجتماعات</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <h3>3️⃣ Artifacts</h3>
+          <p>الأدوات/النواتج</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section id="roles" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">👥 أولاً</div>
+      <h2>Roles — الأدوار</h2>
+    </div>
+
+    <!-- Product Owner -->
+    <div class="role-card red-role">
+      <div class="role-header">
+        <div class="role-number" style="background: linear-gradient(135deg, var(--accent2), #f093fb); color:white;">1</div>
+        <div>
+          <div class="role-title">Product Owner</div>
+          <div class="role-subtitle">ده أخطر دور في المشروع 💣</div>
+        </div>
+      </div>
+      <ul class="resp-list">
+        <li><strong>Define the features of the product</strong> — هو اللي بيحدد المنتج فيه إيه (features)</li>
+        <li><strong>Decide on release date and content</strong> — يحدد: إمتى هننزل المنتج + إيه اللي هينزل فيه</li>
+        <li><strong>Responsible for ROI</strong> — ROI = Return on Investment، يعني: المنتج يكسب فلوس ويحقق قيمة</li>
+        <li><strong>Prioritize features</strong> — يرتب الشغل حسب الأهمية (الأهم في الأول)</li>
+        <li><strong>Adjust every iteration</strong> — بعد كل Sprint يغير الأولويات لو السوق اتغير</li>
+        <li><strong>Accept or reject work</strong> — هو اللي يقول: الشغل صح ✅ أو اترفض ❌</li>
+      </ul>
+    </div>
+
+    <!-- Scrum Master -->
+    <div class="role-card green-role">
+      <div class="role-header">
+        <div class="role-number">2</div>
+        <div>
+          <div class="role-title">Scrum Master</div>
+          <div class="role-subtitle">ده زي "المدرب" أو "الحارس" 👨‍🏫</div>
+        </div>
+      </div>
+      <ul class="resp-list">
+        <li><strong>يمثل الإدارة</strong> — بينقل رؤية الإدارة للفريق</li>
+        <li><strong>يطبق Scrum</strong> — يتأكد إن كل حاجة ماشية صح</li>
+        <li><strong>Removes impediments</strong> — يشيل أي مشاكل (blockers)</li>
+        <li><strong>يخلي الفريق منتج</strong> — يحسن الأداء</li>
+        <li><strong>ينظم التعاون</strong> — يخلي الكل يشتغل مع بعض كويس</li>
+        <li><strong>Shield the team</strong> — يحمي الفريق من: ضغط المديرين + تغييرات مفاجئة</li>
+      </ul>
+    </div>
+
+    <!-- Team -->
+    <div class="role-card orange-role">
+      <div class="role-header">
+        <div class="role-number">3</div>
+        <div>
+          <div class="role-title">Team</div>
+          <div class="role-subtitle">الفريق اللي بيشتغل فعليًا 👨‍💻</div>
+        </div>
+      </div>
+      <ul class="resp-list">
+        <li><strong>5–9 أشخاص</strong> — علشان: أقل = ضغط، أكتر = فوضى</li>
+        <li><strong>Cross-functional</strong> — فيه كل التخصصات: developer + tester + UX</li>
+        <li><strong>Full-time</strong> — متفرغين للمشروع</li>
+        <li><strong>Self-organizing</strong> — هما اللي بيقرروا: مين يعمل إيه + إزاي يشتغلوا</li>
+        <li><strong>Membership ثابت أثناء Sprint</strong> — مفيش حد يدخل أو يخرج في النص</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CEREMONIES -->
+<section id="ceremonies">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📅 ثانياً</div>
+      <h2>Ceremonies — الاجتماعات</h2>
+    </div>
+
+    <!-- Sprint Planning -->
+    <div class="ceremony-card open" id="c1">
+      <div class="ceremony-header" onclick="toggleCard('c1')">
+        <div class="ceremony-icon">🚀</div>
+        <div class="ceremony-title">1️⃣ Sprint Planning</div>
+        <div class="ceremony-toggle">▼</div>
+      </div>
+      <div class="ceremony-body">
+        <div class="highlight">
+          <strong>ده أهم اجتماع 🚨</strong><br>
+          نختار الشغل اللي هيتعمل ونحدد الهدف
+        </div>
+        <div class="io-grid">
+          <div class="io-box">
+            <h4>📥 INPUTS</h4>
+            <ul class="io-list">
+              <li>📋 Product Backlog</li>
+              <li>👨‍💻 Team capabilities</li>
+              <li>💼 Business conditions</li>
+              <li>⚙️ Technology</li>
+            </ul>
+          </div>
+          <div class="io-box output">
+            <h4>📤 OUTPUTS</h4>
+            <ul class="io-list">
+              <li>🎯 Sprint Goal</li>
+              <li>📋 Sprint Backlog</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Scrum -->
+    <div class="ceremony-card" id="c2">
+      <div class="ceremony-header green-h" onclick="toggleCard('c2')">
+        <div class="ceremony-icon green-h">⏱️</div>
+        <div class="ceremony-title">2️⃣ Daily Scrum</div>
+        <div class="ceremony-toggle">▼</div>
+      </div>
+      <div class="ceremony-body">
+        <div class="highlight green">
+          <strong>اجتماع يومي 15 دقيقة ⏱️</strong><br>
+          كل واحد يقول: عملت إيه امبارح · هتعمل إيه النهارده · في مشكلة؟
+        </div>
+        <div class="questions-grid">
+          <div class="question-box">
+            <div class="question-num">1</div>
+            <div class="question-text">What did you do yesterday?</div>
+            <div class="question-sub">عملت إيه امبارح</div>
+          </div>
+          <div class="question-box">
+            <div class="question-num">2</div>
+            <div class="question-text">What will you do today?</div>
+            <div class="question-sub">هتعمل إيه النهارده</div>
+          </div>
+          <div class="question-box">
+            <div class="question-num">3</div>
+            <div class="question-text">Is anything in your way?</div>
+            <div class="question-sub">في مشكلة معطلاك؟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint Review -->
+    <div class="ceremony-card" id="c3">
+      <div class="ceremony-header orange-h" onclick="toggleCard('c3')">
+        <div class="ceremony-icon">🎯</div>
+        <div class="ceremony-title">3️⃣ Sprint Review</div>
+        <div class="ceremony-toggle">▼</div>
+      </div>
+      <div class="ceremony-body">
+        <div class="highlight orange">
+          <strong>في آخر الـ Sprint</strong><br>
+          👉 بنعرض الشغل للـ Product Owner<br>
+          👉 يا يقبله يا يرفضه
+        </div>
+        <p style="color:var(--text3); margin-top:1rem;">
+          <strong style="color:var(--text)">Team presents what it accomplished during the sprint</strong> — الفريق يعرض اللي عمله
+        </p>
+        <p style="color:var(--text3); margin-top:0.8rem;">
+          <strong style="color:var(--text)">Demo of new features or architecture</strong> — غالبًا Demo (عرض عملي): Feature شغالة · UI ظاهر · System شغال
+        </p>
+        <div style="margin-top:1rem;">
+          <span class="pill pill-purple">Customers 👤</span>
+          <span class="pill pill-purple">Management 🏢</span>
+          <span class="pill pill-purple">Product Owner 👨‍💼</span>
+          <span class="pill pill-purple">Engineers 👨‍💻</span>
+        </div>
+        <div class="highlight" style="margin-top:1rem;">💡 ليه؟ ناخد feedback حقيقي</div>
+      </div>
+    </div>
+
+    <!-- Sprint Retrospective -->
+    <div class="ceremony-card" id="c4">
+      <div class="ceremony-header red-h" onclick="toggleCard('c4')">
+        <div class="ceremony-icon">🔁</div>
+        <div class="ceremony-title">4️⃣ Sprint Retrospective</div>
+        <div class="ceremony-toggle">▼</div>
+      </div>
+      <div class="ceremony-body">
+        <div class="highlight red">
+          <strong>ده للتطوير الذاتي 💡</strong><br>
+          Scrum Team only · Feedback meeting · 15–30 minutes · Done after every sprint
+        </div>
+        <p style="color:var(--text3); margin:1rem 0;">نسأل: إيه اللي كان كويس؟ · إيه اللي كان وحش؟ · نطور إزاي؟</p>
+        <div class="ssc-grid">
+          <div class="ssc-card start">
+            <div class="ssc-icon">🚀</div>
+            <div class="ssc-title">Start doing</div>
+            <div class="ssc-sub">نبدأ نعمل إيه جديد؟</div>
+          </div>
+          <div class="ssc-card stop">
+            <div class="ssc-icon">🛑</div>
+            <div class="ssc-title">Stop doing</div>
+            <div class="ssc-sub">نوقف إيه غلط؟</div>
+          </div>
+          <div class="ssc-card continue">
+            <div class="ssc-icon">✅</div>
+            <div class="ssc-title">Continue</div>
+            <div class="ssc-sub">نكمل إيه كويس؟</div>
+          </div>
+        </div>
+        <div class="highlight" style="margin-top:1rem;">
+          💡 <strong>This is just one of many ways</strong> — دي طريقة من طرق كتير. مفيش طريقة واحدة صح. Scrum flexible.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTIFACTS -->
+<section id="artifacts" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📦 ثالثاً</div>
+      <h2>Artifacts — الحاجات اللي بنشتغل بيها</h2>
+    </div>
+
+    <div class="artifact-card">
+      <div class="artifact-number">📋</div>
+      <div class="artifact-content">
+        <h3>1️⃣ Product Backlog</h3>
+        <p>قائمة بكل المطلوب في المنتج: features + improvements + bugs</p>
+        <p style="margin-top:0.5rem;">👉 دي شغل الـ Product Owner</p>
+      </div>
+    </div>
+
+    <div class="artifact-card">
+      <div class="artifact-number">📌</div>
+      <div class="artifact-content">
+        <h3>2️⃣ Sprint Backlog</h3>
+        <p>الحاجات اللي الفريق هيعملها في Sprint ده</p>
+        <p style="margin-top:0.5rem;">👉 جزء من الـ Product Backlog</p>
+      </div>
+    </div>
+
+    <div class="artifact-card">
+      <div class="artifact-number">📊</div>
+      <div class="artifact-content">
+        <h3>3️⃣ Burndown Chart</h3>
+        <p>رسم بياني بيوري: الشغل المتبقي + الوقت</p>
+        <p style="margin-top:0.5rem;">👉 الهدف: تشوف هل ماشي صح؟ ولا متأخر؟</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPRINT PLANNING DETAILS -->
+<section id="planning">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🚀 أولاً</div>
+      <h2>Sprint Planning — التفاصيل</h2>
+    </div>
+
+    <div class="role-card">
+      <h3 style="font-family:'Tajawal',sans-serif; font-size:1.4rem; font-weight:900; color:var(--accent); margin-bottom:1.5rem;">Team selects items from the product backlog they can commit to completing</h3>
+      <ul class="resp-list">
+        <li>👉 الفريق هو اللي بيختار الشغل بنفسه — مش حد بيفرض عليه</li>
+        <li>ده اسمه <strong>Commitment</strong> — الفريق بيقول: "إحنا نقدر نخلص ده خلال Sprint"</li>
+        <li>💡 ليه مهم؟ علشان المسؤولية تبقى عليهم — مش الإدارة تقول "خلص ده" وهم مش قادرين</li>
+      </ul>
+    </div>
+
+    <div class="highlight" style="margin-top:1.5rem;">
+      <strong>Sprint backlog is created</strong><br>
+      👉 هنا بنتج حاجة اسمها: 📌 Sprint Backlog<br>
+      يعني إيه؟ قائمة بكل الشغل اللي هيتعمل في Sprint ده
+    </div>
+
+    <div class="highlight green" style="margin-top:1rem;">
+      <strong>Tasks are identified and each is estimated (1–16 hours)</strong><br>
+      👉 بنقسم الشغل لـ Tasks صغيرة: UI · Backend · Testing<br>
+      أقل من ساعة = trivial · أكتر من 16 ساعة = كبير قوي → لازم يتقسم<br>
+      💡 الهدف: شغل قابل للقياس + تقدير أدق
+    </div>
+
+    <div class="highlight orange" style="margin-top:1rem;">
+      <strong>Collaboratively, not done alone by the ScrumMaster</strong><br>
+      ❌ مش الـ Scrum Master لوحده · ✅ الفريق كله يشارك<br>
+      💡 ليه؟ الفريق هو اللي هيشتغل → هو اللي يقدر يقدر الوقت صح · يمنع فرض قرارات غلط
+    </div>
+
+    <div class="highlight" style="margin-top:1rem;">
+      <strong>High-level design is considered</strong><br>
+      👉 بنفكر في التصميم بشكل عام — مش تفاصيل دقيقة<br>
+      💡 ليه؟ Scrum بيعتمد على التطوير التدريجي — مش بنصمم كل حاجة من الأول
+    </div>
+
+    <div class="user-story">
+      <div class="us-label">💡 USER STORY — مثال مهم جدًا</div>
+      <div class="us-text">As a vacation planner, I want to see photos of the hotels.</div>
+    </div>
+
+    <p style="color:var(--text3); margin-bottom:1rem;">👉 كل Feature كبيرة → تتقسم Tasks صغيرة</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Code middle tier</td><td>8 hours</td></tr>
+          <tr><td>Code UI</td><td>4 hours</td></tr>
+          <tr><td>Write test fixtures</td><td>4 hours</td></tr>
+          <tr><td>Code foo class</td><td>6 hours</td></tr>
+          <tr><td>Update performance tests</td><td>4 hours</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight green">
+      💡 ده بيساعد: توزيع الشغل · متابعة التقدم · منع الفوضى
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="intro-card">
+      <h3>🔥 Sprint Planning Meeting — المدخلات والمخرجات</h3>
+      <div class="io-grid" style="margin-top:1.5rem;">
+        <div class="io-box">
+          <h4>📥 المدخلات</h4>
+          <ul class="io-list">
+            <li>📋 Product Backlog</li>
+            <li>👨‍💻 Team Capabilities</li>
+            <li>💼 Business Conditions</li>
+            <li>⚙️ Technology</li>
+            <li>🏷️ Current Product</li>
+          </ul>
+        </div>
+        <div class="io-box output">
+          <h4>📤 المخرجات</h4>
+          <ul class="io-list">
+            <li>🎯 Sprint Goal</li>
+            <li>📋 Sprint Backlog</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DAILY SCRUM DETAILS -->
+<section id="daily" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">⏱️ ثانياً</div>
+      <h2>Daily Scrum — التفاصيل</h2>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">📅</div>
+        <h3>Daily</h3>
+        <p>كل يوم بدون استثناء</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏱️</div>
+        <h3>15 minutes</h3>
+        <p>سريع جدًا — مش أكتر</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧍</div>
+        <h3>Stand-up</h3>
+        <p>واقفين 😄 علشان الاجتماع يفضل سريع ومفيش رغى</p>
+      </div>
+    </div>
+
+    <div class="highlight red">
+      <strong>Not for problem solving</strong><br>
+      ❌ مش بنحل مشاكل هنا · ✅ بنحدد المشاكل بس<br>
+      💡 الحل يحصل بعد الاجتماع
+    </div>
+
+    <div class="highlight" style="margin-top:1rem;">
+      <strong>Whole world is invited</strong><br>
+      👉 أي حد ممكن يحضر 👀<br>
+      لكن: <strong>Only team members, ScrumMaster, product owner, can talk</strong><br>
+      👉 الكلام مسموح بس لـ: الفريق + Scrum Master + Product Owner
+    </div>
+
+    <div class="highlight green" style="margin-top:1rem;">
+      <strong>Helps avoid other unnecessary meetings</strong><br>
+      💡 الهدف: بدل 10 اجتماعات → اجتماع واحد يومي سريع
+    </div>
+
+    <div class="questions-grid" style="margin-top:2rem;">
+      <div class="question-box">
+        <div class="question-num">1️⃣</div>
+        <div class="question-text">What did you do yesterday?</div>
+        <div class="question-sub">عملت إيه امبارح</div>
+      </div>
+      <div class="question-box">
+        <div class="question-num">2️⃣</div>
+        <div class="question-text">What will you do today?</div>
+        <div class="question-sub">هتعمل إيه النهارده</div>
+      </div>
+      <div class="question-box">
+        <div class="question-num">3️⃣</div>
+        <div class="question-text">Is anything in your way?</div>
+        <div class="question-sub">في مشكلة معطلاك؟</div>
+      </div>
+    </div>
+
+    <div class="highlight red" style="margin-top:2rem;">
+      🔴 <strong>These are not status for the ScrumMaster</strong><br>
+      المعنى: ❌ مش تقرير للمدير · ✅ ده Commitment قدام الفريق<br>
+      💡 يعني: لو قلت "هخلص كذا" → بقيت مسؤول قدام زمايلك<br>
+      🔥 ده بيخلق: ضغط إيجابي + التزام
+    </div>
+  </div>
+</section>
+
+<!-- REVIEW DETAILS -->
+<section id="review">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🎯 ثالثاً</div>
+      <h2>Sprint Review — التفاصيل</h2>
+    </div>
+
+    <div class="role-card">
+      <ul class="resp-list">
+        <li><strong>Team presents what it accomplished during the sprint</strong> — الفريق يعرض اللي عمله</li>
+        <li><strong>Demo of new features or architecture</strong> — غالبًا Demo (عرض عملي): Feature شغالة · UI ظاهر · System شغال</li>
+      </ul>
+    </div>
+
+    <div class="highlight" style="margin-top:1.5rem;">
+      <strong>المشاركين:</strong><br>
+      <span class="pill pill-purple">Customers 👤</span>
+      <span class="pill pill-purple">Management 🏢</span>
+      <span class="pill pill-purple">Product Owner 👨‍💼</span>
+      <span class="pill pill-purple">Engineers 👨‍💻</span><br><br>
+      💡 ليه؟ ناخد feedback حقيقي
+    </div>
+  </div>
+</section>
+
+<!-- RETROSPECTIVE DETAILS -->
+<section id="retro" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🔁 رابعاً</div>
+      <h2>Sprint Retrospective — التفاصيل</h2>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <h3>Scrum Team only</h3>
+        <p>الاجتماع ده خاص بالفريق بس — مفيش إدارة 👀</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h3>Feedback meeting</h3>
+        <p>اجتماع صريح جدًا</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏱️</div>
+        <h3>15–30 minutes</h3>
+        <p>قصير ومركز</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔁</div>
+        <h3>Done after every sprint</h3>
+        <p>بعد كل Sprint</p>
+      </div>
+    </div>
+
+    <div class="highlight green" style="margin-top:1.5rem;">
+      💡 الهدف: <strong>تحسين مستمر</strong>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin-bottom:1rem; font-size:1.3rem;">🔥 تقنية مهمة: Start / Stop / Continue</h3>
+      <div class="ssc-grid">
+        <div class="ssc-card start">
+          <div class="ssc-icon">🚀</div>
+          <div class="ssc-title">1️⃣ Start doing</div>
+          <div class="ssc-sub">نبدأ نعمل إيه جديد؟</div>
+        </div>
+        <div class="ssc-card stop">
+          <div class="ssc-icon">🛑</div>
+          <div class="ssc-title">2️⃣ Stop doing</div>
+          <div class="ssc-sub">نوقف إيه غلط؟</div>
+        </div>
+        <div class="ssc-card continue">
+          <div class="ssc-icon">✅</div>
+          <div class="ssc-title">3️⃣ Continue</div>
+          <div class="ssc-sub">نكمل إيه كويس؟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight" style="margin-top:1.5rem;">
+      🔴 <strong>This is just one of many ways</strong><br>
+      👉 دي طريقة من طرق كتير<br>
+      💡 يعني: مفيش طريقة واحدة صح — Scrum flexible
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT BACKLOG DETAILS -->
+<section id="backlog">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📦 أولاً</div>
+      <h2>Product Backlog — التفاصيل</h2>
+    </div>
+
+    <div class="role-card">
+      <ul class="resp-list">
+        <li><strong>The requirements</strong> — يعني: 📌 كل متطلبات المشروع</li>
+        <li><strong>A list of all desired work on the project</strong> — قائمة بكل حاجة عايزينها في المنتج: Features + تحسينات + Bugs</li>
+      </ul>
+    </div>
+
+    <div class="highlight" style="margin-top:1.5rem;">
+      🔥 <strong>Ideally expressed such that each item has value to the users</strong><br>
+      المعنى: 👉 كل عنصر لازم يكون ليه قيمة حقيقية للمستخدم
+    </div>
+
+    <div class="compare-grid" style="margin-top:1rem;">
+      <div class="compare-box wrong">
+        <div class="label">❌ غلط</div>
+        <p>"Add function X"</p>
+      </div>
+      <div class="compare-box right">
+        <div class="label">✅ صح — User Story</div>
+        <p>"As a user, I can upload a file"</p>
+      </div>
+    </div>
+
+    <div class="highlight green" style="margin-top:1rem;">
+      <strong>Prioritized by the product owner</strong><br>
+      👉 الـ Product Owner هو اللي يحدد: إيه الأول + إيه بعدين<br>
+      💡 حسب: السوق + الفلوس (ROI) + احتياج العميل
+    </div>
+
+    <div class="highlight orange" style="margin-top:1rem;">
+      <strong>Reprioritized at the start of each sprint</strong><br>
+      👉 قبل كل Sprint: بنعيد ترتيب الأولويات<br>
+      💡 ليه؟ السوق بيتغير + العميل يغير رأيه + يظهر Bugs مهمة
+    </div>
+
+    <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin:2rem 0 1rem; font-size:1.3rem;">📊 مثال Product Backlog</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Estimate (Story Points)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Reservation</td><td>3</td></tr>
+          <tr><td>Cancel</td><td>5</td></tr>
+          <tr><td>Change dates</td><td>3</td></tr>
+          <tr><td>RevPAR report</td><td>8</td></tr>
+          <tr><td>Exception handling</td><td>8</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight" style="margin-top:1rem;">
+      🔥 <strong>الأرقام دي مش ساعات — دي Story Points</strong><br>
+      💡 معناها: صعوبة + وقت + تعقيد<br><br>
+      مثال: <strong>RevPAR reports (revenue per available room)</strong><br>
+      👉 ده KPI مهم في الفنادق — 📊 الإيراد لكل غرفة متاحة
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin:2rem 0 1rem; font-size:1.3rem;">🎯 Sprint Goal</h3>
+
+    <div class="highlight">
+      <strong>A short statement of what the work will be focused on</strong><br>
+      👉 جملة قصيرة بتوصف هدف الـ Sprint
+    </div>
+
+    <div class="cards-grid" style="margin-top:1.5rem;">
+      <div class="card">
+        <div class="card-icon">🗄️</div>
+        <h3>Database</h3>
+        <p>دعم دراسات genetics</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <h3>Application</h3>
+        <p>تشغيل على SQL Server بدل Oracle</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💹</div>
+        <h3>Financial</h3>
+        <p>real-time indicators</p>
+      </div>
+    </div>
+
+    <div class="highlight red" style="margin-top:1.5rem;">
+      🔥 <strong>الفكرة العميقة:</strong><br>
+      Sprint Goal ≠ Tasks<br>
+      👉 الهدف مش "نكتب كود"<br>
+      👉 الهدف "نحقق قيمة"
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin:2rem 0 1rem; font-size:1.3rem;">⚙️ Managing the Sprint Backlog</h3>
+
+    <div class="role-card">
+      <ul class="resp-list">
+        <li><strong>Individuals sign up for work</strong> — كل واحد يختار شغله بنفسه ❌ مش بيتوزع عليه ✅ هو اللي ياخده. 💡 ده: يزيد المسؤولية + يحسن الأداء</li>
+        <li><strong>Work is never assigned</strong> — مفيش Manager يقول: "أنت تعمل كذا". 💡 الفريق self-organizing</li>
+        <li><strong>Estimated work remaining is updated daily</strong> — كل يوم نحدث: فاضل قد إيه؟ 💡 علشان نتابع التقدم</li>
+        <li><strong>Any team member can add, delete or change</strong> — الفريق حر يغير الـ Sprint Backlog. 💡 لأن: الفهم بيتطور + ممكن نكتشف شغل جديد</li>
+        <li><strong>If work is unclear → define large then break later</strong> — لو مش فاهم: حط Task كبيرة → قسمها بعدين. 💡 ده Agile Thinking</li>
+        <li><strong>Update work remaining as more becomes known</strong> — كل ما نفهم أكتر → نعدل التقديرات</li>
+      </ul>
+    </div>
+
+    <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin:2rem 0 1rem; font-size:1.3rem;">📋 مثال Sprint Backlog</h3>
+
+    <div class="highlight" style="margin-bottom:1rem;">Tasks: Code UI · Code middle tier · Testing · Help · Foo class</div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Work (hours)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mon</td><td>8, 16, 8</td></tr>
+          <tr><td>Tues</td><td>4, 12</td></tr>
+          <tr><td>Wed</td><td>11</td></tr>
+          <tr><td>Thu</td><td>8</td></tr>
+          <tr><td>Fri</td><td>8</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight green" style="margin-top:1rem;">
+      🔥 الفهم: 👉 كل يوم: الشغل بيقل — أو أحيانًا يزيد (لو اكتشفنا حاجة جديدة)
+    </div>
+  </div>
+</section>
+
+<!-- BURNDOWN -->
+<section id="burndown" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📉 رابعاً</div>
+      <h2>Burndown Chart</h2>
+    </div>
+
+    <div class="role-card">
+      <ul class="resp-list">
+        <li><strong>Depicts total Sprint Backlog hours remaining per day</strong> — رسم بياني بيوري: 📉 الشغل المتبقي كل يوم</li>
+        <li><strong>Shows estimated time to release</strong> — يساعد تعرف: هتخلص امتى؟</li>
+        <li><strong>Ideally burn down to zero</strong> — في نهاية Sprint: 📉 الشغل = صفر</li>
+      </ul>
+    </div>
+
+    <div class="highlight red" style="margin-top:1.5rem;">
+      🔴 <strong>Not a straight line</strong><br>
+      👉 مش خط مستقيم<br>
+      💡 ليه؟ الشغل مش ثابت + فيه مفاجآت
+    </div>
+
+    <div class="highlight orange" style="margin-top:1rem;">
+      🔴 <strong>Can bump UP</strong><br>
+      👉 ممكن يزيد 😳<br>
+      💡 ليه؟ اكتشفنا Tasks جديدة · التقدير كان غلط
+    </div>
+
+    <div class="burndown-container">
+      <h3 style="font-family:'Tajawal',sans-serif; font-weight:900; color:var(--text); margin-bottom:0.5rem;">📊 Burndown Chart — مثال بصري</h3>
+      <p style="color:var(--text2); font-size:0.9rem; margin-bottom:1rem;">الخط المنقط = المثالي · الخط الملون = الواقعي</p>
+      <div class="burndown-chart">
+        <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="burnGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#6c63ff"/>
+              <stop offset="100%" style="stop-color:#ff6584"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="60" y1="20" x2="60" y2="220" stroke="#2a2a3f" stroke-width="1"/>
+          <line x1="60" y1="220" x2="660" y2="220" stroke="#2a2a3f" stroke-width="1"/>
+          <line x1="60" y1="20" x2="660" y2="20" stroke="#2a2a3f" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="70" x2="660" y2="70" stroke="#2a2a3f" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="120" x2="660" y2="120" stroke="#2a2a3f" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="170" x2="660" y2="170" stroke="#2a2a3f" stroke-width="0.5" stroke-dasharray="4"/>
+          <!-- Ideal line (dashed) -->
+          <line x1="60" y1="20" x2="660" y2="220" stroke="#9090b0" stroke-width="2" stroke-dasharray="8 4" opacity="0.6"/>
+          <!-- Actual burn line -->
+          <polyline points="60,20 160,50 210,80 280,140 330,100 410,130 490,160 580,200 660,220" fill="none" stroke="url(#burnGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Dots -->
+          <circle cx="60" cy="20" r="5" fill="#6c63ff"/>
+          <circle cx="160" cy="50" r="5" fill="#6c63ff"/>
+          <circle cx="210" cy="80" r="5" fill="#8b73ff"/>
+          <circle cx="280" cy="140" r="5" fill="#ff6584" opacity="0.9"/>
+          <circle cx="330" cy="100" r="5" fill="#43e97b"/>
+          <circle cx="410" cy="130" r="5" fill="#8b73ff"/>
+          <circle cx="490" cy="160" r="5" fill="#8b73ff"/>
+          <circle cx="580" cy="200" r="5" fill="#6c63ff"/>
+          <circle cx="660" cy="220" r="5" fill="#43e97b"/>
+          <!-- Labels -->
+          <text x="30" y="25" fill="#9090b0" font-size="12" font-family="Cairo">100</text>
+          <text x="30" y="125" fill="#9090b0" font-size="12" font-family="Cairo">50</text>
+          <text x="35" y="225" fill="#9090b0" font-size="12" font-family="Cairo">0</text>
+          <text x="55" y="240" fill="#9090b0" font-size="11" font-family="Cairo">Day 1</text>
+          <text x="630" y="240" fill="#9090b0" font-size="11" font-family="Cairo">End</text>
+          <!-- Up bump annotation -->
+          <text x="250" y="95" fill="#ff6584" font-size="11" font-family="Cairo">Can bump UP ↑</text>
+          <text x="5" y="130" fill="#9090b0" font-size="11" font-family="Cairo" transform="rotate(-90 20 130)">Hours</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="highlight" style="margin-top:1.5rem;">
+      🔥 <strong>Burndown Chart = Reality Check</strong><br>
+      👉 بيجاوب: هل الفريق ماشي صح؟ ولا متأخر؟
+    </div>
+  </div>
+</section>
+
+<!-- SCRUM LOOP -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🔁 الخلاصة العميقة</div>
+      <h2>Scrum بيشتغل كـ Loop مستمر</h2>
+    </div>
+
+    <div class="loop-section">
+      <div class="loop-title">🔁 الحلقة المستمرة</div>
+      <div class="loop-flow">
+        <div class="loop-step">
+          <div class="loop-circle c1">🗓️</div>
+          <div class="loop-label">Planning<br>نخطط</div>
+        </div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">
+          <div class="loop-circle c2">📅</div>
+          <div class="loop-label">Daily Scrum<br>نتابع</div>
+        </div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">
+          <div class="loop-circle c3">🎯</div>
+          <div class="loop-label">Review<br>نعرض</div>
+        </div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">
+          <div class="loop-circle c4">🔁</div>
+          <div class="loop-label">Retrospective<br>نحسن</div>
+        </div>
+        <div class="loop-arrow">→ 🔁</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL SUMMARY -->
+<section id="summary" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">💥 الخلاصة</div>
+      <h2>Scrum — الصورة الكاملة</h2>
+    </div>
+
+    <div class="highlight" style="font-size:1.05rem; margin-bottom:2rem;">
+      🔥 <strong>Scrum بيشتغل كده:</strong><br>
+      Product Owner يحدد الشغل → الفريق يختار جزء في Sprint Planning → يشتغلوا بدون تغييرات → Daily متابعة → Review يعرضوا الشغل → Retrospective يطوروا نفسهم
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="sum-icon">📦</div>
+        <h4>Product Backlog</h4>
+        <p>كل الشغل المطلوب (مرتب حسب القيمة)</p>
+      </div>
+      <div class="summary-item">
+        <div class="sum-icon">🎯</div>
+        <h4>Sprint Goal</h4>
+        <p>هدف واضح للـ Sprint</p>
+      </div>
+      <div class="summary-item">
+        <div class="sum-icon">📋</div>
+        <h4>Sprint Backlog</h4>
+        <p>الشغل اللي الفريق اختاره</p>
+      </div>
+      <div class="summary-item">
+        <div class="sum-icon">⚙️</div>
+        <h4>Management</h4>
+        <p>الفريق يدير نفسه · يختار الشغل · يحدث التقدم</p>
+      </div>
+      <div class="summary-item">
+        <div class="sum-icon">📉</div>
+        <h4>Burndown</h4>
+        <p>مؤشر الأداء الحقيقي</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>📚 SA2 — المحاضرة الثالثة | <strong>Scrum Framework</strong></p>
+  <p style="margin-top:0.5rem; font-size:0.8rem;">Roles · Ceremonies · Artifacts</p>
+</footer>
+
+<!-- BACK TO TOP -->
+<button id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // Toggle ceremony cards
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  // Back to top button
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backTop');
+    if (window.scrollY > 500) {
+      btn.classList.add('show');
+    } else {
+      btn.classList.remove('show');
+    }
+  });
+
+  // Animate cards on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.card, .role-card, .artifact-card, .ceremony-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease, border-color 0.4s, box-shadow 0.4s';
+    observer.observe(el);
+  });
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) {
+        current = s.id;
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.color = '';
+      link.style.borderColor = '';
+      link.style.background = '';
+      if (link.getAttribute('href') === '#' + current) {
+        link.style.color = 'var(--accent)';
+        link.style.borderColor = 'var(--accent)';
+        link.style.background = 'rgba(108,99,255,0.1)';
+      }
+    });
+  });
+</script>
+</body>
+</html>
