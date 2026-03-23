@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SA2 - المحاضرة الأولى | معمارية البرمجيات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --bg3: #141c30;
+    --card: #1a2340;
+    --card2: #1e2a4a;
+    --border: rgba(100,140,255,0.15);
+    --accent1: #4f8fff;
+    --accent2: #7c3aed;
+    --accent3: #06d6a0;
+    --accent4: #ff6b6b;
+    --accent5: #ffd166;
+    --text: #e8eaf6;
+    --text2: #94a3b8;
+    --glow: rgba(79,143,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* ─── PARTICLES BACKGROUND ─── */
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .content-wrap { position: relative; z-index: 1; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(79,143,255,0.12) 0%, transparent 70%);
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(79,143,255,0.12);
+    border: 1px solid rgba(79,143,255,0.4);
+    color: var(--accent1);
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text2);
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .hero-nav {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+
+  .hero-nav a {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 0.6rem 1.3rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .hero-nav a:hover {
+    background: var(--card2);
+    border-color: var(--accent1);
+    color: var(--accent1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79,143,255,0.2);
+  }
+
+  /* ─── SCROLL INDICATOR ─── */
+  .scroll-down {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text2);
+    font-size: 0.75rem;
+    animation: bounce 2s infinite;
+  }
+  .scroll-down svg { width: 20px; }
+
+  /* ─── MAIN CONTAINER ─── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-number {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-header p {
+    color: var(--text2);
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ─── SECTION WRAPPERS ─── */
+  section {
+    padding: 5rem 0;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ─── THREE TIER SECTION ─── */
+  #three-tier { background: var(--bg); }
+
+  .tier-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 3rem 0;
+    position: relative;
+  }
+
+  .tier-card {
+    width: 100%;
+    max-width: 620px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.8rem 2rem;
+    position: relative;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .tier-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .tier-card .tier-num {
+    position: absolute;
+    top: -12px;
+    right: 1.5rem;
+    background: var(--accent1);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .tier-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .tier-card .tier-sub {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-bottom: 0.8rem;
+  }
+
+  .tier-card p { color: var(--text2); font-size: 0.95rem; }
+
+  .tier-card .examples {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.8rem;
+  }
+
+  .badge {
+    background: rgba(79,143,255,0.1);
+    border: 1px solid rgba(79,143,255,0.25);
+    color: var(--accent1);
+    padding: 0.2rem 0.7rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .badge.green {
+    background: rgba(6,214,160,0.1);
+    border-color: rgba(6,214,160,0.25);
+    color: var(--accent3);
+  }
+
+  .badge.purple {
+    background: rgba(124,58,237,0.12);
+    border-color: rgba(124,58,237,0.3);
+    color: #a78bfa;
+  }
+
+  .badge.red {
+    background: rgba(255,107,107,0.1);
+    border-color: rgba(255,107,107,0.25);
+    color: var(--accent4);
+  }
+
+  .badge.yellow {
+    background: rgba(255,209,102,0.1);
+    border-color: rgba(255,209,102,0.25);
+    color: var(--accent5);
+  }
+
+  .tier-arrow {
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(to bottom, var(--accent1), var(--accent2));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+  }
+
+  .tier-arrow::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    color: var(--accent2);
+    font-size: 0.7rem;
+  }
+
+  .tier-flow-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text2);
+    font-size: 0.8rem;
+    margin: 0.3rem 0;
+  }
+
+  /* ─── ARCHITECTURE CARDS ─── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  @media(max-width: 700px) { .arch-grid { grid-template-columns: 1fr; } }
+
+  .arch-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+
+  .arch-card:hover {
+    border-color: var(--accent1);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    transform: translateY(-4px);
+  }
+
+  .arch-card .arch-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .arch-card h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+  }
+
+  .arch-card p {
+    color: var(--text2);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .pro-con { margin-top: 1rem; }
+
+  .pro-con-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+    margin-bottom: 0.4rem;
+    font-size: 0.88rem;
+  }
+
+  .pro-con-row .icon { flex-shrink: 0; margin-top: 2px; }
+
+  .pro-con-row.pro .icon { color: var(--accent3); }
+  .pro-con-row.con .icon { color: var(--accent4); }
+  .pro-con-row.pro { color: #c8f7ec; }
+  .pro-con-row.con { color: #ffd5d5; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .compare-table th {
+    background: var(--card2);
+    padding: 1rem 1.2rem;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent1);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table td {
+    background: var(--card);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.88rem;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: var(--card2); }
+
+  /* ─── PATTERNS ─── */
+  .patterns-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .pat-tab {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.25s;
+  }
+
+  .pat-tab:hover, .pat-tab.active {
+    background: var(--accent1);
+    border-color: var(--accent1);
+    color: #fff;
+  }
+
+  .pat-panel { display: none; animation: fadeUp 0.4s ease; }
+  .pat-panel.active { display: block; }
+
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .pattern-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+  }
+
+  .pattern-card:hover {
+    border-color: rgba(79,143,255,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+  }
+
+  .pattern-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pattern-card p { color: var(--text2); font-size: 0.88rem; }
+
+  .code-block {
+    background: #0d1220;
+    border: 1px solid rgba(79,143,255,0.15);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #a8d8ff;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* ─── COMMUNICATION SECTION ─── */
+  .comm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .comm-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .comm-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 0 0 0 100%;
+    opacity: 0.06;
+  }
+
+  .comm-card.sync::before { background: var(--accent1); }
+  .comm-card.async::before { background: var(--accent3); }
+  .comm-card.event::before { background: var(--accent5); }
+
+  .comm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+
+  .comm-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .sync .comm-type-badge { background: rgba(79,143,255,0.15); color: var(--accent1); border: 1px solid rgba(79,143,255,0.3); }
+  .async .comm-type-badge { background: rgba(6,214,160,0.12); color: var(--accent3); border: 1px solid rgba(6,214,160,0.3); }
+  .event .comm-type-badge { background: rgba(255,209,102,0.1); color: var(--accent5); border: 1px solid rgba(255,209,102,0.3); }
+
+  .comm-card h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+  }
+
+  .comm-card p { color: var(--text2); font-size: 0.88rem; margin-bottom: 0.8rem; }
+
+  .comm-visual {
+    background: #0a0f1e;
+    border-radius: 8px;
+    padding: 0.8rem;
+    margin: 0.8rem 0;
+    font-size: 0.78rem;
+    color: #7dd3fc;
+    font-family: monospace;
+    line-height: 1.6;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.2rem 0;
+    color: var(--text2);
+    font-size: 0.8rem;
+  }
+
+  .flow-row .arrow { color: var(--accent1); }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .pros-cons-col h5 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .pros-cons-col.pros h5 { color: var(--accent3); }
+  .pros-cons-col.cons h5 { color: var(--accent4); }
+
+  .pros-cons-col li {
+    list-style: none;
+    font-size: 0.8rem;
+    color: var(--text2);
+    padding: 0.15rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  /* ─── DEPLOYMENT SECTION ─── */
+  .deploy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .deploy-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+  }
+
+  .deploy-card:hover {
+    border-color: rgba(124,58,237,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(124,58,237,0.1);
+  }
+
+  .deploy-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+
+  .deploy-card h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+  }
+
+  .deploy-card p { color: var(--text2); font-size: 0.83rem; }
+
+  /* ─── SUMMARY TABLE ─── */
+  .summary-table-wrap { overflow-x: auto; }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .summary-table th {
+    background: linear-gradient(135deg, var(--accent2), var(--accent1));
+    color: #fff;
+    padding: 0.9rem 1rem;
+    text-align: right;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .summary-table td {
+    background: var(--card);
+    padding: 0.8rem 1rem;
+    font-size: 0.83rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+
+  .summary-table td:first-child { font-weight: 700; color: var(--text); }
+  .summary-table tr:hover td { background: var(--card2); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+
+  footer span { color: var(--accent1); font-weight: 700; }
+
+  /* ─── STICKY NAV ─── */
+  .sticky-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(10,14,26,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transform: translateY(-100%);
+    transition: transform 0.3s;
+  }
+
+  .sticky-nav.visible { transform: translateY(0); }
+
+  .sticky-nav .logo {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--accent1);
+  }
+
+  .sticky-nav .nav-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .sticky-nav .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .sticky-nav .nav-links a:hover { color: var(--accent1); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── MICROSERVICES VISUAL ─── */
+  .micro-visual {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.8rem;
+    margin: 2rem 0;
+  }
+
+  .micro-service {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .micro-service:hover {
+    border-color: var(--accent3);
+    box-shadow: 0 0 20px rgba(6,214,160,0.15);
+    transform: translateY(-3px);
+  }
+
+  .micro-service .ms-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .micro-service .ms-name { font-size: 0.78rem; font-weight: 700; }
+  .micro-service .ms-db { font-size: 0.68rem; color: var(--text2); margin-top: 0.2rem; }
+
+  .highlight-box {
+    background: rgba(79,143,255,0.06);
+    border: 1px solid rgba(79,143,255,0.2);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .highlight-box p { color: var(--text2); font-size: 0.9rem; }
+  .highlight-box strong { color: var(--accent1); }
+</style>
+</head>
+<body>
+
+<!-- Particles canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Sticky Nav -->
+<nav class="sticky-nav" id="stickyNav">
+  <div class="logo">SA2 — معمارية البرمجيات</div>
+  <div class="nav-links">
+    <a href="#three-tier">Three-Tier</a>
+    <a href="#monolithic">Monolithic</a>
+    <a href="#microservices">Microservices</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#communication">Communication</a>
+    <a href="#deployment">Deployment</a>
+  </div>
+</nav>
+
+<div class="content-wrap">
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+    <div>
+      <div class="hero-badge">📚 SA2 — المحاضرة الأولى</div>
+      <h1>معمارية <span>البرمجيات</span><br>Software Architecture</h1>
+      <p>كل حاجة اتاخدت في المحاضرة الأولى — من Three-Tier لـ Microservices وكل الـ Patterns</p>
+      <div class="hero-nav">
+        <a href="#three-tier">Three-Tier Architecture</a>
+        <a href="#monolithic">Monolithic</a>
+        <a href="#microservices">Microservices</a>
+        <a href="#patterns">Design Patterns</a>
+        <a href="#communication">Communication</a>
+        <a href="#deployment">Deployment</a>
+      </div>
+    </div>
+    <div class="scroll-down">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      ابدأ
+    </div>
+  </section>
+
+  <!-- ══════════════ THREE TIER ══════════════ -->
+  <div class="section-divider"></div>
+  <section id="three-tier">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-number" style="color:var(--accent1)">أولًا</div>
+        <h2>Three-Tier Architecture</h2>
+        <p>أي برنامج كبير بيتقسم 3 طبقات علشان يبقى منظم وسهل التطوير</p>
+      </div>
+
+      <div class="tier-flow reveal">
+        <!-- Tier 1 -->
+        <div class="tier-card" style="border-color: rgba(79,143,255,0.4);">
+          <div class="tier-num" style="background:var(--accent1)">1</div>
+          <h3>🖥️ Presentation Tier</h3>
+          <div class="tier-sub">واجهة المستخدم — User Interface</div>
+          <p>دي الطبقة اللي المستخدم بيتعامل معاها مباشرة. وظيفتها تعرض البيانات وتاخد input من المستخدم — لكنها مش بتقرر لو الـ input صح أو غلط.</p>
+          <div class="examples">
+            <span class="badge">موقع ويب</span>
+            <span class="badge">تطبيق موبايل</span>
+            <span class="badge">شاشة برنامج</span>
+          </div>
+          <div class="highlight-box" style="margin-top:1rem">
+            <p>مثال: المستخدم يكتب <strong>username + password</strong> — الطبقة دي بس بتعرض وبتستقبل.</p>
+          </div>
+        </div>
+
+        <div class="tier-arrow"></div>
+
+        <!-- Tier 2 -->
+        <div class="tier-card" style="border-color: rgba(124,58,237,0.4);">
+          <div class="tier-num" style="background:var(--accent2)">2</div>
+          <h3>🧠 Logic Tier</h3>
+          <div class="tier-sub">Business Logic — مخ البرنامج</div>
+          <p>دي مخ البرنامج. هي اللي بتفكر وتنفذ القوانين. الـ Logic Layer هو الوحيد اللي يتكلم مع الداتابيز.</p>
+          <div class="examples">
+            <span class="badge purple">هل كلمة السر صحيحة؟</span>
+            <span class="badge purple">هل المستخدم Admin؟</span>
+            <span class="badge purple">هل يقدر يشوف الصفحة؟</span>
+          </div>
+          <div class="highlight-box" style="margin-top:1rem; border-color:rgba(124,58,237,0.25); background:rgba(124,58,237,0.06)">
+            <p>مثال Login: <strong>بتتحقق من البيانات → بتقارنها بالداتابيز → بتقرر يدخل أو لا</strong></p>
+          </div>
+        </div>
+
+        <div class="tier-arrow"></div>
+
+        <!-- Tier 3 -->
+        <div class="tier-card" style="border-color: rgba(6,214,160,0.4);">
+          <div class="tier-num" style="background:var(--accent3)">3</div>
+          <h3>🗄️ Data Tier</h3>
+          <div class="tier-sub">Database — طبقة تخزين البيانات</div>
+          <p>دي طبقة تخزين البيانات. المستخدم ميقدرش يوصل للداتابيز مباشرة — بس Logic Layer يقدر.</p>
+          <div class="examples">
+            <span class="badge green">Users</span>
+            <span class="badge green">Passwords</span>
+            <span class="badge green">Posts</span>
+            <span class="badge green">Products</span>
+          </div>
+          <div class="examples" style="margin-top:0.5rem">
+            <span class="badge">MySQL</span>
+            <span class="badge">PostgreSQL</span>
+            <span class="badge">MongoDB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practical Example -->
+      <div class="reveal" style="margin-top:2.5rem">
+        <h3 style="text-align:center; margin-bottom:1.5rem; font-size:1.1rem; color:var(--text2)">🛒 مثال عملي — شراء منتج من موقع</h3>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem">
+          <div class="flow-row" style="justify-content:center; font-size:0.9rem">
+            <span style="background:rgba(79,143,255,0.15); border:1px solid rgba(79,143,255,0.3); padding:0.4rem 1rem; border-radius:8px;">1️⃣ المستخدم يضغط Buy</span>
+          </div>
+          <div style="color:var(--accent1); font-size:1rem">↓</div>
+          <div class="flow-row" style="justify-content:center; font-size:0.9rem">
+            <span style="background:rgba(79,143,255,0.08); border:1px solid rgba(79,143,255,0.2); padding:0.4rem 1rem; border-radius:8px;">2️⃣ الواجهة تبعت الطلب للسيرفر</span>
+          </div>
+          <div style="color:var(--accent2); font-size:1rem">↓</div>
+          <div class="flow-row" style="justify-content:center; font-size:0.9rem">
+            <span style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.25); padding:0.4rem 1rem; border-radius:8px;">3️⃣ السيرفر يتأكد من الفلوس والكمية</span>
+          </div>
+          <div style="color:var(--accent3); font-size:1rem">↓</div>
+          <div class="flow-row" style="justify-content:center; font-size:0.9rem">
+            <span style="background:rgba(6,214,160,0.08); border:1px solid rgba(6,214,160,0.25); padding:0.4rem 1rem; border-radius:8px;">4️⃣ يسجل الطلب في الداتابيز ✅</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ MONOLITHIC & MICROSERVICES ══════════════ -->
+  <div class="section-divider"></div>
+  <section id="monolithic" style="background: var(--bg2);">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-number" style="color:var(--accent4)">ثانيًا وثالثًا</div>
+        <h2>Monolithic vs Microservices</h2>
+        <p>أسلوبان مختلفان كليًا في بناء البرامج الكبيرة</p>
+      </div>
+
+      <div class="arch-grid reveal">
+        <!-- Monolithic -->
+        <div class="arch-card">
+          <div class="arch-icon">🧱</div>
+          <h3>Monolithic Architecture</h3>
+          <p><strong style="color:var(--text)">كلمة Monolithic معناها:</strong> كل البرنامج قطعة واحدة</p>
+          <p>يعني الـ UI والـ Business Logic والـ Database Access كلهم داخل برنامج واحد كبير.</p>
+          <div class="code-block">برنامج واحد فيه:
+├─ تسجيل دخول
+├─ منتجات
+├─ دفع
+├─ رسائل
+└─ كل حاجة</div>
+          <div class="pro-con">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>سهل في البداية</span></div>
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>أسهل في التطوير الصغير</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>لو البرنامج كبر يبقى صعب</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>أي مشكلة توقف السيستم كله</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>صعب يشتغل عليه فرق كبيرة</span></div>
+          </div>
+        </div>
+
+        <!-- Microservices -->
+        <div class="arch-card" style="border-color: rgba(6,214,160,0.2);">
+          <div class="arch-icon">🔬</div>
+          <h3>Microservices Architecture</h3>
+          <p>بدل برنامج كبير، نعمله <strong style="color:var(--accent3)">برامج صغيرة كتير</strong>. كل برنامج مسؤول عن حاجة واحدة. كل service له كوده وداتابيزه ويشتغل لوحده.</p>
+          <div class="micro-visual" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="micro-service">
+              <div class="ms-icon">👤</div>
+              <div class="ms-name">User Service</div>
+              <div class="ms-db">User DB</div>
+            </div>
+            <div class="micro-service">
+              <div class="ms-icon">📦</div>
+              <div class="ms-name">Order Service</div>
+              <div class="ms-db">Order DB</div>
+            </div>
+            <div class="micro-service">
+              <div class="ms-icon">💳</div>
+              <div class="ms-name">Payment Service</div>
+              <div class="ms-db">Payment DB</div>
+            </div>
+          </div>
+          <div class="pro-con">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>Scalable</span></div>
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>سهل التطوير والتعديل</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>أكثر تعقيدًا في البداية</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="reveal" style="margin-top:2rem">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>الخاصية</th>
+              <th>Monolithic</th>
+              <th>Microservices</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>البنية</td><td>برنامج واحد كبير</td><td>برامج صغيرة كتير</td></tr>
+            <tr><td>الكود</td><td>كل الكود مع بعض</td><td>كل خدمة منفصلة</td></tr>
+            <tr><td>التعديل</td><td>صعب التعديل</td><td>سهل التطوير</td></tr>
+            <tr><td>Scalability</td><td>مش scalable</td><td>scalable ✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ MICROSERVICES PATTERNS ══════════════ -->
+  <div class="section-divider"></div>
+  <section id="patterns">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-number" style="color:var(--accent5)">رابعًا</div>
+        <h2>Microservices Design Patterns</h2>
+        <p>patterns = طرق جاهزة لحل مشاكل التصميم</p>
+      </div>
+
+      <div class="patterns-nav reveal">
+        <button class="pat-tab active" onclick="showTab('decomp')">🔀 Decomposition</button>
+        <button class="pat-tab" onclick="showTab('integ')">🔗 Integration</button>
+        <button class="pat-tab" onclick="showTab('db')">🗄️ Database</button>
+        <button class="pat-tab" onclick="showTab('obs')">📊 Observability</button>
+        <button class="pat-tab" onclick="showTab('cross')">⚙️ Cross-Cutting</button>
+      </div>
+
+      <!-- Decomposition -->
+      <div class="pat-panel active" id="tab-decomp">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <h4>🏢 Decompose by Business Capability</h4>
+            <p>نقسم حسب وظائف البزنس</p>
+            <div class="code-block">User Service
+Order Service
+Payment Service</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🗂️ Decompose by Subdomain</h4>
+            <p>نقسم حسب جزء من النظام</p>
+            <div class="code-block">Product Domain
+Order Domain
+Shipping Domain
+Payment Domain</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🐍 Strangler Pattern</h4>
+            <p>طريقة لتحويل Monolithic → Microservices بالتدريج. نبدأ ناخد جزء من السيستم القديم ونحوله service، لحد ما السيستم القديم يختفي.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integration -->
+      <div class="pat-panel" id="tab-integ">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <h4>🚪 API Gateway</h4>
+            <p>هو باب واحد لكل السيستم. المستخدم بدل ما يكلم كل service — يكلم API Gateway والـ Gateway يوزع الطلب.</p>
+            <div class="code-block">User → API Gateway
+         ├→ User Service
+         ├→ Order Service
+         └→ Payment Service</div>
+          </div>
+          <div class="pattern-card">
+            <h4>📦 Aggregator Pattern</h4>
+            <p>service تجمع البيانات من عدة services.</p>
+            <div class="code-block">صفحة Profile تحتاج:
+- user service
+- order service
+- payment service
+↓
+Aggregator يجمعهم ويرجع رد واحد</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🖥️ Client-Side UI Composition</h4>
+            <p>الـ Frontend نفسه يجمع البيانات من services مختلفة.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database -->
+      <div class="pat-panel" id="tab-db">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <h4>🗃️ Database per Service</h4>
+            <p>كل Service لها database خاصة. <strong style="color:var(--accent3)">ده الأفضل ✅</strong></p>
+            <div class="code-block">User Service  → User DB
+Order Service → Order DB</div>
+          </div>
+          <div class="pattern-card">
+            <h4>⚠️ Shared Database</h4>
+            <p>كل services تستخدم database واحدة. ده أسهل لكن خطر.</p>
+          </div>
+          <div class="pattern-card">
+            <h4>↕️ CQRS Pattern</h4>
+            <p>نقسم العمليات:</p>
+            <div class="code-block">Read  → قراءة لوحدها
+Write → كتابة لوحدها</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🔄 Saga Pattern</h4>
+            <p>لحل مشكلة transactions بين services. لو واحدة فشلت، السيستم يرجع كل العمليات.</p>
+            <div class="code-block">شراء منتج يحتاج:
+├─ خصم فلوس
+├─ حجز المنتج
+└─ تسجيل الطلب</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observability -->
+      <div class="pat-panel" id="tab-obs">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <h4>📋 Log Aggregation</h4>
+            <p>نجمع logs من كل services في مكان واحد علشان نراقبهم.</p>
+          </div>
+          <div class="pattern-card">
+            <h4>📈 Performance Metrics</h4>
+            <p>قياس الأداء.</p>
+            <div class="code-block">- latency
+- request count</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🔍 Distributed Tracing</h4>
+            <p>نعرف الطلب مر على أي services.</p>
+          </div>
+          <div class="pattern-card">
+            <h4>💓 Health Check</h4>
+            <p>نراقب: هل service شغالة أم لا.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cross-Cutting -->
+      <div class="pat-panel" id="tab-cross">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <h4>⚙️ Externalized Configuration</h4>
+            <p>نخلي الإعدادات خارج الكود.</p>
+            <div class="code-block">مثال: config server</div>
+          </div>
+          <div class="pattern-card">
+            <h4>🔍 Service Discovery</h4>
+            <p>service تعرف عنوان services الأخرى.</p>
+            <div class="code-block">- Eureka
+- Consul</div>
+          </div>
+          <div class="pattern-card">
+            <h4>⚡ Circuit Breaker</h4>
+            <p>لو service تعبانة، نوقف الطلبات مؤقتًا علشان نحمي السيستم.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ COMMUNICATION ══════════════ -->
+  <div class="section-divider"></div>
+  <section id="communication" style="background: var(--bg2);">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-number" style="color:var(--accent3)">خامسًا</div>
+        <h2>Communication Patterns</h2>
+        <p>أنماط التواصل بين الخدمات — الميكروسيرفيسز لازم تتكلم مع بعض</p>
+      </div>
+
+      <div class="comm-grid reveal">
+
+        <!-- Request/Response -->
+        <div class="comm-card sync">
+          <div class="comm-type-badge">Synchronous</div>
+          <h3>1️⃣ Request / Response Pattern</h3>
+          <p>الخدمة A تطلب شيء من الخدمة B، والخدمة B ترد مباشرة. شبه لما المستخدم يضغط على زر ويستنى الرد فورًا. الخدمة A مستنية الرد قبل ما تكمل شغلها.</p>
+          <div class="comm-visual">User Service → Order Service
+  "اعطني الطلبات"
+Order Service ← يرد بالطلبات</div>
+          <div class="pros-cons">
+            <div class="pros-cons-col pros">
+              <h5>✅ مميزات</h5>
+              <ul>
+                <li>✔ سهل الفهم</li>
+                <li>✔ الرد فورًا</li>
+              </ul>
+            </div>
+            <div class="pros-cons-col cons">
+              <h5>❌ عيوب</h5>
+              <ul>
+                <li>✘ لو B بطيئة، A تتأخر</li>
+                <li>✘ مش scalable</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messaging -->
+        <div class="comm-card async">
+          <div class="comm-type-badge">Asynchronous</div>
+          <h3>2️⃣ Messaging Pattern</h3>
+          <p>الخدمات تبعت رسائل عبر نظام وسيط (Queue أو Broker). كل خدمة ممكن تستقبل الرسائل وقت ما تحب.</p>
+          <div class="comm-visual">Order Service → [Kafka/RabbitMQ]
+         ↓
+Payment Service  ← تلتقط
+Shipping Service ← تلتقط</div>
+          <div class="examples" style="margin-top:0.5rem">
+            <span class="badge green">Kafka</span>
+            <span class="badge green">RabbitMQ</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons-col pros">
+              <h5>✅ مميزات</h5>
+              <ul>
+                <li>✔ أكثر scalable</li>
+                <li>✔ الخدمات مستقلة</li>
+                <li>✔ لو تعطلت، تنتظر</li>
+              </ul>
+            </div>
+            <div class="pros-cons-col cons">
+              <h5>❌ عيوب</h5>
+              <ul>
+                <li>✘ صعب debug</li>
+                <li>✘ في بعض التأخير</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Driven -->
+        <div class="comm-card event">
+          <div class="comm-type-badge">Asynchronous</div>
+          <h3>3️⃣ Event Driven Pattern</h3>
+          <p>كل خدمة تراقب الأحداث في السيستم وتتصرف على أساسها. الخدمات لا تبعت رسائل مباشرة لبعضها، بل تبعت أحداث عامّة.</p>
+          <div class="comm-visual">حدث: "User Created"
+   ↓
+Notification Service → إيميل ترحيبي
+Analytics Service   → تسجيل بيانات
+Welcome Service     → شاشة ترحيب</div>
+          <div class="pros-cons">
+            <div class="pros-cons-col pros">
+              <h5>✅ مميزات</h5>
+              <ul>
+                <li>✔ سيستم مرن جدًا</li>
+                <li>✔ قابل للتوسع الكبير</li>
+                <li>✔ لا تعتمد مباشرة</li>
+              </ul>
+            </div>
+            <div class="pros-cons-col cons">
+              <h5>❌ عيوب</h5>
+              <ul>
+                <li>✘ معقد شويه</li>
+                <li>✘ لازم مراقبة جيدة</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="reveal summary-table-wrap" style="margin-top:2.5rem">
+        <h3 style="text-align:center; margin-bottom:1.2rem; font-size:1rem; color:var(--text2)">ملخص بسيط للحفظ</h3>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>النمط</th>
+              <th>Sync/Async</th>
+              <th>وصف سريع</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Request/Response</td>
+              <td><span class="badge">Synchronous</span></td>
+              <td>الخدمة A تطلب، الخدمة B ترد فورًا</td>
+            </tr>
+            <tr>
+              <td>Messaging</td>
+              <td><span class="badge green">Asynchronous</span></td>
+              <td>الرسائل تنتقل عبر Broker، كل خدمة تلتقط وقت ما تحب</td>
+            </tr>
+            <tr>
+              <td>Event Driven</td>
+              <td><span class="badge green">Asynchronous</span></td>
+              <td>كل خدمة تراقب أحداث وتتصرف عليها، لا تبعت رسائل مباشرة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ DEPLOYMENT ══════════════ -->
+  <div class="section-divider"></div>
+  <section id="deployment">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-number" style="color:var(--accent2)">سادسًا</div>
+        <h2>Deployment Patterns</h2>
+        <p>أنماط النشر للخدمات — إزاي ننشرهم على السيرفرات بطريقة صحيحة</p>
+      </div>
+
+      <div class="deploy-grid reveal">
+        <!-- Multiple per Host -->
+        <div class="deploy-card">
+          <div class="deploy-icon">🏠</div>
+          <h3>Multiple Service Instances per Host</h3>
+          <p>ننشر أكثر من خدمة على نفس السيرفر. يعني السيرفر الواحد فيه نسخ متعددة من services مختلفة.</p>
+          <div class="code-block">Server 1
+ ├─ User Service
+ ├─ Order Service
+ └─ Payment Service</div>
+          <div class="pro-con" style="margin-top:0.8rem">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>أقل تكلفة، استغلال أفضل</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>لو السيرفر وقع — كل شيء وقع</span></div>
+          </div>
+        </div>
+
+        <!-- Instance per Host -->
+        <div class="deploy-card">
+          <div class="deploy-icon">🏢</div>
+          <h3>Service Instance per Host</h3>
+          <p>كل خدمة على سيرفر منفصل.</p>
+          <div class="code-block">Server 1 → User Service
+Server 2 → Order Service
+Server 3 → Payment Service</div>
+          <div class="pro-con" style="margin-top:0.8rem">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>عزل واستقرار أفضل</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>أغلى — سيرفر لكل خدمة</span></div>
+          </div>
+        </div>
+
+        <!-- Serverless -->
+        <div class="deploy-card">
+          <div class="deploy-icon">☁️</div>
+          <h3>Serverless Deployment</h3>
+          <p>الخدمة تعمل بدون سيرفر تقليدي. الكود بيشتغل على cloud provider حسب الحاجة. تدفع بس على حسب الاستخدام.</p>
+          <div class="examples" style="margin:0.8rem 0">
+            <span class="badge purple">AWS Lambda</span>
+            <span class="badge purple">Azure Functions</span>
+          </div>
+          <div class="pro-con">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>ما تحتاجش تدير السيرفرات</span></div>
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>scale تلقائي</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>مش مناسب لكل الخدمات</span></div>
+          </div>
+        </div>
+
+        <!-- Platform -->
+        <div class="deploy-card">
+          <div class="deploy-icon">⚙️</div>
+          <h3>Service Deployment Platform</h3>
+          <p>بيئة أو منصة خاصة لإدارة نشر الخدمات. المنصة تدير كل حاجة: نشر، مراقبة، scaling، واسترجاع الخدمة لو وقعت.</p>
+          <div class="examples" style="margin:0.8rem 0">
+            <span class="badge">Kubernetes</span>
+            <span class="badge">Docker Swarm</span>
+            <span class="badge">AWS ECS</span>
+          </div>
+          <div class="pro-con">
+            <div class="pro-con-row pro"><span class="icon">✔</span><span>تنظيم وscaling متقدم</span></div>
+            <div class="pro-con-row con"><span class="icon">✘</span><span>setup معقد، خبرة مطلوبة</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deployment Summary Table -->
+      <div class="reveal summary-table-wrap" style="margin-top:2.5rem">
+        <h3 style="text-align:center; margin-bottom:1.2rem; font-size:1rem; color:var(--text2)">ملخص سريع للحفظ</h3>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>النمط</th>
+              <th>وصف سريع</th>
+              <th>مميزات</th>
+              <th>عيوب</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Multiple Service Instances per Host</td>
+              <td>أكثر من خدمة على سيرفر واحد</td>
+              <td>رخيص، سهل</td>
+              <td>لو السيرفر وقع، كل الخدمات توقف</td>
+            </tr>
+            <tr>
+              <td>Service Instance per Host</td>
+              <td>كل خدمة على سيرفر منفصل</td>
+              <td>عزل واستقرار</td>
+              <td>أغلى، إدارة أصعب</td>
+            </tr>
+            <tr>
+              <td>Serverless Deployment</td>
+              <td>بدون سيرفر، cloud functions</td>
+              <td>scale تلقائي، إدارة سهلة</td>
+              <td>مش مناسب لكل شيء، runtime محدود</td>
+            </tr>
+            <tr>
+              <td>Service Deployment Platform</td>
+              <td>منصة لإدارة نشر الخدمات</td>
+              <td>تنظيم، مراقبة، scalable</td>
+              <td>setup معقد، خبرة مطلوبة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer>
+    <p>📚 <span>SA2 — Software Architecture</span> | المحاضرة الأولى</p>
+    <p style="margin-top:0.4rem; font-size:0.78rem; opacity:0.6;">Three-Tier · Monolithic · Microservices · Design Patterns · Communication · Deployment</p>
+  </footer>
+
+</div><!-- end content-wrap -->
+
+<script>
+// ─── PARTICLES ───
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.alpha = Math.random() * 0.4 + 0.05;
+    const colors = ['79,143,255','124,58,237','6,214,160'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for(let i = 0; i < 120; i++) particles.push(new Particle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+
+  // Connect nearby particles
+  for(let i = 0; i < particles.length; i++) {
+    for(let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(79,143,255,${0.04 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ─── STICKY NAV ───
+const nav = document.getElementById('stickyNav');
+window.addEventListener('scroll', () => {
+  if(window.scrollY > window.innerHeight * 0.8) nav.classList.add('visible');
+  else nav.classList.remove('visible');
+});
+
+// ─── REVEAL ON SCROLL ───
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+
+// ─── PATTERN TABS ───
+function showTab(id) {
+  document.querySelectorAll('.pat-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pat-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
