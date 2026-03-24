@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Lifecycle & Continuous - المحاضرة الخامسة | SA2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05050e;
+  --bg2: #07071a;
+  --bg3: #0a0a1f;
+  --card: #0c0c1e;
+  --card2: #10102a;
+  --border: #1a1a35;
+  --border2: #252545;
+  --gold: #f5c842;
+  --gold2: #ffd700;
+  --teal: #00bfa5;
+  --teal2: #00e5cc;
+  --pink: #e91e8c;
+  --pink2: #ff4db8;
+  --blue: #2979ff;
+  --blue2: #82b1ff;
+  --green: #00e676;
+  --red: #ff1744;
+  --purple: #aa00ff;
+  --text: #f0f0ff;
+  --text2: #7777aa;
+  --text3: #c0c0dd;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.85;
+}
+
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--gold), var(--teal)); border-radius:5px; }
+
+/* ---- ANIMATED BG ---- */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: orbFloat ease-in-out infinite;
+  opacity: 0.07;
+}
+.orb1 { width:500px;height:500px;background:var(--gold);top:-100px;right:-100px;animation-duration:18s; }
+.orb2 { width:400px;height:400px;background:var(--teal);bottom:-100px;left:-100px;animation-duration:22s;animation-delay:-8s; }
+.orb3 { width:300px;height:300px;background:var(--pink);top:50%;left:60%;animation-duration:16s;animation-delay:-4s; }
+
+@keyframes orbFloat {
+  0%,100% { transform:translateY(0) scale(1); }
+  33% { transform:translateY(-40px) scale(1.05); }
+  66% { transform:translateY(30px) scale(0.95); }
+}
+
+/* ---- HERO ---- */
+.hero {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:1;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 25% 40%, rgba(245,200,66,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 75% 70%, rgba(0,191,165,0.08) 0%, transparent 60%),
+    var(--bg);
+}
+
+.hero-ring {
+  position:absolute;
+  border-radius:50%;
+  border: 1px solid;
+  animation: ringPulse ease-in-out infinite;
+  pointer-events:none;
+}
+.ring1 { width:600px;height:600px;border-color:rgba(245,200,66,0.06);animation-duration:6s; }
+.ring2 { width:850px;height:850px;border-color:rgba(0,191,165,0.04);animation-duration:9s;animation-delay:-3s; }
+.ring3 { width:1100px;height:1100px;border-color:rgba(233,30,140,0.03);animation-duration:12s;animation-delay:-6s; }
+
+@keyframes ringPulse {
+  0%,100% { transform:scale(1); opacity:1; }
+  50% { transform:scale(1.04); opacity:0.5; }
+}
+
+.hero-content {
+  z-index:2;
+  text-align:center;
+  padding:2rem;
+  animation: heroIn 1s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes heroIn {
+  from { opacity:0; transform:translateY(50px); filter:blur(8px); }
+  to { opacity:1; transform:translateY(0); filter:blur(0); }
+}
+
+.hero-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:0.6rem;
+  background:linear-gradient(135deg, rgba(245,200,66,0.12), rgba(0,191,165,0.08));
+  border:1px solid rgba(245,200,66,0.3);
+  border-radius:100px;
+  padding:0.5rem 1.6rem;
+  font-size:0.78rem;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:2rem;
+  animation: heroIn 1s 0.2s both;
+}
+
+.badge-dot {
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--gold);
+  animation:dotPulse 2s infinite;
+}
+@keyframes dotPulse {
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.6);opacity:0.5;}
+}
+
+.hero h1 {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.5rem,10vw,8rem);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-3px;
+  margin-bottom:1.5rem;
+  animation:heroIn 1s 0.4s both;
+}
+
+.h1-line1 {
+  background:linear-gradient(135deg, #fff 0%, var(--gold) 60%, var(--gold2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:block;
+}
+.h1-line2 {
+  background:linear-gradient(135deg, var(--teal) 0%, var(--teal2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:block;
+  font-size:0.65em;
+}
+
+.hero-desc {
+  font-size:clamp(1rem,2.5vw,1.3rem);
+  color:var(--text2);
+  margin-bottom:2.5rem;
+  animation:heroIn 1s 0.6s both;
+  max-width:600px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.hero-desc strong { color:var(--gold); font-weight:800; }
+
+/* Loop Visual */
+.hero-loop {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:0;
+  animation:heroIn 1s 0.8s both;
+  margin-bottom:2rem;
+}
+
+.hl-step {
+  background:rgba(245,200,66,0.07);
+  border:1px solid rgba(245,200,66,0.2);
+  border-radius:10px;
+  padding:0.35rem 0.7rem;
+  font-size:0.72rem;
+  font-weight:800;
+  color:var(--gold);
+  white-space:nowrap;
+}
+.hl-arrow {
+  color:var(--text2);
+  padding:0 0.3rem;
+  font-size:0.8rem;
+}
+
+.scroll-cue {
+  position:absolute;
+  bottom:2rem;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.4rem;
+  color:var(--text2);
+  font-size:0.72rem;
+  letter-spacing:2px;
+  z-index:2;
+  animation:cueFloat 2s infinite;
+}
+.scroll-cue::after {
+  content:'';
+  width:1px;height:40px;
+  background:linear-gradient(var(--gold),transparent);
+}
+@keyframes cueFloat {
+  0%,100%{transform:translateX(-50%) translateY(0);}
+  50%{transform:translateX(-50%) translateY(-7px);}
+}
+
+/* ---- NAV ---- */
+nav {
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(5,5,14,0.93);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0.75rem 1.5rem;
+  display:flex;
+  gap:0.4rem;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+nav a {
+  color:var(--text2);
+  text-decoration:none;
+  padding:0.35rem 0.9rem;
+  border-radius:100px;
+  font-size:0.78rem;
+  font-weight:700;
+  letter-spacing:0.5px;
+  transition:all 0.3s;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+nav a:hover, nav a.active {
+  color:var(--gold);
+  border-color:rgba(245,200,66,0.3);
+  background:rgba(245,200,66,0.07);
+}
+
+/* ---- LAYOUT ---- */
+.container {
+  max-width:1060px;
+  margin:0 auto;
+  padding:0 1.5rem;
+}
+section { padding:5rem 0; position:relative; z-index:1; }
+section:nth-child(even) { background:var(--bg2); }
+
+.sec-eye {
+  display:block;
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-bottom:0.8rem;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.sec-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:900;
+  color:var(--text);
+  margin-bottom:0.8rem;
+  line-height:1.2;
+}
+.sec-desc {
+  color:var(--text2);
+  font-size:1.05rem;
+  max-width:580px;
+  margin:0 auto 3rem;
+  text-align:center;
+}
+.sec-header { text-align:center; margin-bottom:3rem; }
+
+/* ---- CALLOUT ---- */
+.box {
+  border-radius:16px;
+  padding:1.25rem 1.6rem;
+  margin:1.1rem 0;
+  font-size:0.94rem;
+  line-height:2;
+  position:relative;
+  overflow:hidden;
+}
+.box::before {
+  content:'';
+  position:absolute;
+  right:0;top:0;bottom:0;
+  width:4px;
+  border-radius:4px 0 0 4px;
+}
+.box-gold {
+  background:linear-gradient(135deg,rgba(245,200,66,0.07),rgba(255,215,0,0.03));
+  border:1px solid rgba(245,200,66,0.2);
+}
+.box-gold::before { background:linear-gradient(var(--gold),var(--gold2)); }
+.box-teal {
+  background:linear-gradient(135deg,rgba(0,191,165,0.07),rgba(0,229,204,0.03));
+  border:1px solid rgba(0,191,165,0.2);
+}
+.box-teal::before { background:linear-gradient(var(--teal),var(--teal2)); }
+.box-pink {
+  background:linear-gradient(135deg,rgba(233,30,140,0.07),rgba(255,77,184,0.03));
+  border:1px solid rgba(233,30,140,0.2);
+}
+.box-pink::before { background:linear-gradient(var(--pink),var(--pink2)); }
+.box-blue {
+  background:linear-gradient(135deg,rgba(41,121,255,0.07),rgba(130,177,255,0.03));
+  border:1px solid rgba(41,121,255,0.2);
+}
+.box-blue::before { background:linear-gradient(var(--blue),var(--blue2)); }
+.box-red {
+  background:linear-gradient(135deg,rgba(255,23,68,0.07),rgba(255,23,68,0.03));
+  border:1px solid rgba(255,23,68,0.2);
+}
+.box-red::before { background:var(--red); }
+.box-green {
+  background:linear-gradient(135deg,rgba(0,230,118,0.07),rgba(0,230,118,0.03));
+  border:1px solid rgba(0,230,118,0.2);
+}
+.box-green::before { background:var(--green); }
+.box-purple {
+  background:linear-gradient(135deg,rgba(170,0,255,0.07),rgba(170,0,255,0.03));
+  border:1px solid rgba(170,0,255,0.2);
+}
+.box-purple::before { background:var(--purple); }
+
+.box strong { color:var(--gold); font-weight:800; }
+.box-teal strong { color:var(--teal2); }
+.box-pink strong { color:var(--pink2); }
+.box-blue strong { color:var(--blue2); }
+.box-red strong { color:var(--red); }
+.box-green strong { color:var(--green); }
+.box-purple strong { color:var(--purple); }
+
+/* CODE */
+.code {
+  background:rgba(0,0,0,0.55);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  padding:1rem 1.4rem;
+  font-family:'Courier New',monospace;
+  font-size:0.9rem;
+  color:var(--teal2);
+  margin:0.9rem 0;
+  overflow-x:auto;
+}
+
+/* GLASS CARD */
+.glass {
+  background:rgba(12,12,30,0.7);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:2rem;
+  backdrop-filter:blur(12px);
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+  position:relative;
+  overflow:hidden;
+}
+.glass:hover {
+  border-color:rgba(245,200,66,0.2);
+  transform:translateY(-4px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.6),0 0 30px rgba(245,200,66,0.04);
+}
+.glass::after {
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+  transform:scaleX(0);
+  transform-origin:right;
+  transition:transform 0.4s;
+}
+.glass:hover::after { transform:scaleX(1); }
+
+/* STAGE CARDS */
+.stage-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:2.2rem;
+  margin-bottom:1.5rem;
+  transition:all 0.4s;
+  position:relative;
+  overflow:hidden;
+}
+.stage-card::before {
+  content:'';
+  position:absolute;
+  right:0;top:0;bottom:0;
+  width:4px;
+  background:linear-gradient(var(--gold),var(--gold2));
+  border-radius:4px 0 0 4px;
+}
+.stage-card:hover { transform:translateX(-6px); border-color:rgba(245,200,66,0.3); box-shadow:6px 0 40px rgba(245,200,66,0.06); }
+
+.stage-header {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  margin-bottom:1.2rem;
+}
+.stage-num {
+  width:56px;height:56px;
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(245,200,66,0.2), rgba(255,215,0,0.1));
+  border:1px solid rgba(245,200,66,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  flex-shrink:0;
+}
+.stage-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:1.5rem;
+  font-weight:900;
+  color:var(--text);
+}
+.stage-subtitle { color:var(--text2); font-size:0.88rem; }
+
+/* BULLET */
+.blist {
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:0.65rem;
+}
+.blist li {
+  display:flex;
+  align-items:flex-start;
+  gap:0.8rem;
+  color:var(--text3);
+  font-size:0.93rem;
+  line-height:1.85;
+}
+.blist li .bd {
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--gold);
+  margin-top:0.65rem;
+  flex-shrink:0;
+}
+.blist li strong { color:var(--text); font-weight:700; }
+
+/* GRID */
+.g2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.4rem; }
+.g3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.2rem; }
+
+/* MINI CARD */
+.mc {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:1.5rem;
+  transition:all 0.35s;
+}
+.mc:hover {
+  border-color:rgba(245,200,66,0.25);
+  transform:translateY(-3px);
+  box-shadow:0 14px 35px rgba(0,0,0,0.4);
+}
+.mc .mc-icon { font-size:2.2rem; margin-bottom:0.8rem; }
+.mc h4 {
+  font-family:'Tajawal',sans-serif;
+  font-size:1.1rem;
+  font-weight:900;
+  color:var(--text);
+  margin-bottom:0.5rem;
+}
+.mc p { color:var(--text2); font-size:0.88rem; line-height:1.85; }
+.mc p strong { color:var(--gold); font-weight:700; }
+
+/* COMPARE */
+.cmp {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+  margin:1.2rem 0;
+}
+@media(max-width:560px){.cmp{grid-template-columns:1fr;}}
+.cmp-bad {
+  background:rgba(255,23,68,0.06);
+  border:1px solid rgba(255,23,68,0.2);
+  border-radius:14px;
+  padding:1.2rem 1.5rem;
+}
+.cmp-good {
+  background:rgba(0,230,118,0.06);
+  border:1px solid rgba(0,230,118,0.2);
+  border-radius:14px;
+  padding:1.2rem 1.5rem;
+}
+.cmp-label {
+  font-size:0.73rem;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:0.6rem;
+}
+.cmp-bad .cmp-label { color:var(--red); }
+.cmp-good .cmp-label { color:var(--green); }
+.cmp-bad p, .cmp-bad li, .cmp-good p, .cmp-good li { color:var(--text3); font-size:0.9rem; line-height:1.9; }
+.cmp-bad ul, .cmp-good ul { list-style:none; padding:0; }
+.cmp-bad ul li::before, .cmp-good ul li::before { content:'→ '; color:var(--text2); }
+
+/* TABLE */
+.tbl { overflow-x:auto; border-radius:16px; border:1px solid var(--border); margin:1.5rem 0; }
+table { width:100%; border-collapse:collapse; font-size:0.92rem; }
+th {
+  background:rgba(245,200,66,0.08);
+  color:var(--gold);
+  font-weight:800;
+  padding:1rem 1.4rem;
+  text-align:right;
+  font-size:0.85rem;
+  letter-spacing:1px;
+  border-bottom:1px solid var(--border2);
+}
+td {
+  padding:0.85rem 1.4rem;
+  color:var(--text3);
+  border-top:1px solid var(--border);
+}
+tr:hover td { background:rgba(245,200,66,0.03); color:var(--text); }
+td strong { color:var(--gold); font-weight:700; }
+
+/* PILL */
+.pill {
+  display:inline-block;
+  padding:0.2rem 0.8rem;
+  border-radius:100px;
+  font-size:0.74rem;
+  font-weight:700;
+  margin:0.15rem;
+}
+.pg { background:rgba(245,200,66,0.1); color:var(--gold); border:1px solid rgba(245,200,66,0.25); }
+.pt { background:rgba(0,191,165,0.1); color:var(--teal2); border:1px solid rgba(0,191,165,0.25); }
+.pp { background:rgba(233,30,140,0.1); color:var(--pink2); border:1px solid rgba(233,30,140,0.25); }
+.pb { background:rgba(41,121,255,0.1); color:var(--blue2); border:1px solid rgba(41,121,255,0.25); }
+.pr { background:rgba(255,23,68,0.1); color:var(--red); border:1px solid rgba(255,23,68,0.25); }
+.pgr { background:rgba(0,230,118,0.1); color:var(--green); border:1px solid rgba(0,230,118,0.25); }
+
+/* CONTINUOUS CARDS */
+.cont-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:2rem;
+  margin-bottom:1.5rem;
+  transition:all 0.4s;
+  position:relative;
+  overflow:hidden;
+}
+.cont-card::before {
+  content:'';
+  position:absolute;
+  top:0;right:0;left:0;
+  height:3px;
+}
+.cc-gold::before { background:linear-gradient(90deg, var(--gold), var(--gold2)); }
+.cc-teal::before { background:linear-gradient(90deg, var(--teal), var(--teal2)); }
+.cc-pink::before { background:linear-gradient(90deg, var(--pink), var(--pink2)); }
+.cc-blue::before { background:linear-gradient(90deg, var(--blue), var(--blue2)); }
+.cc-purple::before { background:linear-gradient(90deg, var(--purple), #cc44ff); }
+
+.cont-card:hover { transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,0.5); }
+.cc-gold:hover { border-color:rgba(245,200,66,0.3); }
+.cc-teal:hover { border-color:rgba(0,191,165,0.3); }
+.cc-pink:hover { border-color:rgba(233,30,140,0.3); }
+.cc-blue:hover { border-color:rgba(41,121,255,0.3); }
+.cc-purple:hover { border-color:rgba(170,0,255,0.3); }
+
+.cont-header {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  margin-bottom:1.2rem;
+}
+.cont-icon {
+  width:52px;height:52px;
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  flex-shrink:0;
+}
+.ci-gold { background:rgba(245,200,66,0.12); border:1px solid rgba(245,200,66,0.2); }
+.ci-teal { background:rgba(0,191,165,0.12); border:1px solid rgba(0,191,165,0.2); }
+.ci-pink { background:rgba(233,30,140,0.12); border:1px solid rgba(233,30,140,0.2); }
+.ci-blue { background:rgba(41,121,255,0.12); border:1px solid rgba(41,121,255,0.2); }
+.ci-purple { background:rgba(170,0,255,0.12); border:1px solid rgba(170,0,255,0.2); }
+
+.cont-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:1.4rem;
+  font-weight:900;
+  color:var(--text);
+}
+.cont-subtitle { color:var(--text2); font-size:0.88rem; }
+
+/* BENEFIT CARD */
+.benefit-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:2rem;
+  transition:all 0.4s;
+  position:relative;
+  overflow:hidden;
+  height:100%;
+}
+.benefit-card::after {
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+  transform:scaleX(0);
+  transition:transform 0.4s;
+  transform-origin:right;
+}
+.benefit-card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(245,200,66,0.25);
+  box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+.benefit-card:hover::after { transform:scaleX(1); }
+
+.ben-icon { font-size:3rem; margin-bottom:1rem; }
+.ben-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:1.25rem;
+  font-weight:900;
+  color:var(--text);
+  margin-bottom:0.8rem;
+}
+.ben-body { color:var(--text2); font-size:0.9rem; line-height:1.9; }
+.ben-body strong { color:var(--gold); font-weight:700; }
+
+/* BIG QUOTE */
+.bq {
+  background:linear-gradient(135deg, rgba(245,200,66,0.05), rgba(0,191,165,0.03));
+  border:1px solid rgba(245,200,66,0.12);
+  border-radius:22px;
+  padding:2.5rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  margin:2rem 0;
+}
+.bq::before {
+  content:'"';
+  position:absolute;
+  top:-30px;right:20px;
+  font-size:200px;
+  color:rgba(245,200,66,0.03);
+  font-family:'Syne',sans-serif;
+  line-height:1;
+  pointer-events:none;
+}
+.bq p {
+  font-family:'Tajawal',sans-serif;
+  font-size:clamp(1rem,2.5vw,1.4rem);
+  font-weight:700;
+  color:var(--text);
+  line-height:1.7;
+}
+.bq p code {
+  background:rgba(245,200,66,0.1);
+  color:var(--gold);
+  padding:0.1em 0.4em;
+  border-radius:6px;
+  font-family:monospace;
+}
+
+/* DIVIDER */
+.divider {
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin:2rem 0;
+}
+
+/* FLOW DIAGRAM */
+.flow-diagram {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:0;
+  margin:2rem 0;
+}
+.flow-step {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.4rem;
+}
+.flow-circle {
+  width:72px;height:72px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  border:2px solid var(--border2);
+  background:var(--card2);
+  transition:all 0.35s;
+  position:relative;
+  cursor:default;
+}
+.flow-circle:hover {
+  transform:scale(1.2);
+  border-color:var(--gold);
+  box-shadow:0 0 25px rgba(245,200,66,0.25);
+}
+.flow-n {
+  position:absolute;
+  top:-7px;left:-7px;
+  width:22px;height:22px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  font-size:0.65rem;
+  font-weight:900;
+  color:#000;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;
+}
+.flow-name {
+  font-size:0.75rem;
+  font-weight:700;
+  color:var(--text2);
+  text-align:center;
+  transition:color 0.3s;
+}
+.flow-step:hover .flow-name { color:var(--gold); }
+.flow-tool {
+  font-size:0.64rem;
+  color:var(--text2);
+  background:rgba(245,200,66,0.06);
+  border:1px solid rgba(245,200,66,0.15);
+  border-radius:50px;
+  padding:0.1rem 0.5rem;
+  text-align:center;
+}
+.flow-arrow {
+  color:var(--text2);
+  padding:0 0.3rem;
+  font-size:1.2rem;
+  margin-bottom:1.8rem;
+}
+
+/* CD DELIVERY vs DEPLOYMENT */
+.cd-card {
+  border-radius:20px;
+  padding:2rem;
+  transition:all 0.3s;
+}
+.cd-delivery {
+  background:linear-gradient(135deg, rgba(41,121,255,0.08), rgba(41,121,255,0.03));
+  border:1px solid rgba(41,121,255,0.25);
+}
+.cd-deployment {
+  background:linear-gradient(135deg, rgba(0,230,118,0.08), rgba(0,230,118,0.03));
+  border:1px solid rgba(0,230,118,0.25);
+}
+.cd-delivery:hover { border-color:rgba(41,121,255,0.4); transform:scale(1.02); }
+.cd-deployment:hover { border-color:rgba(0,230,118,0.4); transform:scale(1.02); }
+.cd-badge {
+  display:inline-block;
+  border-radius:50px;
+  padding:0.25rem 0.9rem;
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:1px;
+  margin-bottom:1rem;
+}
+.cd-delivery .cd-badge { background:rgba(41,121,255,0.15); color:var(--blue2); border:1px solid rgba(41,121,255,0.25); }
+.cd-deployment .cd-badge { background:rgba(0,230,118,0.15); color:var(--green); border:1px solid rgba(0,230,118,0.25); }
+.cd-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:1.3rem;
+  font-weight:900;
+  margin-bottom:0.8rem;
+}
+.cd-delivery .cd-title { color:var(--blue2); }
+.cd-deployment .cd-title { color:var(--green); }
+.cd-body { color:var(--text3); font-size:0.92rem; line-height:1.9; }
+
+/* SUMMARY HERO */
+.sum-hero {
+  background:linear-gradient(135deg, rgba(245,200,66,0.05), rgba(0,191,165,0.04));
+  border:1px solid rgba(245,200,66,0.12);
+  border-radius:28px;
+  padding:3rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:3rem;
+}
+.sum-hero::before {
+  content:'DEVOPS';
+  position:absolute;
+  font-family:'Syne',sans-serif;
+  font-size:160px;
+  font-weight:800;
+  color:rgba(245,200,66,0.02);
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  white-space:nowrap;
+  pointer-events:none;
+}
+.sum-hero h2 {
+  font-family:'Tajawal',sans-serif;
+  font-size:2.5rem;
+  font-weight:900;
+  color:var(--text);
+  margin-bottom:1rem;
+}
+
+/* 3 REVOLUTION */
+.rev-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+  margin-top:2rem;
+}
+@media(max-width:600px){.rev-grid{grid-template-columns:1fr;}}
+
+.rev-card {
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:2rem;
+  text-align:center;
+  transition:all 0.35s;
+}
+.rev-card:hover { transform:translateY(-5px); border-color:rgba(245,200,66,0.3); }
+.rev-icon { font-size:3rem; margin-bottom:0.8rem; }
+.rev-title {
+  font-family:'Syne',sans-serif;
+  font-size:1.1rem;
+  font-weight:800;
+  color:var(--gold);
+  margin-bottom:0.4rem;
+}
+.rev-desc { color:var(--text2); font-size:0.88rem; }
+
+/* BACK TOP */
+#bTop {
+  position:fixed;
+  bottom:2rem;left:2rem;
+  width:48px;height:48px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--gold), var(--teal));
+  border:none;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  color:#000;
+  opacity:0;
+  transform:translateY(20px);
+  transition:all 0.3s;
+  z-index:200;
+  box-shadow:0 5px 20px rgba(245,200,66,0.2);
+}
+#bTop.show { opacity:1; transform:translateY(0); }
+#bTop:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(245,200,66,0.35); }
+
+/* FOOTER */
+footer {
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:3rem 2rem;
+  text-align:center;
+  position:relative;
+  z-index:1;
+}
+footer p { color:var(--text2); font-size:0.9rem; }
+footer strong { color:var(--gold); }
+
+/* REVEAL */
+.reveal {
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.in { opacity:1; transform:translateY(0); }
+
+@media(max-width:768px){
+  section { padding:3.5rem 0; }
+  nav { padding:0.6rem 1rem; }
+  .g2,.g3 { grid-template-columns:1fr; }
+  .flow-diagram { gap:0.3rem; }
+  .flow-arrow { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-ring ring1"></div>
+  <div class="hero-ring ring2"></div>
+  <div class="hero-ring ring3"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="badge-dot"></div>SA2 · المحاضرة الخامسة</div>
+    <h1>
+      <span class="h1-line1">DevOps Lifecycle</span>
+      <span class="h1-line2">&amp; Continuous Everything</span>
+    </h1>
+    <p class="hero-desc">
+      <strong>DevOps مش خطوات منفصلة</strong> — ده Loop مستمر بيحسن نفسه بنفسه 🔁
+    </p>
+    <div class="hero-loop">
+      <div class="hl-step">Plan</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Code</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Build</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Test</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Release</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Deploy</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Operate</div><div class="hl-arrow">→</div>
+      <div class="hl-step">Monitor</div><div class="hl-arrow">→ 🔁</div>
+    </div>
+  </div>
+  <div class="scroll-cue">اسكرول</div>
+</section>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#lifecycle">Lifecycle</a>
+  <a href="#stages">المراحل الـ 8</a>
+  <a href="#continuous">Continuous</a>
+  <a href="#ci">CI - Integration</a>
+  <a href="#cd">CD - Deployment</a>
+  <a href="#benefits">Benefits</a>
+  <a href="#summary">الخلاصة</a>
+</nav>
+
+<!-- ===== 1. LIFECYCLE OVERVIEW ===== -->
+<section id="lifecycle">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">🔁 أولاً</span>
+      <h2 class="sec-title">DevOps Lifecycle — الدورة الكاملة</h2>
+      <p class="sec-desc">الصورة الكبيرة — DevOps = Continuous Loop 🔁 مش خطوة واحدة</p>
+    </div>
+
+    <div class="box box-gold reveal">
+      <strong>الفكرة الأساسية:</strong><br>
+      👉 DevOps مش خطوات منفصلة<br>
+      👉 ده Loop مستمر (Continuous Cycle)
+    </div>
+
+    <div class="code reveal">Plan → Code → Build → Test → Release → Deploy → Operate → Monitor → (نرجع Plan)</div>
+
+    <div class="box box-teal reveal">
+      <strong>💡 أهم فكرة:</strong><br>
+      DevOps = Continuous Loop 🔁 مش خطوة واحدة<br><br>
+      ❗ كل مرحلة بتغذي اللي بعدها<br>
+      ❗ و Monitoring بيرجعنا لـ Planning
+    </div>
+
+    <!-- Flow Visual -->
+    <div class="flow-diagram reveal">
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">1</span>📋</div>
+        <div class="flow-name">Plan</div>
+        <div class="flow-tool">Jira</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">2</span>💻</div>
+        <div class="flow-name">Code</div>
+        <div class="flow-tool">Git</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">3</span>🏗️</div>
+        <div class="flow-name">Build</div>
+        <div class="flow-tool">Maven</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">4</span>🧪</div>
+        <div class="flow-name">Test</div>
+        <div class="flow-tool">Selenium</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">5</span>🚦</div>
+        <div class="flow-name">Release</div>
+        <div class="flow-tool">Control</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">6</span>🚀</div>
+        <div class="flow-name">Deploy</div>
+        <div class="flow-tool">Docker</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">7</span>⚙️</div>
+        <div class="flow-name">Operate</div>
+        <div class="flow-tool">تشغيل</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle"><span class="flow-n">8</span>📊</div>
+        <div class="flow-name">Monitor</div>
+        <div class="flow-tool">Nagios</div>
+      </div>
+    </div>
+
+    <div class="box box-pink reveal">
+      <strong>🔥 أهم فكرة في DevOps Lifecycle:</strong><br>
+      ❗ كل مرحلة بتغذي اللي بعدها &nbsp; ❗ و Monitoring بيرجعنا لـ Planning
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 2. THE 8 STAGES ===== -->
+<section id="stages">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">🧠 ثانيًا</span>
+      <h2 class="sec-title">شرح كل Stage بعمق</h2>
+      <p class="sec-desc">كل مرحلة بتدور في الـ Loop المستمر — دي أهم حاجة تفهمها 👇</p>
+    </div>
+
+    <!-- 1. Plan -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">🧭</div>
+        <div>
+          <div class="stage-title">1️⃣ Plan — التخطيط</div>
+          <div class="stage-subtitle">🟡 البداية وهي في نفس الوقت النهاية</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> gathers information from monitoring stage<br>
+        👉 التخطيط بيعتمد على: Feedback من المستخدم + Data من Monitoring
+      </div>
+      <div class="box box-teal">
+        <strong>🔥 الفكرة العميقة:</strong><br>
+        مش بنخطط من دماغنا<br>
+        👉 بنخطط بناءً على واقع فعلي<br><br>
+        الفكرة: نحدد هنعمل إيه + ناخد Feedback من Monitoring<br>
+        ✔ تحسين مستمر
+      </div>
+    </div>
+
+    <!-- 2. Code -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">💻</div>
+        <div>
+          <div class="stage-title">2️⃣ Code — البرمجة</div>
+          <div class="stage-subtitle">🟡 المطورين يكتبوا الكود</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> developers build the code<br>
+        👉 المطورين يكتبوا الكود
+      </div>
+      <div class="box box-teal">
+        <strong>🔧 Tools:</strong> <span class="pill pt">Git</span><br><br>
+        ✔ version control &nbsp; ✔ teamwork<br><br>
+        <strong>💡 الفكرة:</strong><br>
+        👉 الكود بيتكتب على شكل: Small changes — مش Project كبير مرة واحدة
+      </div>
+    </div>
+
+    <!-- 3. Build -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">🏗️</div>
+        <div>
+          <div class="stage-title">3️⃣ Build — البناء</div>
+          <div class="stage-subtitle">🟡 نحول الكود لبرنامج قابل للتشغيل</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> build the version of their program<br>
+        👉 نحول الكود لـ: Executable + Package
+      </div>
+      <div class="box box-teal">
+        <strong>🔧 Tools:</strong> <span class="pill pt">Maven</span> <span class="pill pt">Gradle</span><br><br>
+        ✔ compile + package<br><br>
+        <strong>💡 مثال:</strong> Java code → JAR file
+      </div>
+    </div>
+
+    <!-- 4. Test -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">🧪</div>
+        <div>
+          <div class="stage-title">4️⃣ Test — الاختبار</div>
+          <div class="stage-subtitle">🟡 اكتشاف bugs بدري</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> testing must be automated<br>
+        👉 الاختبار لازم يكون: ❌ Manual · ✅ Automated
+      </div>
+      <div class="box box-teal">
+        <strong>🔧 Tools:</strong> <span class="pill pt">Selenium</span><br><br>
+        ✔ اكتشاف bugs بدري<br><br>
+        <strong>🔥 الفكرة:</strong><br>
+        👉 كل تغيير يتعمله Test أوتوماتيك<br>
+        علشان: نكتشف Bugs بسرعة
+      </div>
+    </div>
+
+    <!-- 5. Release -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">🚦</div>
+        <div>
+          <div class="stage-title">5️⃣ Release — الإصدار</div>
+          <div class="stage-subtitle">🟡 تجهيز النسخة للنشر + تنظيم الإصدارات</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> managing and scheduling build before deployment<br>
+        👉 مرحلة تنظيم: إمتى هننزل؟ + فين هننزل؟
+      </div>
+      <div class="box box-teal">
+        <strong>💡 دي مرحلة:</strong> Control + Approval<br>
+        ✔ إدارة Versions
+      </div>
+    </div>
+
+    <!-- 6. Deploy -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">🚀</div>
+        <div>
+          <div class="stage-title">6️⃣ Deploy — النشر</div>
+          <div class="stage-subtitle">🟡 رفع البرنامج على السيرفر</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> deploy code on the server<br>
+        👉 ننزل التطبيق على السيرفر
+      </div>
+      <div class="box box-teal">
+        <strong>🔥 الفرق:</strong><br>
+        Release = تجهيز<br>
+        Deploy = تنفيذ فعلي<br><br>
+        ✔ user يقدر يستخدمه
+      </div>
+    </div>
+
+    <!-- 7. Operate -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">⚙️</div>
+        <div>
+          <div class="stage-title">7️⃣ Operate — التشغيل</div>
+          <div class="stage-subtitle">🟡 تشغيل التطبيق في الواقع</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> application is run<br>
+        👉 السيستم شغال فعليًا · 👤 المستخدم بيستخدمه
+      </div>
+      <div class="box box-teal">
+        ✔ المستخدمين يستخدموه
+      </div>
+    </div>
+
+    <!-- 8. Monitor -->
+    <div class="stage-card reveal">
+      <div class="stage-header">
+        <div class="stage-num">📊</div>
+        <div>
+          <div class="stage-title">8️⃣ Monitor — المراقبة</div>
+          <div class="stage-subtitle">🟡 متابعة الأداء + اكتشاف المشاكل</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> ensure uptime and performance<br>
+        👉 نراقب: هل السيستم شغال؟ + الأداء عامل إيه؟
+      </div>
+      <div class="box box-teal">
+        <strong>🔧 Tools:</strong> <span class="pill pt">Nagios</span> <span class="pill pt">Splunk</span> <span class="pill pt">ELK</span><br><br>
+        ✔ uptime &nbsp; ✔ performance<br><br>
+        <strong>🔥 الفكرة:</strong><br>
+        👉 أي مشكلة → ترجع لـ Plan تاني<br>
+        💣 وده سر DevOps
+      </div>
+    </div>
+
+    <!-- FULL FLOW -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:1.5rem;">💥 الصورة الكاملة — ربط كل حاجة ببعض</h3>
+      <div class="box box-gold">
+        <strong>🔁 Flow حقيقي:</strong><br>
+        Monitor → نكتشف مشكلة<br>
+        Plan → نخطط حل<br>
+        Code → نكتب الكود<br>
+        Build → نعمل Package<br>
+        Test → نتأكد<br>
+        Release → نجهز<br>
+        Deploy → ننزل<br>
+        Operate → المستخدم يستخدم<br>
+        Monitor → نتابع<br>
+        🔁 ونعيد تاني
+      </div>
+      <div class="box box-teal" style="margin-top:1rem;">
+        <strong>🧠 الفهم الاحترافي:</strong><br>
+        DevOps = System مغلق Loop<br>
+        👉 بيحسن نفسه بنفسه
+      </div>
+      <div class="box box-pink" style="margin-top:1rem;">
+        <strong>💣 أهم 3 أفكار لازم تطلع بيهم:</strong><br>
+        1️⃣ <strong>Automation</strong> — كل حاجة أوتوماتيك<br>
+        2️⃣ <strong>Feedback Loop</strong> — كل مرحلة تأثر على اللي بعدها<br>
+        3️⃣ <strong>Speed + Stability</strong> — سرعة + استقرار مع بعض
+      </div>
+    </div>
+
+    <!-- Practical Example -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;">🔥 مثال عملي بسيط جدًا</h3>
+      <p style="color:var(--text2);margin-bottom:1rem;">تخيل تطبيق:</p>
+      <ul class="blist">
+        <li><span class="bd"></span><span>1. كتبت feature جديدة</span></li>
+        <li><span class="bd"></span><span>2. Git خزّنها</span></li>
+        <li><span class="bd"></span><span>3. Jenkins عمل Build</span></li>
+        <li><span class="bd"></span><span>4. Selenium اختبرها</span></li>
+        <li><span class="bd"></span><span>5. Deploy تلقائي</span></li>
+        <li><span class="bd"></span><span>6. Monitoring راقب الأداء</span></li>
+        <li><span class="bd"></span><span>7. لو في مشكلة → ترجع تصلحها</span></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 3. CONTINUOUS CONCEPTS ===== -->
+<section id="continuous">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">🔁 Continuous مفهوم مهم جدًا</span>
+      <h2 class="sec-title">Continuous Concepts — أهم حاجة 🔥</h2>
+      <p class="sec-desc">DevOps كله قائم على كلمة: 👉 Continuous</p>
+    </div>
+
+    <div class="box box-gold reveal">
+      <strong>🚀 ثالثًا: Continuous Concepts (أهم حاجة 🔥)</strong>
+    </div>
+
+    <!-- Continuous Development -->
+    <div class="cont-card cc-gold reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-gold">🔄</div>
+        <div>
+          <div class="cont-title">🔹 1️⃣ Continuous Development</div>
+          <div class="cont-subtitle">software is developed continuously</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> software is developed continuously<br>
+        👉 الكود بيتكتب طول الوقت
+      </div>
+      <div class="box box-teal" style="margin-top:0.8rem;">
+        <strong>🔧 Tools:</strong> <span class="pill pt">Git</span> <span class="pill pt">Maven</span><br><br>
+        <strong>💡 الفرق عن Waterfall:</strong><br>
+        ❌ مرة واحدة<br>
+        ✅ باستمرار<br><br>
+        ✔ الكود بيتكتب ويتبني طول الوقت &nbsp; ✔ مش مرة واحدة
+      </div>
+      <div class="code" style="margin-top:0.8rem;">Code + Build continuously</div>
+    </div>
+
+    <!-- Continuous Integration -->
+    <div class="cont-card cc-teal reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-teal">🔗</div>
+        <div>
+          <div class="cont-title">🔹 2️⃣ Continuous Integration (CI)</div>
+          <div class="cont-subtitle">integrate code continuously</div>
+        </div>
+      </div>
+      <div class="box box-teal">
+        <strong>🔹 الجملة:</strong> integrate code continuously<br>
+        👉 كل ما Dev يكتب كود: يتدمج فورًا مع المشروع
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>🔧 Tools:</strong> <span class="pill pg">Jenkins</span><br><br>
+        <strong>🔥 الفكرة:</strong><br>
+        👉 نمنع المشاكل الكبيرة<br>
+        عن طريق دمج صغير مستمر<br><br>
+        ✔ كل كود جديد يتدمج &nbsp; ✔ يتعمله test
+      </div>
+      <div class="code" style="margin-top:0.8rem;">Merge code frequently + test automatically</div>
+      <div class="box box-pink" style="margin-top:0.8rem;">
+        <strong>💥 مثال:</strong><br>
+        10 Devs شغالين<br>
+        كل واحد يرفع كوده يوميًا<br>
+        Jenkins يدمج + يعمل Build + Test
+      </div>
+    </div>
+
+    <!-- Continuous Testing -->
+    <div class="cont-card cc-pink reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-pink">🧪</div>
+        <div>
+          <div class="cont-title">🔹 3️⃣ Continuous Testing</div>
+          <div class="cont-subtitle">tested continuously</div>
+        </div>
+      </div>
+      <div class="box box-pink">
+        <strong>🔹 الجملة:</strong> tested continuously<br>
+        👉 كل Build يتعمله Test
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>🔧 Tools:</strong> <span class="pill pg">Selenium</span><br><br>
+        <strong>💡 الهدف:</strong><br>
+        👉 مفيش Bug يوصل Production<br><br>
+        ✔ اكتشاف bugs بدري &nbsp; ✔ جودة أعلى
+      </div>
+      <div class="code" style="margin-top:0.8rem;">Test automatically all the time</div>
+    </div>
+
+    <!-- Continuous Deployment -->
+    <div class="cont-card cc-blue reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-blue">🚀</div>
+        <div>
+          <div class="cont-title">🔹 4️⃣ Continuous Deployment</div>
+          <div class="cont-subtitle">Deploy automatically after testing</div>
+        </div>
+      </div>
+      <div class="box box-blue">
+        👉 كل حاجة بعد Test: تنزل Production تلقائي<br>
+        💣 بدون تدخل بشري<br><br>
+        ✔ سرعة رهيبة
+      </div>
+      <div class="code" style="margin-top:0.8rem;">Deploy automatically after testing</div>
+    </div>
+
+    <!-- Continuous Monitoring -->
+    <div class="cont-card cc-purple reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-purple">📊</div>
+        <div>
+          <div class="cont-title">🔹 5️⃣ Continuous Monitoring</div>
+          <div class="cont-subtitle">monitor application health</div>
+        </div>
+      </div>
+      <div class="box box-purple">
+        <strong>🔹 الجملة:</strong> monitor application health<br>
+        👉 نتابع: Servers + Performance + Errors
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>🔧 Tools:</strong> <span class="pill pg">Nagios</span> <span class="pill pg">Splunk</span> <span class="pill pg">ELK Stack</span><br><br>
+        <strong>🔥 الفكرة:</strong><br>
+        👉 Monitoring → Feedback → تحسين<br><br>
+        ✔ نعرف المشاكل بسرعة &nbsp; ✔ نحسن الأداء
+      </div>
+      <div class="code" style="margin-top:0.8rem;">Monitor app in real-time</div>
+    </div>
+
+    <!-- Full Connection -->
+    <div class="bq reveal">
+      <p>
+        <code>Code → Build → Test → Deploy → Monitor → Feedback → Code again</code><br><br>
+        💥 دي أهم جملة في DevOps كلها<br>
+        <strong style="color:var(--gold)">الفكرة الأساسية: DevOps = سرعة + Automation + Feedback Loop</strong>
+      </p>
+    </div>
+
+    <div class="box box-teal reveal">
+      <strong>🔁 الربط بين كل حاجة:</strong><br>
+      <code style="color:var(--teal2);">Code → Build → Test → Deploy → Monitor → Feedback → Code again</code><br><br>
+      💥 دي أهم جملة في DevOps كلها
+    </div>
+
+    <!-- Continuous Summary -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;">🧠 الخلاصة اللي تتحفظ</h3>
+      <div class="box box-gold">
+        <strong>DevOps Lifecycle:</strong>
+        <div class="code">Plan → Code → Build → Test → Release → Deploy → Operate → Monitor</div>
+      </div>
+      <div class="box box-teal" style="margin-top:0.8rem;">
+        <strong>Continuous:</strong>
+        <div class="code">Continuous = Code + Integrate + Test + Deploy + Monitor</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 4. CI DEEP DIVE ===== -->
+<section id="ci">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">🔗 Continuous Integration</span>
+      <h2 class="sec-title">CI — الدمج المستمر بالتفصيل</h2>
+    </div>
+
+    <div class="glass reveal">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:1.5rem;">2️⃣ Continuous Integration (CI)</h3>
+      <div class="box box-teal">
+        <strong>🔹 الجملة:</strong> integrate code continuously<br>
+        👉 كل ما Dev يكتب كود: يتدمج فورًا مع المشروع<br><br>
+        <strong>🔧 Tools:</strong> <span class="pill pt">Jenkins</span>
+      </div>
+      <div class="box box-gold" style="margin-top:1rem;">
+        <strong>🔥 الفكرة:</strong><br>
+        👉 نمنع المشاكل الكبيرة<br>
+        عن طريق دمج صغير مستمر
+      </div>
+      <div class="box box-pink" style="margin-top:1rem;">
+        <strong>💥 مثال:</strong><br>
+        10 Devs شغالين<br>
+        كل واحد يرفع كوده يوميًا<br>
+        Jenkins يدمج + يعمل Build + Test
+      </div>
+      <div class="code" style="margin-top:1rem;">Merge code frequently + test automatically</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 5. CD - DEPLOYMENT ===== -->
+<section id="cd">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">🚀 أولاً / ثالثًا</span>
+      <h2 class="sec-title">Continuous Deployment (CD)</h2>
+      <p class="sec-desc">نشر الكود تلقائيًا بعد ما ينجح في الاختبارات</p>
+    </div>
+
+    <div class="box box-blue reveal">
+      <strong>💡 التعريف البسيط:</strong><br>
+      Continuous Deployment = نشر الكود تلقائيًا بعد ما ينجح في الاختبارات
+    </div>
+
+    <div class="code reveal">Code → Build → Test → (لو كله OK) → Deploy تلقائي 🚀</div>
+
+    <div class="box box-red reveal">
+      <strong>💥 بدون أي تدخل بشري</strong>
+    </div>
+
+    <!-- Step by Step -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;">🧠 يعني إيه عمليًا؟</h3>
+      <ul class="blist">
+        <li><span class="bd"></span><span>المطور يكتب كود</span></li>
+        <li><span class="bd"></span><span>يرفعه على Git</span></li>
+        <li><span class="bd"></span><span>النظام (CI/CD pipeline): يعمل Build</span></li>
+        <li><span class="bd"></span><span>يعمل Test</span></li>
+        <li><span class="bd"></span><span>لو كله تمام 👇 &nbsp;→ ينزل مباشرة على Production</span></li>
+      </ul>
+    </div>
+
+    <!-- CD Details from lecture notes -->
+    <div class="box box-teal reveal" style="margin-top:1.5rem;">
+      <strong>🔹 الجملة:</strong> automates deploying changes to staging or production<br>
+      👉 يعني: 📌 أي كود جديد يتعمله: Merge ➡️ يتنزل أوتوماتيك على السيرفر
+    </div>
+
+    <div class="box box-gold reveal">
+      <strong>🔥 الجملة:</strong> save time and effort<br>
+      👉 بدل: Deployment يدوي أو تستنى schedule ➡️ كله يحصل فورًا
+    </div>
+
+    <!-- Delivery vs Deployment -->
+    <div class="reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;">❗ فرق مهم (بييجي في الامتحان)</h3>
+      <div class="cmp">
+        <div class="cd-card cd-delivery">
+          <div class="cd-badge">Continuous Delivery</div>
+          <div class="cd-title">🟡 Continuous Delivery</div>
+          <div class="cd-body">
+            👉 الكود جاهز للنشر<br>
+            لكن: ❌ محتاج موافقة بشر<br><br>
+            <strong>جاهز للنشر</strong><br>
+            في approval
+          </div>
+        </div>
+        <div class="cd-card cd-deployment">
+          <div class="cd-badge">Continuous Deployment</div>
+          <div class="cd-title">🟢 Continuous Deployment</div>
+          <div class="cd-body">
+            👉 الكود:<br>
+            يتبني ✅ · يتست ✅<br>
+            ➡️ يتنشر تلقائي 🚀<br><br>
+            <strong>يتم النشر تلقائيًا</strong><br>
+            بدون تدخل بشري
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table: Delivery vs Deployment -->
+    <div class="tbl reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Continuous Delivery</th>
+            <th>Continuous Deployment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>جاهز للنشر</td><td>يتم النشر تلقائيًا</td></tr>
+          <tr><td>في approval</td><td>بدون تدخل بشري</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Real World Example -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1.2rem;">💥 مثال واقعي</h3>
+      <div class="cmp">
+        <div class="cmp-bad">
+          <div class="cmp-label">❌ بدون CD</div>
+          <ul>
+            <li>Dev يخلص كود</li>
+            <li>Ops يستنى يوم deploy</li>
+            <li>يحصل تأخير 😓</li>
+            <li>deploy كل شهر</li>
+            <li>مشاكل كتير</li>
+          </ul>
+        </div>
+        <div class="cmp-good">
+          <div class="cmp-label">✅ مع CD</div>
+          <ul>
+            <li>Dev يعمل commit</li>
+            <li>Pipeline: Build ✅ · Test ✅ · Deploy 🚀</li>
+            <li>في دقايق</li>
+            <li>deploy كل يوم</li>
+            <li>مشاكل أقل</li>
+            <li>feedback أسرع</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-teal reveal" style="margin-top:1.5rem;">
+      <strong>🧠 ليه ده مهم جدًا؟</strong><br>
+      👉 لأنه بيحقق:<br>
+      سرعة رهيبة + تقليل أخطاء البشر + Feedback أسرع<br><br>
+      <strong>✅ مميزات Continuous Deployment:</strong><br>
+      سرعة رهيبة ⚡ · تقليل الأخطاء البشرية · تحديثات مستمرة · توفير وقت ومجهود
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 6. DEVOPS BENEFITS ===== -->
+<section id="benefits">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">💎 ثانياً / 🔥 ثانيًا</span>
+      <h2 class="sec-title">DevOps Benefits — الفوائد</h2>
+      <p class="sec-desc">دي أهم حاجة الشركات عايزاها 💣 — دي بقى أهم نقطة تحفظها لأنها تيجي نظري كتير 👇</p>
+    </div>
+
+    <!-- Breaking Silos -->
+    <div class="cont-card cc-gold reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-gold">🔥</div>
+        <div>
+          <div class="cont-title">1️⃣ 🔥 Breaking Silos</div>
+          <div class="cont-subtitle">breaks conventional departmentation</div>
+        </div>
+      </div>
+      <div class="box box-gold">
+        <strong>🔹 الجملة:</strong> breaks conventional departmentation<br>
+        👉 زمان: كل فريق لوحده (Silo)<br><br>
+        الفكرة: قبل DevOps: كل فريق لوحده · بعد DevOps: كلهم فريق واحد
+      </div>
+      <div class="code">Dev + Ops + QA = One Team</div>
+      <div class="box box-teal" style="margin-top:0.8rem;">
+        <strong>💥 المشكلة:</strong> مفيش تواصل · بطء · مشاكل كتير<br><br>
+        <strong>✅ DevOps:</strong> 👉 يكسر الحواجز<br>
+        Dev + Ops + QA = Team واحد<br><br>
+        <strong>🔥 النتيجة:</strong> سرعة · مرونة · تعاون<br>
+        ✔ تواصل أحسن &nbsp; ✔ سرعة أعلى
+      </div>
+    </div>
+
+    <!-- Continuous Improvement -->
+    <div class="cont-card cc-teal reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-teal">🔁</div>
+        <div>
+          <div class="cont-title">2️⃣ 🔁 Continuous Improvement</div>
+          <div class="cont-subtitle">reduce feedback cycle</div>
+        </div>
+      </div>
+      <div class="box box-teal">
+        <strong>🔹 الجملة:</strong> reduce feedback cycle<br>
+        👉 DevOps بيخلي: Feedback سريع جدًا
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>💡 يعني:</strong><br>
+        المستخدم يقول رأيه<br>
+        نعدل فورًا<br><br>
+        <strong>🔥 النتيجة:</strong> Customer Satisfaction أعلى ❤️<br>
+        ✔ Feedback Loop &nbsp; ✔ تطوير دائم
+      </div>
+      <div class="code">Monitor → Feedback → Improve → Repeat</div>
+    </div>
+
+    <!-- Minimized Failures -->
+    <div class="cont-card cc-pink reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-pink">❌</div>
+        <div>
+          <div class="cont-title">3️⃣ ❌ Minimized Failures</div>
+          <div class="cont-subtitle">minimize failures</div>
+        </div>
+      </div>
+      <div class="box box-pink">
+        <strong>🔹 الجملة:</strong> minimize failures<br>
+        👉 DevOps يقلل الأخطاء
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>💡 ليه؟</strong><br>
+        Testing أوتوماتيك · Integration مستمر · Monitoring<br><br>
+        ✔ اكتشاف bugs بدري &nbsp; ✔ automation<br><br>
+        <strong>🔥 مثال:</strong><br>
+        بدل ما Bug يظهر بعد شهر 👉 يظهر في نفس اليوم
+      </div>
+    </div>
+
+    <!-- Creativity & Innovation -->
+    <div class="cont-card cc-blue reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-blue">💡</div>
+        <div>
+          <div class="cont-title">4️⃣ 💡 Creativity &amp; Innovation</div>
+          <div class="cont-subtitle">culture of trust</div>
+        </div>
+      </div>
+      <div class="box box-blue">
+        <strong>🔹 الجملة:</strong> culture of trust<br>
+        👉 DevOps يبني: ثقة + تعاون
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>💥 النتيجة:</strong> الناس تبتكر · أفكار جديدة<br><br>
+        <strong>💡 ليه؟</strong><br>
+        👉 مفيش ضغط "مين غلط"<br>
+        👉 كله Team واحد<br><br>
+        ✔ التيم يجرب أفكار جديدة &nbsp; ✔ تحسين المنتجات<br>
+        بيئة تشجع الإبداع
+      </div>
+    </div>
+
+    <!-- Performance-oriented Culture -->
+    <div class="cont-card cc-purple reveal">
+      <div class="cont-header">
+        <div class="cont-icon ci-purple">📈</div>
+        <div>
+          <div class="cont-title">5️⃣ 📈 Performance-oriented Culture</div>
+          <div class="cont-subtitle">more productive and creative</div>
+        </div>
+      </div>
+      <div class="box box-purple">
+        <strong>🔹 الجملة:</strong> more productive and creative<br>
+        👉 الفريق: أسرع · أذكى · أكثر إنتاجية<br><br>
+        التركيز على الأداء
+      </div>
+      <div class="box box-gold" style="margin-top:0.8rem;">
+        <strong>🔥 كمان:</strong><br>
+        Turnover يقل (ناس تمشي أقل)<br>
+        Retention يزيد (ناس تقعد)<br><br>
+        ✔ إنتاجية أعلى &nbsp; ✔ شغل أفضل &nbsp; ✔ تقليل ترك الموظفين
+      </div>
+    </div>
+
+    <!-- Deep Understanding -->
+    <div class="glass reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:1.5rem;">💥 الفهم العميق جدًا</h3>
+      <div class="box box-red">
+        DevOps مش بس Technology ❌<br>
+        DevOps = Culture 💣
+      </div>
+      <div class="box box-gold" style="margin-top:1rem;">
+        <strong>🧠 بيغير 3 حاجات أساسية:</strong><br><br>
+        <strong>1️⃣ طريقة الشغل:</strong> Automation · Continuous<br>
+        <strong>2️⃣ طريقة التفكير:</strong> Team واحد · مسؤولية مشتركة<br>
+        <strong>3️⃣ سرعة الشركة:</strong> Faster delivery · Faster feedback
+      </div>
+      <div class="box box-teal" style="margin-top:1rem;">
+        <strong>🧠 أهم جملة في الدرس كله:</strong><br>
+        DevOps مش Tools بس<br>
+        👉 ده Culture + Automation + Collaboration
+      </div>
+    </div>
+
+    <!-- Benefits Table -->
+    <div class="reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1rem;">🔥 الخلاصة الجبارة</h3>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>الفايدة</th><th>النتيجة</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Breaking Silos</strong></td><td>Team واحد</td></tr>
+            <tr><td><strong>Continuous Improvement</strong></td><td>تطوير مستمر</td></tr>
+            <tr><td><strong>Minimized Failures</strong></td><td>أخطاء أقل</td></tr>
+            <tr><td><strong>Innovation</strong></td><td>إبداع</td></tr>
+            <tr><td><strong>Performance Culture</strong></td><td>إنتاجية أعلى</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box box-gold reveal" style="margin-top:1rem;">
+      <strong>🔥 الخلاصة اللي تتحفظ:</strong><br>
+      Continuous Deployment: Automatic Deploy after successful tests<br><br>
+      DevOps Benefits: Collaboration + Continuous Improvement + Fewer Failures + Innovation + High Performance
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 7. SUMMARY ===== -->
+<section id="summary">
+  <div class="container">
+    <div class="sec-header reveal">
+      <span class="sec-eye">💥 الخلاصة</span>
+      <h2 class="sec-title">الخلاصة الجبارة — احفظها كلها</h2>
+    </div>
+
+    <div class="sum-hero reveal">
+      <h2>💥 DevOps عمل 3 ثورات</h2>
+      <div class="rev-grid">
+        <div class="rev-card">
+          <div class="rev-icon">🤖</div>
+          <div class="rev-title">1️⃣ Automation</div>
+          <div class="rev-desc">كل حاجة أوتوماتيك</div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-icon">🔁</div>
+          <div class="rev-title">2️⃣ Feedback Loop</div>
+          <div class="rev-desc">كل مرحلة تأثر على اللي بعدها</div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-icon">⚡</div>
+          <div class="rev-title">3️⃣ Speed + Stability</div>
+          <div class="rev-desc">سرعة + استقرار مع بعض</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass reveal">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:2rem;">🧠 كل حاجة في مكانها</h3>
+
+      <div class="box box-gold">
+        <strong>🔹 DevOps Lifecycle:</strong>
+        <div class="code">Plan → Code → Build → Test → Release → Deploy → Operate → Monitor</div>
+      </div>
+
+      <div class="box box-teal" style="margin-top:1rem;">
+        <strong>🔹 Continuous:</strong>
+        <div class="code">Continuous = Code + Integrate + Test + Deploy + Monitor</div>
+      </div>
+
+      <div class="box box-pink" style="margin-top:1rem;">
+        <strong>🔹 Continuous Deployment:</strong>
+        <div class="code">Automatic Deploy after successful tests</div>
+      </div>
+
+      <div class="box box-blue" style="margin-top:1rem;">
+        <strong>🔹 DevOps Benefits:</strong>
+        <div class="code">Collaboration + Continuous Improvement + Fewer Failures + Innovation + High Performance</div>
+      </div>
+
+      <div class="box box-gold" style="margin-top:1rem;">
+        <strong>🔹 الفكرة الأساسية:</strong>
+        <div class="code">DevOps = سرعة + Automation + Feedback Loop</div>
+      </div>
+
+      <div class="box box-red" style="margin-top:1rem;">
+        <strong>🧠 أهم جملة في الدرس كله:</strong><br>
+        DevOps مش Tools بس<br>
+        👉 ده <strong>Culture + Automation + Collaboration</strong>
+      </div>
+    </div>
+
+    <div class="bq reveal" style="margin-top:2rem;">
+      <p>
+        <code>DevOps = System مغلق Loop</code><br>
+        بيحسن نفسه بنفسه 🔁<br>
+        <strong style="color:var(--gold)">💣 وده سر DevOps</strong>
+      </p>
+    </div>
+
+    <!-- Tools Reference -->
+    <div class="reveal" style="margin-top:2rem;">
+      <h3 style="font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:1rem;">🔧 مرجع الأدوات الكاملة</h3>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>المرحلة</th><th>الأدوات</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Plan</strong></td><td>Jira</td></tr>
+            <tr><td><strong>Code</strong></td><td>Git · Maven</td></tr>
+            <tr><td><strong>Build</strong></td><td>Maven · Gradle</td></tr>
+            <tr><td><strong>Test (Integration)</strong></td><td>Selenium · Jenkins</td></tr>
+            <tr><td><strong>Deploy</strong></td><td>Docker</td></tr>
+            <tr><td><strong>Monitor</strong></td><td>Nagios · Splunk · ELK Stack</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>📚 SA2 — المحاضرة الخامسة | <strong>DevOps Lifecycle &amp; Continuous Concepts</strong></p>
+  <p style="margin-top:0.5rem;font-size:0.8rem;">Lifecycle · CI · CD · Benefits · Automation</p>
+</footer>
+
+<button id="bTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// BACK TO TOP
+window.addEventListener('scroll', () => {
+  document.getElementById('bTop').classList.toggle('show', window.scrollY > 400);
+}, {passive:true});
+
+// REVEAL ON SCROLL
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ACTIVE NAV
+const secs = document.querySelectorAll('section[id]');
+const navAs = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  secs.forEach(s => { if(window.scrollY >= s.offsetTop - 130) cur = s.id; });
+  navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+},{passive:true});
+</script>
+
+</body>
+</html>
