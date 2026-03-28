@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrum & Software Process Quiz – Lec 2 & 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#07090d;--card:#0e1117;--border:#1a2030;
+    --accent:#a855f7;--accent2:#22d3ee;
+    --correct:#22c55e;--wrong:#ef4444;
+    --text:#e2e8f0;--muted:#64748b;--gold:#f59e0b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:0 0 80px;}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(168,85,247,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,0.04) 1px,transparent 1px);
+    background-size:42px 42px;pointer-events:none;z-index:0;}
+
+  .hero{position:relative;text-align:center;padding:60px 20px 36px;z-index:1;}
+  .hero-tag{display:inline-block;background:rgba(168,85,247,0.12);border:1px solid var(--accent);
+    color:var(--accent);font-size:11px;letter-spacing:3px;padding:6px 16px;border-radius:2px;margin-bottom:18px;text-transform:uppercase;}
+  .hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.9rem,5vw,3.3rem);font-weight:800;line-height:1.1;
+    background:linear-gradient(135deg,#fff 0%,var(--accent) 55%,var(--accent2) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+  .hero p{color:var(--muted);font-size:13px;letter-spacing:1px;}
+
+  .scorebar{position:sticky;top:0;z-index:100;background:rgba(7,9,13,0.93);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:40px;padding:14px 20px;}
+  .score-item{text-align:center;}
+  .score-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;}
+  .score-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+  #sc{color:var(--correct);}#sw{color:var(--wrong);}#st{color:var(--accent2);}#sp{color:var(--gold);}
+
+  .section-header{position:relative;z-index:1;max-width:880px;margin:50px auto 24px;padding:0 20px;
+    display:flex;align-items:center;gap:14px;}
+  .section-badge{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+    font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;
+    padding:6px 14px;border-radius:2px;white-space:nowrap;text-transform:uppercase;}
+  .section-title{font-family:'Syne',sans-serif;font-size:1.05rem;color:#fff;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  .quiz-container{max-width:880px;margin:0 auto;padding:0 20px;position:relative;z-index:1;display:flex;flex-direction:column;gap:18px;}
+
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;
+    transition:border-color 0.2s;animation:slideIn 0.3s ease both;}
+  .q-card:hover{border-color:#2a1f40;}
+  .q-header{display:flex;align-items:flex-start;gap:14px;padding:20px 22px 16px;}
+  .q-num{background:rgba(168,85,247,0.12);color:var(--accent);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+    min-width:36px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;border:1px solid rgba(168,85,247,0.25);}
+  .q-text{font-size:13px;line-height:1.75;color:var(--text);padding-top:5px;}
+
+  .tf-row{display:flex;gap:12px;padding:0 22px 20px;}
+  .tf-btn{flex:1;padding:12px;border:1px solid var(--border);background:transparent;color:var(--text);
+    font-family:'Space Mono',monospace;font-size:13px;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+  .tf-btn.true-btn:hover:not(:disabled){border-color:var(--correct);background:rgba(34,197,94,0.08);color:var(--correct);}
+  .tf-btn.false-btn:hover:not(:disabled){border-color:var(--wrong);background:rgba(239,68,68,0.08);color:var(--wrong);}
+
+  .options{padding:0 22px 20px;display:flex;flex-direction:column;gap:10px;}
+  .option-btn{width:100%;text-align:left;padding:13px 16px;border:1px solid var(--border);
+    background:rgba(255,255,255,0.02);color:var(--text);font-family:'Space Mono',monospace;font-size:12.5px;
+    border-radius:6px;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;gap:10px;line-height:1.5;}
+  .option-letter{background:rgba(255,255,255,0.06);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;
+    font-size:11px;min-width:26px;height:26px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:all 0.18s;}
+  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(168,85,247,0.06);}
+  .option-btn:hover:not(:disabled) .option-letter{background:rgba(168,85,247,0.2);color:var(--accent);}
+
+  .option-btn.correct,.tf-btn.correct{border-color:var(--correct)!important;background:rgba(34,197,94,0.12)!important;color:var(--correct);}
+  .option-btn.correct .option-letter{background:var(--correct);color:#fff;}
+  .option-btn.wrong,.tf-btn.wrong{border-color:var(--wrong)!important;background:rgba(239,68,68,0.1)!important;color:var(--wrong);}
+  .option-btn.wrong .option-letter{background:var(--wrong);color:#fff;}
+  .option-btn.show-correct{border-color:rgba(34,197,94,0.45)!important;background:rgba(34,197,94,0.07)!important;color:var(--correct);}
+  .option-btn.show-correct .option-letter{background:rgba(34,197,94,0.3);color:var(--correct);}
+  .option-btn:disabled,.tf-btn:disabled{cursor:default;}
+
+  .feedback{margin:0 22px 18px;padding:12px 16px;border-radius:6px;font-size:12px;line-height:1.65;display:none;}
+  .feedback.show{display:block;}
+  .feedback.correct-fb{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);color:var(--correct);}
+  .feedback.wrong-fb{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:var(--wrong);}
+
+  .reset-wrap{max-width:880px;margin:44px auto 0;padding:0 20px;text-align:center;position:relative;z-index:1;}
+  .reset-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;
+    font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;
+    padding:16px 48px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:opacity 0.2s,transform 0.2s;}
+  .reset-btn:hover{opacity:0.85;transform:translateY(-2px);}
+
+  @keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pc{0%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+  @keyframes pw{0%{box-shadow:0 0 0 0 rgba(239,68,68,.45)}70%{box-shadow:0 0 0 9px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+  .q-card.ac{animation:pc 0.6s ease;}
+  .q-card.aw{animation:pw 0.6s ease;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">IS352 · Lec 2 & 3</div>
+  <h1>Scrum & Software<br>Process Quiz</h1>
+  <p>اختار الإجابة وشوف نتيجتك فوراً 📚</p>
+</div>
+
+<div class="scorebar">
+  <div class="score-item"><div class="score-num" id="sc">0</div><div class="score-label">Correct</div></div>
+  <div class="score-item"><div class="score-num" id="sw">0</div><div class="score-label">Wrong</div></div>
+  <div class="score-item"><div class="score-num" id="st">0</div><div class="score-label">Answered</div></div>
+  <div class="score-item"><div class="score-num" id="sp">—</div><div class="score-label">Score %</div></div>
+</div>
+
+<!-- Lec 3 -->
+<div class="section-header">
+  <span class="section-badge">Lec 3</span>
+  <span class="section-title">Scrum Framework (32 questions)</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="lec3"></div>
+
+<!-- Lec 2 -->
+<div class="section-header" style="margin-top:60px">
+  <span class="section-badge" style="background:linear-gradient(135deg,#0ea5e9,#22d3ee)">Lec 2</span>
+  <span class="section-title">Software Process Models & Agile (66 questions)</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="lec2"></div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">↺ Reset Quiz</button>
+</div>
+
+<script>
+const L = ['a','b','c','d','e'];
+
+const lec3 = [
+  {q:"1. There is change during the sprint.",type:"tf",answer:false,
+   exp:"FALSE – No changes are allowed during a sprint. Plan sprint durations around how long you can keep change out."},
+  {q:"2. ………… Represents management to the project.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master represents management to the project."},
+  {q:"3. ………… is responsible for enacting Scrum values and practices.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master is responsible for enacting Scrum values and practices."},
+  {q:"4. In Scrum, members should be full-time — even the database administrator.",type:"tf",answer:false,
+   exp:"FALSE – Members should generally be full-time, BUT the database administrator is listed as a possible exception."},
+  {q:"5. Membership can change during a sprint.",type:"tf",answer:false,
+   exp:"FALSE – Membership should change only BETWEEN sprints, not during one."},
+  {q:"6. ………… selects items from the product backlog they can commit to completing.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team selects items from the product backlog during Sprint Planning."},
+  {q:"7. Sprint backlog is created in …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","None of the above"],answer:1,
+   exp:"The Sprint Backlog is created during Sprint Planning."},
+  {q:"8. Tasks are identified and each is estimated (1–16 hours) in …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","None of the above"],answer:1,
+   exp:"During Sprint Planning, tasks are identified and estimated between 1–16 hours."},
+  {q:"9. Sprint backlog creation is done collaboratively, not done alone by the …………",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The sprint backlog is created collaboratively — NOT done alone by the ScrumMaster."},
+  {q:"10. The stand-up meeting is …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum is the 15-minute stand-up meeting."},
+  {q:"11. The feedback meeting is …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is the feedback meeting (Start/Stop/Continue)."},
+  {q:"12. The Daily Scrum is for problem solving.",type:"tf",answer:false,
+   exp:"FALSE – The Daily Scrum is NOT for problem solving. It is a short sync/coordination meeting only."},
+  {q:"13. ………… helps avoid other unnecessary meetings.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum helps avoid other unnecessary meetings by keeping everyone in sync daily."},
+  {q:"14. In ………… the team presents what it accomplished during the sprint.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:0,
+   exp:"The Sprint Review is where the team presents/demos what was accomplished."},
+  {q:"15. ………… is done after every sprint.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is done after every sprint."},
+  {q:"16. In ………… only team members, ScrumMaster, and product owner can talk.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"In the Daily Scrum, the whole world is invited to listen but ONLY team members, ScrumMaster, and Product Owner can talk."},
+  {q:"17. ………… typically takes the form of a demo of new features or underlying architecture.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:0,
+   exp:"The Sprint Review takes the form of a demo of new features or architecture."},
+  {q:"18. Everyone answers 3 questions in …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"In the Daily Scrum everyone answers: What did you do yesterday? What will you do today? Is anything in your way?"},
+  {q:"19. ………… is between Scrum Team only.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is attended by the Scrum Team ONLY."},
+  {q:"20. ………… is exactly 15 minutes, daily.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum is exactly 15 minutes, held daily."},
+  {q:"21. ………… is 15–30 minutes between the Scrum team.",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is 15–30 minutes, Scrum team only."},
+  {q:"22. Start / Stop / Continue doing exists in …………",type:"mcq",
+   opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"Start/Stop/Continue is a format used in the Sprint Retrospective."},
+  {q:"23. Start / Stop / Continue is the ONLY way to do a sprint retrospective.",type:"tf",answer:false,
+   exp:"FALSE – The slides explicitly state this is 'just one of many ways to do a sprint retrospective.'"},
+  {q:"24. ………… is a short statement of what the work will be focused on during the sprint.",type:"mcq",
+   opts:["Sprint Backlog","Sprint Goal","Product Backlog"],answer:1,
+   exp:"The Sprint Goal is the short statement defining the focus of the sprint."},
+  {q:"25. ………… is a list of all desired work on the project.",type:"mcq",
+   opts:["Product Backlog","Sprint Backlog"],answer:0,
+   exp:"The Product Backlog is the master list of all desired work on the project."},
+  {q:"26. ………… is prioritized by …………",type:"mcq",
+   opts:["Product Backlog / Scrum Master","Sprint Backlog / Scrum Master","Product Backlog / Product Owner"],answer:2,
+   exp:"The Product Backlog is prioritized by the Product Owner."},
+  {q:"27. Product backlog is reprioritized at the END of each sprint.",type:"tf",answer:false,
+   exp:"FALSE – The product backlog is reprioritized at the START of each sprint."},
+  {q:"28. In the sprint backlog, work is assigned.",type:"tf",answer:false,
+   exp:"FALSE – Individuals sign up for work of their own choosing. Work is NEVER assigned."},
+  {q:"29. ………… can add, delete or change the sprint backlog.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"Any team member can add, delete, or change the sprint backlog."},
+  {q:"30. Burndown Chart shows the estimated amount of time to release.",type:"tf",answer:true,
+   exp:"TRUE – The Sprint Burndown Chart shows the estimated amount of time to release (remaining hours per day)."},
+  {q:"31. In Burndown Chart, ideally should burn down to zero by the START of the sprint.",type:"tf",answer:false,
+   exp:"FALSE – It should burn down to zero by the END of the sprint, not the start."},
+  {q:"32. Burndown Chart is a straight line.",type:"tf",answer:false,
+   exp:"FALSE – The burndown chart is actually NOT a straight line — it can bump UP."}
+];
+
+const lec2 = [
+  {q:"1. ………… is an abstract representation of a process.",type:"mcq",
+   opts:["A software process","A software process model","An agile plan","A sprint backlog"],answer:1,
+   exp:"A software process MODEL is an abstract representation of a process."},
+  {q:"2. ………… presents a description of a process from some particular perspective.",type:"mcq",
+   opts:["A software process","A software process model","A sprint","A methodology"],answer:1,
+   exp:"A software process model presents a description from a particular perspective."},
+  {q:"3. ………… is a structured set of activities required to develop a software system.",type:"mcq",
+   opts:["A software process model","A software process","A sprint","An artifact"],answer:1,
+   exp:"A software PROCESS is the structured set of activities required to develop a software system."},
+  {q:"4. In ………… all process activities are planned in advance and progress is measured against this plan.",type:"mcq",
+   opts:["Agile","Plan-driven","Scrum","Kanban"],answer:1,
+   exp:"Plan-driven processes plan all activities in advance and measure progress against the plan."},
+  {q:"5. In ………… planning is incremental and it is easier to change the process to reflect changing customer requirements.",type:"mcq",
+   opts:["Waterfall","Plan-driven","Agile","Spiral"],answer:2,
+   exp:"Agile uses incremental planning, making it easier to adapt to changing requirements."},
+  {q:"6. '………… — the art of maximizing the amount of work not done — is essential.' This is an Agile principle.",type:"mcq",
+   opts:["Simplicity","Collaboration","Iteration","Velocity"],answer:0,
+   exp:"Simplicity — maximizing the work NOT done — is one of the 12 Agile principles."},
+  {q:"7. Which of the following is a Plan-driven process?",type:"mcq",
+   opts:["Scrum","Kanban","Waterfall","eXtreme Programming (XP)"],answer:2,
+   exp:"Waterfall (and also Incremental, Reuse-oriented, Spiral) are plan-driven processes."},
+  {q:"8. Which of the following is an Agile process?",type:"mcq",
+   opts:["Waterfall","Spiral","Incremental","Scrum"],answer:3,
+   exp:"Scrum is Agile. Other Agile examples include XP, Lean, Crystal, and Kanban."},
+  {q:"9. ………… means defining what the system should do.",type:"mcq",
+   opts:["Design","Specification","Implementation","Evolution"],answer:1,
+   exp:"Specification is the activity of defining WHAT the system should do."},
+  {q:"10. Scrum is a waterfall process.",type:"tf",answer:false,
+   exp:"FALSE – Scrum is an Agile process, not waterfall."},
+  {q:"11. ………… means defining the organization of the system.",type:"mcq",
+   opts:["Specification","Design","Implementation","Evolution"],answer:1,
+   exp:"Design is the activity that defines how the system is organized/structured."},
+  {q:"12. ………… means implementing the system.",type:"mcq",
+   opts:["Design","Specification","Implementation","Evolution"],answer:2,
+   exp:"Implementation is the activity of actually building/coding the system."},
+  {q:"13. ………… means changing the system in response to changing customer needs.",type:"mcq",
+   opts:["Specification","Evolution","Implementation","Design"],answer:1,
+   exp:"Evolution is about changing the system in response to changing needs."},
+  {q:"14. ………… means checking that it does what the customer wants.",type:"mcq",
+   opts:["Design","Specification","Implementation","Validation"],answer:3,
+   exp:"Validation (testing/verification) checks that the system does what the customer wants."},
+  {q:"15. Reuse-oriented is …………",type:"mcq",
+   opts:["Plan-driven","Agile"],answer:0,
+   exp:"Reuse-oriented is a Plan-driven approach."},
+  {q:"16. Kanban is …………",type:"mcq",
+   opts:["Plan-driven","Agile"],answer:1,
+   exp:"Kanban is an Agile approach."},
+  {q:"17. Most practical processes prefer the agile approach.",type:"tf",answer:false,
+   exp:"FALSE – Most practical processes use ELEMENTS of both plan-driven and agile. There is no single best approach."},
+  {q:"18. There are no right or wrong software processes.",type:"tf",answer:true,
+   exp:"TRUE – The appropriateness of a process depends on the project context; none is universally correct or wrong."},
+  {q:"19. Working software is the primary measure of progress in waterfall.",type:"tf",answer:false,
+   exp:"FALSE – Working software is the primary measure of progress in AGILE, not waterfall."},
+  {q:"20. ………… is perfect when you know exactly what it takes to get exactly what you want.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:0,
+   exp:"Waterfall works best when requirements are clear and fixed upfront."},
+  {q:"21. ………… is simple to implement and easy to manage.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:0,
+   exp:"Waterfall is simple to implement and easy to manage due to its linear structure."},
+  {q:"22. ………… is a mindset that helps deliver software despite uncertainty and risk.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:1,
+   exp:"Agile is a mindset for delivering software despite uncertainty and change."},
+  {q:"23. ………… enforces discipline through strict phase progression.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:0,
+   exp:"Waterfall enforces discipline through its strict, sequential phases."},
+  {q:"24. In Waterfall, each phase is owned by one team.",type:"tf",answer:true,
+   exp:"TRUE – In Waterfall, each phase (requirements, design, coding, testing) is typically owned by a separate team."},
+  {q:"25. Classically linear is a benefit of Waterfall.",type:"tf",answer:true,
+   exp:"TRUE – The classically linear, structured flow is listed as a benefit of Waterfall."},
+  {q:"26. In ………… plan is everything and requirements are strict.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:0,
+   exp:"In Waterfall, the plan is everything and requirements must be fixed upfront."},
+  {q:"27. In ………… it is hard to change the scope and there is little collaboration between teams/phases.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:0,
+   exp:"Waterfall makes scope changes very difficult and has little cross-team collaboration."},
+  {q:"28. ………… processes promote sustainable development. Sponsors, developers, and users should maintain a constant pace indefinitely.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:1,
+   exp:"Sustainable pace is an Agile principle — all parties maintain a constant, sustainable development pace."},
+  {q:"29. In triple constraints, scope is …………",type:"mcq",
+   opts:["Fixed (Waterfall)","Flexible (Agile)"],answer:0,
+   exp:"In traditional (Waterfall) triple constraints, scope is FIXED."},
+  {q:"30. In triple constraints, time is …………",type:"mcq",
+   opts:["Fixed (Waterfall)","Flexible (Agile)"],answer:0,
+   exp:"In traditional triple constraints, time is also FIXED."},
+  {q:"31. In triple constraints, cost is …………",type:"mcq",
+   opts:["Fixed (Waterfall)","Flexible (Agile)"],answer:0,
+   exp:"In traditional triple constraints, cost is FIXED. In Agile, time and cost are fixed while scope is flexible."},
+  {q:"32. In traditional software development, projects take exactly the estimated time and budget.",type:"tf",answer:false,
+   exp:"FALSE – Traditional projects rarely finish on time and on budget; estimates are notoriously inaccurate."},
+  {q:"33. In traditional software development, there is more communication.",type:"tf",answer:false,
+   exp:"FALSE – Traditional (Waterfall) development has LESS communication and more siloed phases compared to Agile."},
+  {q:"34. In traditional software development, requirements are sealed after Analysis and Design.",type:"tf",answer:true,
+   exp:"TRUE – In Waterfall, requirements are locked/sealed after the analysis and design phases; changes are very difficult."},
+  {q:"35. The goal of ………… is to put into practice a collection of values, principles, and practices pertaining to effective and lightweight modeling.",type:"mcq",
+   opts:["Waterfall","Agile"],answer:1,
+   exp:"Agile modeling aims to put into practice lightweight, effective modeling values and principles."},
+  {q:"36. In Agile Manifesto: Individuals & interactions over …………",type:"mcq",
+   opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:1,
+   exp:"Individuals and interactions over PROCESS AND TOOLS."},
+  {q:"37. In Agile Manifesto: Respond to change over …………",type:"mcq",
+   opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:3,
+   exp:"Respond to change over FOLLOWING A PLAN."},
+  {q:"38. In Agile Manifesto: Working software over …………",type:"mcq",
+   opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:0,
+   exp:"Working software over COMPREHENSIVE DOCUMENTATION."},
+  {q:"39. In Agile Manifesto: Customer collaboration over …………",type:"mcq",
+   opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:2,
+   exp:"Customer collaboration over CONTRACT NEGOTIATION."},
+  {q:"40. People are important but Process and tools are even more important.",type:"tf",answer:false,
+   exp:"FALSE – The Agile Manifesto values Individuals & interactions OVER process and tools. People come first."},
+  {q:"41. Silent client with no requirement change is a dynamic roadmap.",type:"tf",answer:false,
+   exp:"FALSE – A silent client with no requirement change is a FIXED roadmap, not dynamic."},
+  {q:"42. Welcome changing requirements, even late in development. Waterfall processes harness change for the customer's competitive advantage.",type:"tf",answer:false,
+   exp:"FALSE – This is an AGILE principle, not Waterfall. Agile welcomes late change; Waterfall resists it."},
+  {q:"43. In Agile manifesto: deliver working software frequently, with a preference to the LARGER timescale.",type:"tf",answer:false,
+   exp:"FALSE – Agile prefers the SHORTER timescale (a couple of weeks rather than months)."},
+  {q:"44. Business people and developers must work together WEEKLY throughout the project.",type:"tf",answer:false,
+   exp:"FALSE – The Agile principle says DAILY collaboration, not weekly."},
+  {q:"45. The most efficient method of conveying information to a development team is documentation.",type:"tf",answer:false,
+   exp:"FALSE – The Agile manifesto says face-to-face conversation is the most efficient and effective method."},
+  {q:"46. Scrum has been used to manage simple projects since 1990.",type:"tf",answer:false,
+   exp:"FALSE – Scrum has been used to manage COMPLEX projects since 1990, not simple ones."},
+  {q:"47. In Scrum, teams self-organize to determine the best way to deliver the highest priority features.",type:"tf",answer:true,
+   exp:"TRUE – Scrum teams are self-organizing and decide how best to deliver high-priority features."},
+  {q:"48. 'Definition of Done' occurs in …………",type:"mcq",
+   opts:["Sprint Review","Sprint Retrospective","Sprint Planning","Daily Scrum Meeting"],answer:2,
+   exp:"Definition of Done is established/reviewed during Sprint Planning."},
+  {q:"49. The demo occurs in …………",type:"mcq",
+   opts:["Daily Scrum Meeting","Sprint Retrospective","Sprint Planning","Sprint Review"],answer:3,
+   exp:"The demo of completed work happens in the Sprint Review."},
+  {q:"50. In Scrum the team size is ……… to ………",type:"mcq",
+   opts:["5–9","6–9","5–10","None of the above"],answer:0,
+   exp:"Scrum teams are typically 5–9 people."},
+  {q:"51. Scrum team demos work results to …………",type:"mcq",
+   opts:["Scrum Master","Product Owner","Client","Business Analyst"],answer:2,
+   exp:"The Scrum team demos work results to the client (and other stakeholders like management and Product Owner)."},
+  {q:"52. Cross-functional team means everyone must know everything.",type:"tf",answer:false,
+   exp:"FALSE – Cross-functional means the TEAM collectively has all the skills needed (programmers, testers, designers etc.), not that every individual knows everything."},
+  {q:"53. ………… organizes itself and its work.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team is self-organizing — it determines how to do the work."},
+  {q:"54. ………… defines the features of the product.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner defines the product features."},
+  {q:"55. ………… enables close cooperation across all roles and functions.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master enables close cooperation across all roles and functions."},
+  {q:"56. ………… has the right to do everything within the boundaries of the project guidelines to reach the Sprint goal.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team has the right to do whatever is needed within project guidelines to reach the sprint goal."},
+  {q:"57. ………… adjusts features and priority every iteration, as needed.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner adjusts features and priorities every iteration."},
+  {q:"58. ………… prioritizes features according to market value.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner prioritizes features according to market value."},
+  {q:"59. ………… shields the team from external interferences during the Sprint.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master shields the team from external interferences."},
+  {q:"60. ………… selects the Sprint goal and specifies work results.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team selects the Sprint goal and specifies what results they will deliver."},
+  {q:"61. ………… is responsible for the profitability of the product (ROI).",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner is responsible for the product's ROI (Return on Investment)."},
+  {q:"62. ………… removes barriers.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master removes barriers/impediments that block the team."},
+  {q:"63. ………… decides on release date and content.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner decides on release dates and content."},
+  {q:"64. ………… ensures that the team is fully functional and productive.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master ensures the team is fully functional and productive."},
+  {q:"65. ………… accepts or rejects work results.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner accepts or rejects work results."},
+  {q:"66. ………… ensures the process is followed, including issuing invitations to Daily Scrum, Sprint Review, and Sprint Planning meetings.",type:"mcq",
+   opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master ensures the Scrum process is followed and issues invitations to all Scrum ceremonies."}
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let c=0,w=0,t=0;
+
+function upd(ok){
+  if(ok)c++;else w++;t++;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('st').textContent=t;
+  document.getElementById('sp').textContent=Math.round((c/t)*100)+'%';
+}
+
+function render(data,cid){
+  const box=document.getElementById(cid);
+  data.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='q-card';
+    card.style.animationDelay=(i*0.03)+'s';
+    card.id=`${cid}-${i}`;
+    const exp=(q.exp||'').replace(/`/g,"'");
+    let body='';
+    if(q.type==='tf'){
+      body=`<div class="tf-row">
+        <button class="tf-btn true-btn"  onclick="doTF(this,true,${q.answer},'${cid}-${i}',\`${exp}\`)">✔ TRUE</button>
+        <button class="tf-btn false-btn" onclick="doTF(this,false,${q.answer},'${cid}-${i}',\`${exp}\`)">✘ FALSE</button>
+      </div>`;
+    } else {
+      body='<div class="options">'+q.opts.map((o,k)=>
+        `<button class="option-btn" onclick="doMCQ(this,${k},${q.answer},'${cid}-${i}',\`${exp}\`,${q.opts.length})">
+          <span class="option-letter">${L[k]}</span>${o}</button>`).join('')+'</div>';
+    }
+    card.innerHTML=`<div class="q-header"><div class="q-num">${i+1}</div><div class="q-text">${q.q}</div></div>`
+      +body+`<div class="feedback" id="fb-${cid}-${i}"></div>`;
+    box.appendChild(card);
+  });
+}
+
+function doMCQ(btn,chosen,correct,cid,exp,n){
+  const card=document.getElementById(cid);
+  card.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok) card.querySelectorAll('.option-btn')[correct].classList.add('show-correct');
+  card.classList.add(ok?'ac':'aw');
+  fb(cid,ok,exp); upd(ok);
+  setTimeout(()=>card.classList.remove('ac','aw'),700);
+}
+
+function doTF(btn,chosen,correct,cid,exp){
+  const card=document.getElementById(cid);
+  card.querySelectorAll('.tf-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok){
+    card.querySelectorAll('.tf-btn').forEach(b=>{
+      if((b.classList.contains('true-btn')&&correct)||(b.classList.contains('false-btn')&&!correct))
+        b.classList.add('show-correct');
+    });
+  }
+  card.classList.add(ok?'ac':'aw');
+  fb(cid,ok,exp); upd(ok);
+  setTimeout(()=>card.classList.remove('ac','aw'),700);
+}
+
+function fb(cid,ok,exp){
+  const el=document.getElementById(`fb-${cid}`);
+  el.className=`feedback show ${ok?'correct-fb':'wrong-fb'}`;
+  el.innerHTML=(ok?'<span style="font-size:15px">✅</span> Correct! ':'<span style="font-size:15px">❌</span> Wrong. ')+(exp||'');
+}
+
+function resetAll(){
+  c=0;w=0;t=0;
+  ['sc','sw','st'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('sp').textContent='—';
+  ['lec3','lec2'].forEach(id=>document.getElementById(id).innerHTML='');
+  render(lec3,'lec3'); render(lec2,'lec2');
+}
+
+render(lec3,'lec3');
+render(lec2,'lec2');
+</script>
+</body>
+</html>
