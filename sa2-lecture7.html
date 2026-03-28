@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS352 – Lecture 7: SOA & Microservices</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1f2433;
+    --accent: #4f8ef7;
+    --accent2: #f7a24f;
+    --accent3: #4ff7b0;
+    --accent4: #f74f7a;
+    --text: #e8eaf0;
+    --text-muted: #7a8099;
+    --text-dim: #4a5070;
+    --ar: 'Cairo', sans-serif;
+    --en: 'Syne', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ar);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    height: 56px; flex-wrap: wrap;
+  }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-family: var(--en);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  nav a:hover { color: var(--accent); border-color: var(--accent); }
+  .nav-logo {
+    font-family: var(--en); font-weight: 800; font-size: 0.9rem;
+    color: var(--accent); margin-left: auto; white-space: nowrap;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(79,142,247,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    font-family: var(--mono); font-size: 0.7rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--accent); padding: 0.3rem 1rem; border-radius: 999px;
+    margin-bottom: 1.5rem; display: inline-block;
+  }
+  .hero h1 {
+    font-family: var(--en); font-weight: 800; font-size: clamp(2.2rem, 6vw, 4.5rem);
+    line-height: 1.05; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.75rem;
+  }
+  .hero-subtitle {
+    font-size: 1.1rem; color: var(--text-muted);
+    margin-bottom: 2.5rem; max-width: 600px;
+  }
+  .hero-cards {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  }
+  .hero-card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 1rem 1.5rem; border-radius: 12px;
+    font-size: 0.85rem; font-family: var(--en); font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .hero-card:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .hero-card span { color: var(--accent); }
+
+  /* ── SECTIONS ── */
+  .section {
+    max-width: 1100px; margin: 0 auto; padding: 5rem 2rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;
+    padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
+    background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.3);
+    padding: 0.25rem 0.6rem; border-radius: 6px;
+  }
+  .section-title {
+    font-family: var(--en); font-weight: 800; font-size: clamp(1.5rem, 4vw, 2.2rem);
+    letter-spacing: -0.02em;
+  }
+  .section-title .ar { font-family: var(--ar); font-size: 1rem; color: var(--text-muted); display: block; margin-top: 0.2rem; }
+
+  /* ── CARDS GRID ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--card-accent, var(--accent));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .card:hover { border-color: var(--card-accent, var(--accent)); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .card:hover::before { transform: scaleX(1); }
+  .card-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .card-title { font-family: var(--en); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--card-accent, var(--accent)); }
+  .card-title-ar { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+  .card .en-def { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── ADV/DIS ── */
+  .adv-dis { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media(max-width:700px){ .adv-dis { grid-template-columns: 1fr; } }
+  .adv-panel, .dis-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+  }
+  .adv-panel { border-top: 3px solid var(--accent3); }
+  .dis-panel { border-top: 3px solid var(--accent4); }
+  .panel-header { font-family: var(--en); font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem; }
+  .adv-panel .panel-header { color: var(--accent3); }
+  .dis-panel .panel-header { color: var(--accent4); }
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+  .item-list li {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    font-size: 0.87rem; color: var(--text-muted); line-height: 1.6;
+  }
+  .item-list li .dot { flex-shrink: 0; margin-top: 0.35rem; width: 6px; height: 6px; border-radius: 50%; }
+  .adv-panel .dot { background: var(--accent3); }
+  .dis-panel .dot { background: var(--accent4); }
+  .item-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── DIAGRAM ── */
+  .diagram-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem; margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .diagram-title { font-family: var(--en); font-weight: 700; font-size: 1rem; color: var(--text-muted); margin-bottom: 1.5rem; text-align: center; }
+
+  /* mono vs micro */
+  .mono-micro {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center;
+  }
+  @media(max-width:700px){ .mono-micro { grid-template-columns: 1fr; } }
+  .arch-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; text-align: center;
+  }
+  .arch-box h3 { font-family: var(--en); font-weight: 700; font-size: 0.95rem; margin-bottom: 1rem; }
+  .mono-inner {
+    background: var(--bg); border: 2px solid #4f8ef744; border-radius: 10px;
+    padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .mono-layer {
+    background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.3);
+    border-radius: 6px; padding: 0.4rem; font-size: 0.75rem; color: var(--accent);
+    font-family: var(--mono);
+  }
+  .vs-badge {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 50%; width: 40px; height: 40px; display: flex;
+    align-items: center; justify-content: center;
+    font-family: var(--en); font-weight: 800; font-size: 0.8rem; color: var(--text-muted);
+  }
+  .micro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .micro-svc {
+    border-radius: 8px; padding: 0.5rem; font-size: 0.7rem;
+    font-family: var(--mono); text-align: center; font-weight: 600;
+  }
+
+  /* SOA diagram */
+  .soa-diagram { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+  .soa-layer-label { font-family: var(--en); font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.08em; font-weight: 600; }
+  .soa-layer { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .soa-box {
+    border-radius: 10px; padding: 0.7rem 1.2rem; font-size: 0.8rem;
+    font-family: var(--mono); font-weight: 600; text-align: center;
+    border: 1px solid;
+  }
+  .soa-arrow { color: var(--text-dim); font-size: 1.3rem; line-height: 1; }
+  .esb-box {
+    width: 100%; max-width: 480px; background: rgba(247,162,79,0.1);
+    border: 2px solid var(--accent2); border-radius: 14px;
+    padding: 1rem 1.5rem; text-align: center;
+  }
+  .esb-box .esb-title { font-family: var(--en); font-weight: 800; color: var(--accent2); font-size: 1rem; }
+  .esb-box .esb-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .esb-funcs { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-top: 0.75rem; }
+  .esb-tag {
+    background: rgba(247,162,79,0.15); border: 1px solid rgba(247,162,79,0.4);
+    color: var(--accent2); border-radius: 6px; padding: 0.2rem 0.55rem;
+    font-size: 0.68rem; font-family: var(--mono);
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .cmp-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .cmp-table th, .cmp-table td { padding: 0.85rem 1rem; text-align: right; }
+  .cmp-table th { font-family: var(--en); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.05em; }
+  .cmp-table td { font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); line-height: 1.5; }
+  .cmp-table tr:hover td { background: var(--surface2); }
+  .cmp-table .col-aspect { color: var(--text); font-weight: 600; width: 20%; }
+  .cmp-table .col-soa { color: var(--accent2); }
+  .cmp-table .col-ms { color: var(--accent3); }
+  .cmp-head-soa { color: var(--accent2); }
+  .cmp-head-ms { color: var(--accent3); }
+
+  /* ── PATTERNS SECTION ── */
+  .patterns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .pattern-group {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .pattern-group-header {
+    padding: 0.85rem 1.25rem; font-family: var(--en); font-weight: 700; font-size: 0.85rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .pattern-items { padding: 0 1.25rem 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .pattern-item {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.7rem;
+  }
+  .pattern-item-name { font-family: var(--en); font-weight: 600; font-size: 0.82rem; color: var(--text); }
+  .pattern-item-ar { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  /* ── ROLES ── */
+  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media(max-width:700px){ .roles { grid-template-columns: 1fr; } }
+  .role-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.75rem; position: relative; overflow: hidden;
+  }
+  .role-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: var(--role-color);
+  }
+  .role-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+  .role-title { font-family: var(--en); font-weight: 800; font-size: 1.15rem; color: var(--role-color); margin-bottom: 0.3rem; }
+  .role-title-ar { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+  .role-steps { display: flex; flex-direction: column; gap: 0.6rem; }
+  .role-step { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; display: flex; gap: 0.5rem; }
+  .role-step-num { flex-shrink: 0; background: rgba(255,255,255,0.05); border-radius: 4px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-family: var(--mono); font-weight: 600; color: var(--role-color); margin-top: 2px; }
+
+  /* ── ESB DUTIES ── */
+  .esb-duties { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+  .duty-card {
+    background: var(--surface); border: 1px solid var(--border); border-right: 3px solid var(--accent2);
+    border-radius: 12px; padding: 1.1rem 1.25rem;
+  }
+  .duty-title { font-family: var(--en); font-weight: 700; font-size: 0.88rem; color: var(--accent2); margin-bottom: 0.4rem; }
+  .duty-ar { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── WHEN TO USE ── */
+  .when-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+  .when-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .when-num { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: rgba(79,142,247,0.2); line-height: 1; }
+  .when-title { font-family: var(--en); font-weight: 700; font-size: 0.9rem; color: var(--accent); }
+  .when-ar { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── SERVICE COMPONENTS ── */
+  .svc-components { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media(max-width:600px){ .svc-components { grid-template-columns: 1fr; } }
+  .svc-comp {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem; text-align: center;
+  }
+  .svc-comp-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .svc-comp-num { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+  .svc-comp-title { font-family: var(--en); font-weight: 800; font-size: 1rem; color: var(--accent); margin-bottom: 0.3rem; }
+  .svc-comp-ar { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── TOOLS ── */
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+  .tool-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.1rem 1.25rem;
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  .tool-type { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.08em; }
+  .tool-name { font-family: var(--en); font-weight: 700; font-size: 0.9rem; color: var(--text); }
+  .tool-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box {
+    background: var(--surface); border: 1px solid rgba(79,142,247,0.3);
+    border-radius: 16px; padding: 2rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .summary-item h4 { font-family: var(--en); font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 0.5rem; }
+  .summary-item p { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 3rem 2rem;
+    font-size: 0.8rem; color: var(--text-dim);
+    font-family: var(--en); border-top: 1px solid var(--border);
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+  /* ── ANIMATION ── */
+  .fade-in { opacity: 0; transform: translateY(20px); animation: fadeIn 0.6s ease forwards; }
+  @keyframes fadeIn { to { opacity: 1; transform: none; } }
+  .hero .fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .hero .fade-in:nth-child(2) { animation-delay: 0.25s; }
+  .hero .fade-in:nth-child(3) { animation-delay: 0.4s; }
+  .hero .fade-in:nth-child(4) { animation-delay: 0.55s; }
+
+  /* chip */
+  .chip {
+    display: inline-block; padding: 0.18rem 0.55rem; border-radius: 5px;
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    border: 1px solid; margin: 0.1rem;
+  }
+  .chip-blue { color: var(--accent); border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.08); }
+  .chip-orange { color: var(--accent2); border-color: rgba(247,162,79,0.4); background: rgba(247,162,79,0.08); }
+  .chip-green { color: var(--accent3); border-color: rgba(79,247,176,0.4); background: rgba(79,247,176,0.08); }
+  .chip-red { color: var(--accent4); border-color: rgba(247,79,122,0.4); background: rgba(247,79,122,0.08); }
+
+  .note-box {
+    background: rgba(79,142,247,0.06); border: 1px solid rgba(79,142,247,0.2);
+    border-radius: 10px; padding: 1rem 1.25rem; font-size: 0.85rem;
+    color: var(--text-muted); line-height: 1.7; margin-top: 1rem;
+  }
+  .note-box strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#microservices">Microservices</a>
+  <a href="#advantages">Advantages</a>
+  <a href="#challenges">Challenges</a>
+  <a href="#when-to-use">When to Use</a>
+  <a href="#patterns">Patterns</a>
+  <a href="#soa">SOA</a>
+  <a href="#esb">ESB</a>
+  <a href="#roles">Roles</a>
+  <a href="#service-types">Service Types</a>
+  <a href="#comparison">SOA vs µ</a>
+  <a href="#tools">Tools</a>
+  <div class="nav-logo">IS352 · Lec 7</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge fade-in">IS352 — System Analysis & Design — Lecture 7</div>
+  <h1 class="fade-in">Service Oriented<br>Architecture & Microservices</h1>
+  <p class="hero-subtitle fade-in">Dr. Wael Abbas · 2022-2023 — كل حاجة من السلايدز والشرح</p>
+  <div class="hero-cards fade-in">
+    <div class="hero-card"><span>SOA</span> Architecture</div>
+    <div class="hero-card"><span>µ</span> Microservices</div>
+    <div class="hero-card"><span>ESB</span> Enterprise Service Bus</div>
+    <div class="hero-card"><span>Design</span> Patterns</div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 1. MICROSERVICES DEFINITION -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="microservices">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div>
+      <div class="section-title">Microservices
+        <span class="ar">يعني إيه Microservices أصلاً؟</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <div class="diagram-title">Monolithic vs Microservices Architecture</div>
+    <div class="mono-micro">
+      <div class="arch-box">
+        <h3 style="color:var(--accent4)">🧱 Monolithic</h3>
+        <div class="mono-inner">
+          <div class="mono-layer" style="background:rgba(247,79,122,0.1);border-color:rgba(247,79,122,0.3);color:var(--accent4)">UI Layer</div>
+          <div class="mono-layer" style="background:rgba(247,79,122,0.1);border-color:rgba(247,79,122,0.3);color:var(--accent4)">Business Logic</div>
+          <div class="mono-layer" style="background:rgba(247,79,122,0.1);border-color:rgba(247,79,122,0.3);color:var(--accent4)">Data Layer</div>
+          <div class="mono-layer" style="background:rgba(247,79,122,0.1);border-color:rgba(247,79,122,0.3);color:var(--accent4)">Database</div>
+        </div>
+        <p style="margin-top:0.75rem;font-size:0.75rem;color:var(--text-dim)">سيستم واحد كبير — كله مربوط في بعضه</p>
+      </div>
+
+      <div class="vs-badge">VS</div>
+
+      <div class="arch-box">
+        <h3 style="color:var(--accent3)">⚡ Microservices</h3>
+        <div class="micro-grid">
+          <div class="micro-svc" style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.3);color:var(--accent)">
+            👥 Users<br><span style="font-size:0.6rem;color:var(--text-dim)">Team + DB + CI</span>
+          </div>
+          <div class="micro-svc" style="background:rgba(79,247,176,0.12);border:1px solid rgba(79,247,176,0.3);color:var(--accent3)">
+            💳 Payments<br><span style="font-size:0.6rem;color:var(--text-dim)">Team + DB + CI</span>
+          </div>
+          <div class="micro-svc" style="background:rgba(247,162,79,0.12);border:1px solid rgba(247,162,79,0.3);color:var(--accent2)">
+            📦 Orders<br><span style="font-size:0.6rem;color:var(--text-dim)">Team + DB + CI</span>
+          </div>
+          <div class="micro-svc" style="background:rgba(247,79,122,0.12);border:1px solid rgba(247,79,122,0.3);color:var(--accent4)">
+            🚚 Shipping<br><span style="font-size:0.6rem;color:var(--text-dim)">Team + DB + CI</span>
+          </div>
+        </div>
+        <p style="margin-top:0.75rem;font-size:0.75rem;color:var(--text-dim)">كل Service مستقلة — تتكلم بـ REST APIs</p>
+        <div style="margin-top:0.5rem;font-size:0.7rem;color:var(--text-dim);font-family:var(--mono)">Invokes all business logic as REST-based service calls</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <strong>CI Pipeline</strong> — Continuous Integration Pipeline = نظام بيخلي الكود يتعمله Build → Test → Deploy بشكل أوتوماتيك كل ما تعمل update. في Microservices كل Service ليها CI Pipeline خاص بيها.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 2. ADVANTAGES -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="advantages">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div class="section-title">Advantages of Microservices
+      <span class="ar">المميزات</span>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card" style="--card-accent:var(--accent3)">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">Language & Framework Independent</div>
+      <div class="card-title-ar">مستقل عن اللغة والـ Framework</div>
+      <p>تقدر تستخدم أي لغة: Service بـ Java، تانية بـ Python، وتالتة بـ Node.js. مش لازم كله نفس اللغة.</p>
+      <div class="en-def">Language independent and framework independent.</div>
+    </div>
+    <div class="card" style="--card-accent:var(--accent)">
+      <div class="card-icon">🚀</div>
+      <div class="card-title">Independent Deploy & Scale</div>
+      <div class="card-title-ar">تطوير ونشر وتكبير مستقل</div>
+      <p>كل Service تتبني لوحدها، تتنشر لوحدها، تتعمل لها Update لوحدها، وتكبر (Scale) لوحدها — بدون ما تكسر باقي السيستم. Zero downtime upgrades.</p>
+      <div class="en-def">Independently develop, deploy, redeploy, version and scale component services in seconds without compromising the integrity of an application.</div>
+    </div>
+    <div class="card" style="--card-accent:var(--accent2)">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title">Better Fault Isolation</div>
+      <div class="card-title-ar">عزل الأخطاء</div>
+      <p>لو Service وقعت، باقي السيستم شغال عادي. مثال: Service الدفع وقع، باقي الموقع شغال.</p>
+      <div class="en-def">Better fault isolation keeps other services to work even on failure.</div>
+    </div>
+    <div class="card" style="--card-accent:var(--accent4)">
+      <div class="card-icon">🔄</div>
+      <div class="card-title">Reliable & Self-Healing</div>
+      <div class="card-title-ar">موثوق وبيصلح نفسه</div>
+      <p>السيستم بيصلح نفسه لو حصل مشكلة وبيرجع يشتغل تلقائي. Services can be from different servers or even from different datacenters.</p>
+      <div class="en-def">Reliable and self-healing. Services can be of from different servers or even from different datacenters.</div>
+    </div>
+    <div class="card" style="--card-accent:var(--accent3)">
+      <div class="card-icon">♾️</div>
+      <div class="card-title">Supports CI/CD</div>
+      <div class="card-title-ar">بيدعم التكامل والتسليم المستمر</div>
+      <p>بيساعدك تعمل Continuous Integration و Continuous Delivery بشكل مستمر وسريع.</p>
+      <div class="en-def">Supports continuous integration and delivery.</div>
+    </div>
+    <div class="card" style="--card-accent:var(--accent)">
+      <div class="card-icon">🔌</div>
+      <div class="card-title">Easy 3rd Party Integration</div>
+      <div class="card-title-ar">سهل الربط بأطراف خارجية</div>
+      <p>سهل تربطه بـ Payment API، Google services، أو أي API خارجي.</p>
+      <div class="en-def">Easy to integrate with third parties.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 3. CHALLENGES -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="challenges">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div class="section-title">Challenges of Microservices
+      <span class="ar">التحديات والعيوب</span>
+    </div>
+  </div>
+
+  <div class="adv-dis" style="grid-template-columns:1fr;">
+    <div class="dis-panel">
+      <div class="panel-header">⚠️ Challenges — التحديات</div>
+      <ul class="item-list">
+        <li>
+          <div class="dot"></div>
+          <div><strong>Complexity (التعقيد):</strong> A microservices application is more complex as compared to the equivalent monolithic application. السيستم بيبقى معقد جداً مقارنة بـ Monolithic.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Development & Testing (التطوير والاختبار):</strong> Building and testing a service that relies on other services need domain understanding and refactoring them can be difficult. صعب تبني وتختبر Service تعتمد على Services تانية — محتاج فهم كبير للنظام.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Lack of Governance (غياب الحوكمة):</strong> The decentralized approach leads to so many problems like maintenance because of many different languages and frameworks. كل Team بيستخدم لغة مختلفة وFramework مختلف — ده يعمل مشاكل إدارة وصيانة.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Network Congestion & Latency (بطء الشبكة):</strong> The use of many small services can result in additional latency because of inter-service communication and a long chain of service dependencies. الحل: design APIs carefully and use asynchronous communication patterns.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Data Integrity (تكامل البيانات):</strong> Each microservice is responsible for its own data persistence. As a result, data consistency can be a challenge. كل Service ليها DB خاص بيها — صعب توحيد الداتا بين الخدمات.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Management (الإدارة):</strong> To be successful with microservices requires a mature DevOps culture. Correlated logging across services can be challenging for a single user operation. لو حصل Error — مين السبب؟ Service A ولا B ولا C؟ صعب تتبع المشكلة.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Versioning (إدارة الإصدارات):</strong> Be careful while updating a service. It must not break services that depend on it. Without careful design, you might have problems with backward or forward compatibility. التحديثات خطر — لازم الخدمات تبقى متوافقة مع بعض.</div>
+        </li>
+        <li>
+          <div class="dot"></div>
+          <div><strong>Skillset (المهارات):</strong> Microservices are highly distributed systems. So need a skilled and experienced team to implement it. محتاج Team خبرة عالية وفاهم Distributed Systems.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 4. WHEN TO USE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="when-to-use">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div class="section-title">When to Use Microservices
+      <span class="ar">إمتى أستخدم Microservices؟</span>
+    </div>
+  </div>
+
+  <div class="when-grid">
+    <div class="when-card">
+      <div class="when-num">01</div>
+      <div class="when-title">High Release Velocity</div>
+      <div class="when-ar">Large applications that require a high release velocity — سيستم كبير وعايز تنزل Features بسرعة. تعدل Service واحدة بس بدل ما تعدل السيستم كله.</div>
+    </div>
+    <div class="when-card">
+      <div class="when-num">02</div>
+      <div class="when-title">Highly Scalable</div>
+      <div class="when-ar">Complex applications that need to be highly scalable — محتاج تكبر جزء معين بس. مثال: Service الدفع عليها ضغط عالي → تكبرها وحدها.</div>
+    </div>
+    <div class="when-card">
+      <div class="when-num">03</div>
+      <div class="when-title">Rich Domains / Subdomains</div>
+      <div class="when-ar">Applications with rich domains or many subdomains — السيستم متقسم طبيعي لأجزاء كتير: Users / Orders / Payments / Shipping.</div>
+    </div>
+    <div class="when-card">
+      <div class="when-num">04</div>
+      <div class="when-title">Small Development Teams</div>
+      <div class="when-ar">An organization that consists of small development teams — كل Team يمسك Service مستقلة. Team 1 → Users, Team 2 → Orders, Team 3 → Payments.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 5. DESIGN PATTERNS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="patterns">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <div class="section-title">Design Patterns for Microservices
+      <span class="ar">Design Patterns = حلول جاهزة لمشاكل متكررة في تصميم السيستم</span>
+    </div>
+  </div>
+
+  <div class="patterns-grid">
+
+    <!-- Decomposition -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(79,142,247,0.1);color:var(--accent)">
+        🔀 Decomposition Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">تقسيم السيستم</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Decompose by Business Capability</div>
+          <div class="pattern-item-ar">نقسم السيستم حسب الوظائف: Payments / Orders / Users — كل واحدة تبقى Service لوحدها</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Decompose by Subdomain</div>
+          <div class="pattern-item-ar">من Domain Driven Design (DDD) — نقسم حسب Subdomain. مثال: Ecommerce → Orders / Shipping / Inventory</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Strangler Pattern</div>
+          <div class="pattern-item-ar">نحول السيستم القديم (Monolith) لـ Microservices تدريجي — بدل ما نكسره مرة واحدة. زي الشجرة اللي بتخنق القديمة (Strangler Fig)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Communication -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(79,247,176,0.1);color:var(--accent3)">
+        📡 Communication Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">التواصل بين الخدمات</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Request / Response Pattern</div>
+          <div class="pattern-item-ar">زي HTTP: Client يطلب وService ترد — Sync (مباشر)</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Messaging Pattern</div>
+          <div class="pattern-item-ar">باستخدام Queue: Service تبعت Message، Service تانية تستقبل — Async (مش فوري)</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Event Driven Pattern</div>
+          <div class="pattern-item-ar">كل حاجة Events: Order Created / Payment Done — Services تreact على الأحداث</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(247,162,79,0.1);color:var(--accent2)">
+        🔌 Integration Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">ربط الخدمات</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">API Gateway Pattern</div>
+          <div class="pattern-item-ar">بوابة واحدة لكل الطلبات — بدل ما الClient يكلم كل Service يكلم Gateway بس</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Aggregator Pattern</div>
+          <div class="pattern-item-ar">Service تجمع data من Services تانية. مثال: Profile page → يجيب من User + Orders + Payments</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Client-Side UI Composition</div>
+          <div class="pattern-item-ar">الFrontend نفسه يكلم كل Service ويجمع البيانات — عكس Aggregator</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Database -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(247,79,122,0.1);color:var(--accent4)">
+        🗄️ Database Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">إدارة البيانات</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Database per Service ✅</div>
+          <div class="pattern-item-ar">كل Service ليها Database — الأفضل</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Shared Database ❌</div>
+          <div class="pattern-item-ar">كل Services على نفس DB — غلط غالباً (tight coupling)</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">CQRS Pattern</div>
+          <div class="pattern-item-ar">نفصل: Read (Query) عن Write (Command) — لتحسين الأداء</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Saga Pattern</div>
+          <div class="pattern-item-ar">لإدارة Transactions بين Services — بدل Transaction واحدة: سلسلة خطوات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deployment -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(79,142,247,0.08);color:var(--accent)">
+        🚀 Deployment Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">تشغيل الخدمات</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Multiple Service Instances per Host</div>
+          <div class="pattern-item-ar">أكتر من نسخة من Service على نفس السيرفر — للـ Scaling</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Service Instance per Host</div>
+          <div class="pattern-item-ar">كل Service لوحدها على سيرفر — عزل كامل</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Serverless Deployment</div>
+          <div class="pattern-item-ar">بدون سيرفرات — زي AWS Lambda. بتدفع حسب الاستخدام</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Service Deployment Platform</div>
+          <div class="pattern-item-ar">Platforms زي Kubernetes — لإدارة الخدمات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observability -->
+    <div class="pattern-group">
+      <div class="pattern-group-header" style="background:rgba(79,247,176,0.08);color:var(--accent3)">
+        👁️ Observability Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">مراقبة السيستم</span>
+      </div>
+      <div class="pattern-items">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Log Aggregation</div>
+          <div class="pattern-item-ar">كل Logs تتجمع في مكان واحد</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Performance Metrics</div>
+          <div class="pattern-item-ar">متابعة: CPU / Memory / Response time</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Distributed Tracing</div>
+          <div class="pattern-item-ar">تتبع الطلب وهو ماشي بين Services</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Health Check</div>
+          <div class="pattern-item-ar">هل Service شغالة ولا لا؟</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cross-Cutting -->
+    <div class="pattern-group" style="grid-column: 1 / -1;">
+      <div class="pattern-group-header" style="background:rgba(247,162,79,0.08);color:var(--accent2)">
+        ⚙️ Cross-Cutting Concern Patterns
+        <span style="font-size:0.72rem;color:var(--text-dim);margin-right:auto">حاجات مشتركة</span>
+      </div>
+      <div class="pattern-items" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
+        <div class="pattern-item">
+          <div class="pattern-item-name">Externalized Configuration</div>
+          <div class="pattern-item-ar">نخلي الإعدادات برا الكود — زي config files أو environment variables</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Service Discovery Pattern</div>
+          <div class="pattern-item-ar">Services تلاقي بعض تلقائي — زي Eureka</div>
+        </div>
+        <div class="pattern-item">
+          <div class="pattern-item-name">Circuit Breaker Pattern</div>
+          <div class="pattern-item-ar">لو Service وقعت — نوقف الCalls ليها عشان نحمي السيستم</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 6. SOA DEFINITION -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="soa">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div class="section-title">Service Oriented Architecture — SOA
+      <span class="ar">يعني إيه SOA أصلاً؟</span>
+    </div>
+  </div>
+
+  <div class="note-box" style="margin-bottom:2rem">
+    <strong>التعريف الرسمي:</strong> Service-oriented architecture (SOA) is an enterprise-wide approach to software development of application components that takes advantage of reusable software components, or service.<br><br>
+    <strong>بالمصري:</strong> SOA = طريقة تصميم سيستم <strong>على مستوى الشركة كلها</strong> باستخدام Services قابلة لإعادة الاستخدام. كل Service تقدر تستخدمها في أكتر من سيستم — زي LEGO 🧱
+  </div>
+
+  <div class="cards" style="margin-bottom:2rem">
+    <div class="card" style="--card-accent:var(--accent)">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Enterprise-Wide</div>
+      <div class="card-title-ar">على مستوى الشركة كلها</div>
+      <p>مش مشروع صغير — ده نظام كبير بيستخدم في شركات كبيرة. كل السيستم بتاع الشركة مبني على Services مشتركة.</p>
+    </div>
+    <div class="card" style="--card-accent:var(--accent3)">
+      <div class="card-icon">♻️</div>
+      <div class="card-title">Reusable Services</div>
+      <div class="card-title-ar">خدمات قابلة لإعادة الاستخدام</div>
+      <p>It uses software components called services to create business applications. تعمل Service مرة وتستخدمها في كذا سيستم.</p>
+    </div>
+    <div class="card" style="--card-accent:var(--accent2)">
+      <div class="card-icon">🌍</div>
+      <div class="card-title">Cross-Platform & Cross-Language</div>
+      <div class="card-title-ar">بيشتغل على أي منصة ولغة</div>
+      <p>Services can also communicate with each other across platforms and languages. واحدة Java وواحدة Python — عادي يتكلموا.</p>
+    </div>
+    <div class="card" style="--card-accent:var(--accent4)">
+      <div class="card-icon">🔗</div>
+      <div class="card-title">Combine for Complex Tasks</div>
+      <div class="card-title-ar">تجمعهم لأداء مهام معقدة</div>
+      <p>Developers use SOA to reuse services in different systems or combine several independent services to perform complex tasks. مثال: عملية شراء = User + Order + Payment + Shipping.</p>
+    </div>
+  </div>
+
+  <!-- SOA Diagram -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">SOA Architecture Diagram — رسمة السيستم</div>
+    <div class="soa-diagram">
+      <!-- Layer 1: Consumers -->
+      <div class="soa-layer-label">CONSUMERS LAYER — طبقة المستخدمين</div>
+      <div class="soa-layer">
+        <div class="soa-box" style="background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.4);color:var(--accent)">☁️ Cloud Service Consumers</div>
+        <div class="soa-box" style="background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.4);color:var(--accent)">🌐 Browser (Human Users)</div>
+      </div>
+
+      <div class="soa-arrow">⬇️</div>
+
+      <!-- ESB -->
+      <div class="esb-box">
+        <div class="esb-title">🚌 Enterprise Service Bus (ESB)</div>
+        <div class="esb-sub">الوسيط الذكي — بيربط كل الخدمات ببعض</div>
+        <div class="esb-funcs">
+          <span class="esb-tag">Routing</span>
+          <span class="esb-tag">Transformation</span>
+          <span class="esb-tag">Messaging</span>
+          <span class="esb-tag">Protocol Conversion</span>
+          <span class="esb-tag">Security</span>
+          <span class="esb-tag">Composition</span>
+        </div>
+      </div>
+
+      <div class="soa-arrow">⬇️</div>
+
+      <!-- Providers -->
+      <div class="soa-layer-label">PROVIDERS LAYER — طبقة الخدمات</div>
+      <div class="soa-layer">
+        <div class="soa-box" style="background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.3);color:var(--accent)">👤 Account Service</div>
+        <div class="soa-box" style="background:rgba(79,247,176,0.1);border-color:rgba(79,247,176,0.3);color:var(--accent3)">📚 Book Service</div>
+        <div class="soa-box" style="background:rgba(247,162,79,0.1);border-color:rgba(247,162,79,0.3);color:var(--accent2)">📦 Order Service</div>
+        <div class="soa-box" style="background:rgba(247,79,122,0.1);border-color:rgba(247,79,122,0.3);color:var(--accent4)">🚚 Shipping Service</div>
+      </div>
+
+      <div class="soa-arrow">⬇️</div>
+
+      <!-- Shared DB -->
+      <div class="soa-box" style="background:rgba(147,112,219,0.1);border-color:rgba(147,112,219,0.4);color:#b09fe0;font-size:0.85rem">
+        🗄️ Shared Database — قاعدة بيانات مشتركة (In SOA architecture, database storage is shared between all services)
+      </div>
+    </div>
+  </div>
+
+  <!-- Registry -->
+  <div class="note-box">
+    <strong>Registry — سجل الخدمات:</strong> A Service Registry is a resource that provides controlled access to data necessary for the implementation and governance of Service Oriented Architecture (SOA) projects. هو المكان اللي الـ Provider بينشر فيه خدمته والـ Consumer بيدور فيه عليها.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 7. ROLES -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="roles">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div class="section-title">SOA Roles
+      <span class="ar">الدورين الأساسيين في SOA — There are two major roles within SOA</span>
+    </div>
+  </div>
+
+  <div class="roles">
+    <div class="role-card" style="--role-color:var(--accent)">
+      <div class="role-icon">🏭</div>
+      <div class="role-title">Service Provider</div>
+      <div class="role-title-ar">مزود الخدمة — اللي بيقدم وينشر الخدمة</div>
+      <div class="role-steps">
+        <div class="role-step">
+          <div class="role-step-num">1</div>
+          <div><strong>Maintainer:</strong> The service provider is the maintainer of the service — اللي بيصونها ويحدثها</div>
+        </div>
+        <div class="role-step">
+          <div class="role-step-num">2</div>
+          <div><strong>Publish:</strong> يحط الخدمة في Registry — the provider can publish them in a registry</div>
+        </div>
+        <div class="role-step">
+          <div class="role-step-num">3</div>
+          <div><strong>Service Contract:</strong> يعمل عقد بيوضح: nature of the service / how to use it / the requirements / the fees charged</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:1rem">
+        <strong>مثال:</strong> Stripe بتقدم Payment API — بتشرح استخدامها وشروطها وسعرها
+      </div>
+    </div>
+
+    <div class="role-card" style="--role-color:var(--accent3)">
+      <div class="role-icon">💻</div>
+      <div class="role-title">Service Consumer</div>
+      <div class="role-title-ar">مستخدم الخدمة — اللي بيدور ويستخدم الخدمة</div>
+      <div class="role-steps">
+        <div class="role-step">
+          <div class="role-step-num">1</div>
+          <div><strong>Locate:</strong> يدور على الخدمة في الRegistry — can locate the service metadata in the registry</div>
+        </div>
+        <div class="role-step">
+          <div class="role-step-num">2</div>
+          <div><strong>Develop:</strong> يكتب كود — develop the required client components</div>
+        </div>
+        <div class="role-step">
+          <div class="role-step-num">3</div>
+          <div><strong>Bind & Use:</strong> يربط ويستخدمها — to bind and use the service</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:1rem">
+        <strong>مثال:</strong> أنت كمبرمج: دخلت شفت الـ API، قريت الـ docs، كتبت كود، استخدمتها
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 8. ESB -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="esb">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div class="section-title">Enterprise Service Bus — ESB
+      <span class="ar">القلب بتاع السيستم ❤️ — الوسيط الذكي بين كل الخدمات</span>
+    </div>
+  </div>
+
+  <div class="note-box" style="margin-bottom:2rem">
+    <strong>التعريف الرسمي:</strong> An architectural pattern that centralized software component performs integrations between applications. It performs transformations of data models, handles connectivity and messaging, performs routing, converts communication protocols and potentially manages the composition of multiple requests.<br><br>
+    <strong>بالمصري:</strong> ESB = برنامج واحد في النص بيشبّك كل السيستم ببعض. زي موظف سنترال: حد يطلب خدمة → يوجهه للصح، يحول الرسالة، يظبط التواصل.<br><br>
+    <strong>المعنى العميق (من Schmidt et al., IBM Systems Journal 2005):</strong> The ESB manages and exploits meta-data describing interaction endpoints as well as the domain models used to describe the capabilities of those endpoints; it supports configuration of links that bridge between capabilities demanded by service requestors and those offered by service providers, dynamically matching requestors with providers and in the process establishing and enacting contracts between those interaction endpoints.
+  </div>
+
+  <div class="note-box" style="margin-bottom:2rem;border-color:rgba(247,162,79,0.3)">
+    <strong>Meta-data:</strong> بيانات عن البيانات — اسم الخدمة، عنوانها، بتشتغل إزاي. ESB عارف كل Service فين (endpoint) وبتعمل إيه. بيربط اللي طالب الخدمة باللي بيقدمها بشكل أوتوماتيك (dynamically matching). بيتأكد إن كل Service ملتزمة بالقواعد (establishing and enacting contracts).
+  </div>
+
+  <div class="esb-duties">
+    <div class="duty-card">
+      <div class="duty-title">1️⃣ Route Messages Between Services</div>
+      <div class="duty-ar">يوجه الرسائل — "الطلب ده يروح لمين؟"</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">2️⃣ Monitor & Control Routing</div>
+      <div class="duty-ar">Monitor and control routing of message exchange between services — يراقب ويتحكم في مسار الرسائل</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">3️⃣ Resolve Contention</div>
+      <div class="duty-ar">Resolve contention between communicating service components — لو Services كتير بتطلب نفس الحاجة ينظمهم. زي المرور 🚦</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">4️⃣ Deployment & Versioning</div>
+      <div class="duty-ar">Control deployment and versioning of services — يدير تشغيل الخدمات ويتحكم في نسخها (v1 / v2)</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">5️⃣ Event Handling</div>
+      <div class="duty-ar">Provide commodity services like event handling — التعامل مع الأحداث</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">6️⃣ Data Transformation & Mapping</div>
+      <div class="duty-ar">Data transformation and mapping — يحول شكل الداتا. مثال: JSON ↔ XML</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">7️⃣ Message & Event Queuing / Sequencing</div>
+      <div class="duty-ar">Message and event queuing and sequencing — يرتب الرسائل في طابور وينظم التنفيذ</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">8️⃣ Security & Exception Handling</div>
+      <div class="duty-ar">Security or exception handling — الأمان والتعامل مع الأخطاء</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">9️⃣ Protocol Conversion</div>
+      <div class="duty-ar">Protocol conversion — يحول البروتوكول. مثال: HTTP ↔ SOAP</div>
+    </div>
+    <div class="duty-card">
+      <div class="duty-title">🔟 Quality of Service</div>
+      <div class="duty-ar">Enforcing proper quality of communication service — سرعة، استقرار، دقة</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 9. SERVICE TYPES & COMPONENTS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="service-types">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <div class="section-title">SOA Service Types & Components
+      <span class="ar">أنواع الخدمات ومكونات كل Service</span>
+    </div>
+  </div>
+
+  <div style="margin-bottom:2.5rem">
+    <h3 style="font-family:var(--en);font-weight:700;color:var(--text-muted);margin-bottom:1rem;font-size:0.9rem;letter-spacing:0.05em">SOA PROVIDES FOUR DIFFERENT SERVICE TYPES — SOA بيقدم 4 أنواع خدمات</h3>
+    <div class="cards">
+      <div class="card" style="--card-accent:var(--accent)">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Functional Services</div>
+        <div class="card-title-ar">خدمات وظيفية / Business Services</div>
+        <p>Critical for business applications — الأساسية للبزنس. هي الخدمات اللي بتنفذ العمليات البزنس الفعلية.</p>
+      </div>
+      <div class="card" style="--card-accent:var(--accent3)">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title">Enterprise Services</div>
+        <div class="card-title-ar">خدمات المؤسسة</div>
+        <p>Serve to implement functionality — بتخدم تنفيذ الوظائف على مستوى المؤسسة.</p>
+      </div>
+      <div class="card" style="--card-accent:var(--accent2)">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Application Services</div>
+        <div class="card-title-ar">خدمات التطبيق</div>
+        <p>Used to develop and deploy apps — بتتستخدم لتطوير ونشر التطبيقات.</p>
+      </div>
+      <div class="card" style="--card-accent:var(--accent4)">
+        <div class="card-icon">🔐</div>
+        <div class="card-title">Infrastructure Services</div>
+        <div class="card-title-ar">خدمات البنية التحتية</div>
+        <p>Instrumental for backend processes like security and authentication — للعمليات الخلفية زي الأمان والمصادقة.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--en);font-weight:700;color:var(--text-muted);margin-bottom:1rem;font-size:0.9rem;letter-spacing:0.05em">EACH SERVICE CONSISTS OF THREE COMPONENTS — مكونات أي Service</h3>
+  <div class="svc-components">
+    <div class="svc-comp">
+      <div class="svc-comp-icon">🖥️</div>
+      <div class="svc-comp-num">COMPONENT 1</div>
+      <div class="svc-comp-title">Interface</div>
+      <div class="svc-comp-ar">الواجهة — defines how a service provider will execute requests from a service consumer. بتقولك: هتكلم الخدمة إزاي؟ إيه الـ API، إيه الـ inputs & outputs.</div>
+    </div>
+    <div class="svc-comp">
+      <div class="svc-comp-icon">📜</div>
+      <div class="svc-comp-num">COMPONENT 2</div>
+      <div class="svc-comp-title">Contract</div>
+      <div class="svc-comp-ar">العقد — defines how the service provider and service consumer should interact. القوانين بين الطرفين: الشروط، الفورمات، أحيانًا السعر.</div>
+    </div>
+    <div class="svc-comp">
+      <div class="svc-comp-icon">💻</div>
+      <div class="svc-comp-num">COMPONENT 3</div>
+      <div class="svc-comp-title">Implementation</div>
+      <div class="svc-comp-ar">التنفيذ — which is the service code. الكود الحقيقي اللي شغال: Java / Python / PHP — اللوجيك كله هنا.</div>
+    </div>
+  </div>
+
+  <!-- SOA Advantages & Disadvantages -->
+  <h3 style="font-family:var(--en);font-weight:700;color:var(--text-muted);margin:2rem 0 1rem;font-size:0.9rem;letter-spacing:0.05em">SOA ADVANTAGES & DISADVANTAGES</h3>
+  <div class="adv-dis">
+    <div class="adv-panel">
+      <div class="panel-header">✅ Advantages of SOA</div>
+      <ul class="item-list">
+        <li><div class="dot"></div><div><strong>Service Reusability:</strong> In SOA, applications are made from existing services. Thus, services can be reused to make many applications. تعمل Service مرة وتستخدمها في كذا سيستم.</div></li>
+        <li><div class="dot"></div><div><strong>Easy Maintenance:</strong> As services are independent of each other they can be updated and modified easily without affecting other services. كل Service لوحدها → تعدل فيها بسهولة.</div></li>
+        <li><div class="dot"></div><div><strong>Platform Independent:</strong> SOA allows making a complex application by combining services picked from different sources, independent of the platform. Java + Python عادي يشتغلوا مع بعض.</div></li>
+        <li><div class="dot"></div><div><strong>Availability:</strong> SOA facilities are easily available to anyone on request. متاحة بسهولة لأي حد عنده access.</div></li>
+        <li><div class="dot"></div><div><strong>Reliability:</strong> SOA applications are more reliable because it is easy to debug small services rather than huge codes. كل Service صغيرة → سهل تكتشف الغلط.</div></li>
+        <li><div class="dot"></div><div><strong>Scalability:</strong> Services can run on different servers within an environment, this increases scalability. تشغل Services على سيرفرات مختلفة → السيستم يكبر بسهولة.</div></li>
+        <li><div class="dot"></div><div><strong>Faster Time to Market:</strong> بتستخدم Services جاهزة → تطلع المنتج بسرعة 🚀</div></li>
+      </ul>
+    </div>
+    <div class="dis-panel">
+      <div class="panel-header">❌ Disadvantages of SOA</div>
+      <ul class="item-list">
+        <li><div class="dot"></div><div><strong>ESB Bottleneck:</strong> ESB can be bottlenecks — ESB ممكن يبقى بطيء ويعطل السيستم كله. عنق زجاجة.</div></li>
+        <li><div class="dot"></div><div><strong>Single Point of Failure:</strong> ESB can be a single point of failure — لو ESB وقع 💥 السيستم كله يقع.</div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 10. COMPARISON -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="comparison">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <div class="section-title">SOA vs Microservices
+      <span class="ar">الفرق والتشابه</span>
+    </div>
+  </div>
+
+  <div class="note-box" style="margin-bottom:2rem">
+    <strong>التشابه (Similarities):</strong> Some critics of the microservices architecture claim it's nothing new — it's SOA. At a very high level, there are some similarities. Both are architectural styles that structure a system as a set of services. الاتنين بيبنوا السيستم باستخدام Services وكل Service مستقلة وبيكلموا بعض.<br><br>
+    <strong>الفرق الأساسي:</strong> The main distinction between the two approaches comes down to scope. To put it simply, service-oriented architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. (IBM Cloud)
+  </div>
+
+  <div class="diagram-wrap">
+    <table class="cmp-table">
+      <thead>
+        <tr style="background:var(--surface2)">
+          <th class="col-aspect">الجانب</th>
+          <th class="cmp-head-soa">🟠 SOA</th>
+          <th class="cmp-head-ms">🟢 Microservices</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-aspect">Scope</td>
+          <td class="col-soa">Enterprise-wide scope (الشركة كلها)</td>
+          <td class="col-ms">Application scope (التطبيق)</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Communication</td>
+          <td class="col-soa">Smart pipes — ESB (ذكي ومركزي). Managing and coordinating through ESB. ESB can become a single point of failure (SOF).</td>
+          <td class="col-ms">Dumb pipes — Direct communication. كل Service مستقلة بتتواصل مباشرة.</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Protocols</td>
+          <td class="col-soa">Heavyweight / Heterogeneous: SOAP, AMQP (Advanced Messaging Queuing Protocol), MSMQ (Microsoft Messaging Queuing)</td>
+          <td class="col-ms">Lightweight: HTTP/REST (Representational State Transfers), JMS (Java Messaging Service), gRPC</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Data Storage</td>
+          <td class="col-soa">Global data model & Shared Database — database storage is shared between all services</td>
+          <td class="col-ms">Database per service — كل Service ليها DB خاص</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Service Size</td>
+          <td class="col-soa">Larger — can range from small, specialized services to enterprise-wide services</td>
+          <td class="col-ms">Smaller — highly specialized, each designed to do one thing very well</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Service Granularity</td>
+          <td class="col-soa">متنوع: من صغير لـ enterprise-wide</td>
+          <td class="col-ms">Highly specialized — كل service بتعمل حاجة واحدة بس</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Speed</td>
+          <td class="col-soa">Slower — by leveraging shared architecture, SOAs simplify development and troubleshooting. But this tends to make SOAs operate more slowly.</td>
+          <td class="col-ms">Faster — minimize sharing in favor of duplication. أسرع بكتير</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Architecture</td>
+          <td class="col-soa">مركزي — Centralized (ESB)</td>
+          <td class="col-ms">موزع — Distributed & Decentralized</td>
+        </tr>
+        <tr>
+          <td class="col-aspect">Interoperability</td>
+          <td class="col-soa">More open to heterogeneous messaging protocols — SOAP, AMQP, MSMQ</td>
+          <td class="col-ms">Lightweight messaging — HTTP/REST, JMS</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 11. TOOLS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section" id="tools">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <div class="section-title">Tools & Getting Started
+      <span class="ar">الأدوات والبداية في Microservices</span>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-type">DEVELOPMENT TOOL</div>
+      <div class="tool-name">Visual Studio</div>
+      <div class="tool-desc">www.visualstudio.microsoft.com — IDE كامل لتطوير الخدمات</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-type">DEVELOPMENT TOOL</div>
+      <div class="tool-name">VS Code</div>
+      <div class="tool-desc">www.code.visualstudio.com — محرر كود خفيف وسريع</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-type">CONTAINERIZATION</div>
+      <div class="tool-name">Docker</div>
+      <div class="tool-desc">www.docker.com — لتشغيل الخدمات في containers مستقلة</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-type">API GATEWAY</div>
+      <div class="tool-name">Azure API Management</div>
+      <div class="tool-desc">Microsoft's enterprise API Gateway للـ Microservices</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-type">API GATEWAY</div>
+      <div class="tool-name">Ocelot API Gateway</div>
+      <div class="tool-desc">Open source .NET API Gateway</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-type">API GATEWAY</div>
+      <div class="tool-name">Traefik (Traffic)</div>
+      <div class="tool-desc">Modern HTTP reverse proxy and load balancer</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FINAL SUMMARY -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">📝</span>
+    <div class="section-title">Summary — الخلاصة الكاملة للامتحان
+      <span class="ar">أهم النقاط اللي لازم تحفظها</span>
+    </div>
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-item">
+      <h4>Microservices</h4>
+      <p>سيستم متقسم لخدمات صغيرة مستقلة. كل Service ليها Database + Team + CI Pipeline. التواصل بينهم REST APIs. مميزات: Flexibility, Scalability, Fault isolation.</p>
+    </div>
+    <div class="summary-item">
+      <h4>Challenges</h4>
+      <p>Complexity, Development & Testing, Lack of Governance, Network Latency, Data Integrity, Management, Versioning, Skillset — محتاج Team خبرة عالية.</p>
+    </div>
+    <div class="summary-item">
+      <h4>When to Use</h4>
+      <p>Large apps with high release velocity + Complex & Scalable apps + Rich domains/subdomains + Organizations with small independent teams.</p>
+    </div>
+    <div class="summary-item">
+      <h4>Design Patterns</h4>
+      <p>Decomposition, Communication, Integration, Deployment, Database, Observability, Cross-Cutting Concerns — كل واحدة بتحل مشكلة معينة.</p>
+    </div>
+    <div class="summary-item">
+      <h4>SOA</h4>
+      <p>Enterprise-wide approach using reusable services. Provider publishes + Consumer uses. Shared DB. ESB as central communication hub. 4 types: Functional, Enterprise, Application, Infrastructure.</p>
+    </div>
+    <div class="summary-item">
+      <h4>ESB Duties</h4>
+      <p>Routing + Monitoring + Resolve Contention + Deployment/Versioning + Event Handling + Data Transformation + Queuing + Security + Exception Handling + Protocol Conversion + Quality of Service.</p>
+    </div>
+    <div class="summary-item">
+      <h4>Service = 3 Components</h4>
+      <p>Interface (إزاي تستخدمها) + Contract (القوانين) + Implementation (الكود)</p>
+    </div>
+    <div class="summary-item">
+      <h4>SOA vs Microservices</h4>
+      <p>SOA: Enterprise scope + ESB (Smart Pipes) + SOAP + Shared DB + Larger + Slower. Microservices: App scope + Direct (Dumb Pipes) + REST + DB per Service + Smaller + Faster.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  IS352 — System Analysis & Design · Lecture 7 · Dr. Wael Abbas · 2022–2023<br>
+  Service Oriented Architecture & Microservices — كل المحتوى من السلايدز والشرح
+</footer>
+
+</body>
+</html>
