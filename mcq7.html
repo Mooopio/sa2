@@ -738,4 +738,304 @@ const partA = [
     answer: 1
   },
   {
-    q: "44. ESB provides communication by a common communication protocol, or com
+    q: "44. ESB provides communication by a common communication protocol, or communication bus, which has connections between the consumers and providers in Microservices.",
+    type: "tf",
+    answer: false,
+    explanation: "FALSE – ESB belongs to SOA, not Microservices. Microservices use dumb pipes and lightweight protocols."
+  },
+  {
+    q: "45. An organization that consists of small development team, it prefer to use ………… architecture.",
+    type: "mcq",
+    options: ["Microservices", "SOA", "Monolithic"],
+    answer: 0
+  }
+];
+
+const partB = [
+  {
+    q: "Which of the following is NOT an advantage of Microservices?",
+    type: "mcq",
+    options: [
+      "Language independent and framework independent",
+      "Shared single database for all services",
+      "Better fault isolation",
+      "Zero downtime upgrades"
+    ],
+    answer: 1,
+    explanation: "Each microservice has its own database (Database per Service pattern) — shared database is a SOA trait."
+  },
+  {
+    q: "Which microservices challenge refers to the difficulty caused by having many different languages and frameworks used across services?",
+    type: "mcq",
+    options: [
+      "Network congestion",
+      "Lack of governance",
+      "Data integrity",
+      "Versioning"
+    ],
+    answer: 1,
+    explanation: "Lack of governance: the decentralized approach leads to many different languages/frameworks, making maintenance harder."
+  },
+  {
+    q: "The ………… pattern in microservices acts as a single entry point that routes requests to appropriate services.",
+    type: "mcq",
+    options: [
+      "Aggregator Pattern",
+      "API Gateway Pattern",
+      "Saga Pattern",
+      "Strangler Pattern"
+    ],
+    answer: 1,
+    explanation: "The API Gateway Pattern provides a single entry point and routes requests to the correct microservice."
+  },
+  {
+    q: "Which microservices design pattern is used to decompose a monolith incrementally?",
+    type: "mcq",
+    options: [
+      "Decompose by Subdomain",
+      "Strangler Pattern",
+      "CQRS Pattern",
+      "Circuit Breaker Pattern"
+    ],
+    answer: 1,
+    explanation: "The Strangler Pattern gradually replaces parts of a monolith with microservices over time."
+  },
+  {
+    q: "SOA has two major roles: Service Provider and Service Consumer.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – SOA defines exactly two major roles: the service provider and the service consumer."
+  },
+  {
+    q: "Which SOA service type serves to implement functionality?",
+    type: "mcq",
+    options: [
+      "Functional services",
+      "Enterprise services",
+      "Application services",
+      "Infrastructure services"
+    ],
+    answer: 1,
+    explanation: "Enterprise services serve to implement functionality (not to be confused with Functional/business services)."
+  },
+  {
+    q: "The primary duty of an ESB includes which of the following?",
+    type: "mcq",
+    options: [
+      "Storing user session data",
+      "Route messages between services",
+      "Rendering UI components",
+      "Managing source code versions"
+    ],
+    answer: 1,
+    explanation: "A primary duty of an ESB is to route messages between services, along with monitoring, transformation, and protocol conversion."
+  },
+  {
+    q: "Microservices architecture is more complex than an equivalent monolithic application.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – Complexity is listed as a key challenge of microservices compared to monolithic apps."
+  },
+  {
+    q: "Which of the following is a 'when to use microservices' condition?",
+    type: "mcq",
+    options: [
+      "Small simple application with no scalability needs",
+      "Large applications that require a high release velocity",
+      "Single-team enterprise with shared codebase",
+      "Applications with no subdomains"
+    ],
+    answer: 1,
+    explanation: "Large applications requiring high release velocity are a primary use-case for microservices."
+  },
+  {
+    q: "In SOA, the service ………… specifies the nature of the service, how to use it, and the fees charged.",
+    type: "mcq",
+    options: ["Interface", "Registry", "Contract", "ESB"],
+    answer: 2,
+    explanation: "The Service Contract specifies the nature, usage requirements, and fees for a service."
+  },
+  {
+    q: "Which observability pattern in microservices collects logs from all service instances into one place?",
+    type: "mcq",
+    options: [
+      "Health Check",
+      "Distributed Tracing",
+      "Log Aggregation",
+      "Performance Metrics"
+    ],
+    answer: 2,
+    explanation: "Log Aggregation collects and centralizes logs from all microservice instances."
+  },
+  {
+    q: "The Circuit Breaker Pattern in microservices helps prevent cascading failures.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – The Circuit Breaker Pattern detects failures and stops requests to a failing service, preventing wider system failure."
+  },
+  {
+    q: "In microservices, correlated logging across services can be challenging for a single user operation.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – This is mentioned as a Management challenge of microservices."
+  },
+  {
+    q: "Which of the following is NOT a Decomposition Pattern in Microservices?",
+    type: "mcq",
+    options: [
+      "Decompose by Business Capability",
+      "Decompose by Subdomain",
+      "Strangler Pattern",
+      "CQRS Pattern"
+    ],
+    answer: 3,
+    explanation: "CQRS (Command Query Responsibility Segregation) is a Database Pattern, not a Decomposition Pattern."
+  },
+  {
+    q: "SOA services that are critical for business applications are called:",
+    type: "mcq",
+    options: [
+      "Enterprise services",
+      "Functional (business) services",
+      "Infrastructure services",
+      "Application services"
+    ],
+    answer: 1,
+    explanation: "Functional (business) services are the ones critical for core business applications."
+  }
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let correct = 0, wrong = 0, total = 0;
+
+function updateScore(isCorrect) {
+  if (isCorrect) correct++;
+  else wrong++;
+  total++;
+  document.getElementById('score-correct').textContent = correct;
+  document.getElementById('score-wrong').textContent = wrong;
+  document.getElementById('score-total').textContent = total;
+  document.getElementById('score-pct').textContent =
+    Math.round((correct / total) * 100) + '%';
+}
+
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+function renderQuestions(data, containerId) {
+  const container = document.getElementById(containerId);
+  const letters = ['a', 'b', 'c', 'd', 'e'];
+
+  data.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.style.animationDelay = (idx * 0.04) + 's';
+    card.id = `${containerId}-q${idx}`;
+
+    const header = `
+      <div class="q-header">
+        <div class="q-num">${idx + 1}</div>
+        <div class="q-text">${q.q}</div>
+      </div>`;
+
+    let body = '';
+
+    if (q.type === 'tf') {
+      body = `
+        <div class="tf-row">
+          <button class="tf-btn true-btn" onclick="checkTF(this, true, ${q.answer}, '${containerId}-q${idx}', \`${(q.explanation || '').replace(/`/g, "'")}\`)">✔ TRUE</button>
+          <button class="tf-btn false-btn" onclick="checkTF(this, false, ${q.answer}, '${containerId}-q${idx}', \`${(q.explanation || '').replace(/`/g, "'")}\`)">✘ FALSE</button>
+        </div>`;
+    } else {
+      const opts = q.options.map((o, i) => `
+        <button class="option-btn"
+          onclick="checkMCQ(this, ${i}, ${q.answer}, '${containerId}-q${idx}', \`${(q.explanation || '').replace(/`/g, "'")}\`, ${q.options.length})">
+          <span class="option-letter">${letters[i]}</span>
+          ${o}
+        </button>`).join('');
+      body = `<div class="options">${opts}</div>`;
+    }
+
+    const feedback = `<div class="feedback" id="fb-${containerId}-q${idx}"></div>`;
+
+    card.innerHTML = header + body + feedback;
+    container.appendChild(card);
+  });
+}
+
+function checkMCQ(btn, chosen, correct, cardId, explanation, numOpts) {
+  const card = document.getElementById(cardId);
+  const allBtns = card.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correct;
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    card.classList.add('answered-correct');
+  } else {
+    btn.classList.add('wrong');
+    allBtns[correct].classList.add('show-correct');
+    card.classList.add('answered-wrong');
+  }
+
+  showFeedback(cardId, isCorrect, explanation);
+  updateScore(isCorrect);
+
+  setTimeout(() => card.classList.remove('answered-correct', 'answered-wrong'), 700);
+}
+
+function checkTF(btn, chosen, correctAnswer, cardId, explanation) {
+  const card = document.getElementById(cardId);
+  const allBtns = card.querySelectorAll('.tf-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correctAnswer;
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    card.classList.add('answered-correct');
+  } else {
+    btn.classList.add('wrong');
+    // highlight correct
+    allBtns.forEach(b => {
+      const isTrue = b.classList.contains('true-btn');
+      if ((isTrue && correctAnswer) || (!isTrue && !correctAnswer)) {
+        b.classList.add('show-correct');
+      }
+    });
+    card.classList.add('answered-wrong');
+  }
+
+  showFeedback(cardId, isCorrect, explanation);
+  updateScore(isCorrect);
+
+  setTimeout(() => card.classList.remove('answered-correct', 'answered-wrong'), 700);
+}
+
+function showFeedback(cardId, isCorrect, explanation) {
+  const fb = document.getElementById(`fb-${cardId}`);
+  fb.className = `feedback show ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
+  if (isCorrect) {
+    fb.innerHTML = `<span class="feedback-icon">✅</span> Correct! ${explanation || 'Well done!'}`;
+  } else {
+    fb.innerHTML = `<span class="feedback-icon">❌</span> Wrong. ${explanation || 'Check the correct answer above.'}`;
+  }
+}
+
+function resetAll() {
+  correct = 0; wrong = 0; total = 0;
+  document.getElementById('score-correct').textContent = '0';
+  document.getElementById('score-wrong').textContent = '0';
+  document.getElementById('score-total').textContent = '0';
+  document.getElementById('score-pct').textContent = '—';
+  document.getElementById('part-a').innerHTML = '';
+  document.getElementById('part-b').innerHTML = '';
+  renderQuestions(partA, 'part-a');
+  renderQuestions(partB, 'part-b');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+renderQuestions(partA, 'part-a');
+renderQuestions(partB, 'part-b');
+</script>
+</body>
+</html>
