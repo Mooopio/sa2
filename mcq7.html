@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOA & Microservices Quiz – Lec 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131c;
+    --border: #2a2a3e;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --gold: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* BG Grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 60px 20px 40px;
+    z-index: 1;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* Score Bar */
+  .scorebar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 14px 20px;
+  }
+
+  .score-item {
+    text-align: center;
+  }
+
+  .score-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+
+  .score-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  #score-correct { color: var(--correct); }
+  #score-wrong { color: var(--wrong); }
+  #score-total { color: var(--accent2); }
+
+  /* Sections */
+  .section-header {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 50px auto 24px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 2px;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Quiz Container */
+  .quiz-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Question Card */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .q-card:hover { border-color: #3a3a5e; }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 22px 16px;
+  }
+
+  .q-num {
+    background: rgba(124,58,237,0.15);
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(124,58,237,0.3);
+  }
+
+  .q-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+    padding-top: 6px;
+  }
+
+  /* True/False */
+  .tf-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 22px 20px;
+  }
+
+  .tf-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .tf-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(124,58,237,0.08);
+  }
+
+  .tf-btn.true-btn:hover:not(:disabled) { border-color: var(--correct); background: rgba(16,185,129,0.08); }
+  .tf-btn.false-btn:hover:not(:disabled) { border-color: var(--wrong); background: rgba(239,68,68,0.08); }
+
+  /* Options */
+  .options {
+    padding: 0 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .option-letter {
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent2);
+    background: rgba(6,182,212,0.06);
+  }
+
+  .option-btn:hover:not(:disabled) .option-letter {
+    background: rgba(6,182,212,0.2);
+    color: var(--accent2);
+  }
+
+  /* Result States */
+  .option-btn.correct, .tf-btn.correct {
+    border-color: var(--correct) !important;
+    background: rgba(16,185,129,0.12) !important;
+    color: var(--correct);
+  }
+
+  .option-btn.correct .option-letter {
+    background: var(--correct);
+    color: #fff;
+  }
+
+  .option-btn.wrong, .tf-btn.wrong {
+    border-color: var(--wrong) !important;
+    background: rgba(239,68,68,0.1) !important;
+    color: var(--wrong);
+  }
+
+  .option-btn.wrong .option-letter {
+    background: var(--wrong);
+    color: #fff;
+  }
+
+  .option-btn.show-correct {
+    border-color: rgba(16,185,129,0.4) !important;
+    background: rgba(16,185,129,0.06) !important;
+    color: var(--correct);
+  }
+
+  .option-btn.show-correct .option-letter {
+    background: rgba(16,185,129,0.3);
+    color: var(--correct);
+  }
+
+  .option-btn:disabled, .tf-btn:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    margin: 0 22px 18px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+
+  .feedback.correct-fb {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: var(--correct);
+  }
+
+  .feedback.wrong-fb {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--wrong);
+  }
+
+  .feedback-icon { font-size: 16px; margin-right: 6px; }
+
+  /* Reset Btn */
+  .reset-wrap {
+    max-width: 860px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 16px 48px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .reset-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  /* Pulse animation for answered */
+  @keyframes pulse-correct {
+    0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+    100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+  }
+
+  @keyframes pulse-wrong {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+
+  .q-card.answered-correct { animation: pulse-correct 0.6s ease; }
+  .q-card.answered-wrong { animation: pulse-wrong 0.6s ease; }
+
+  /* Slide-in */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-card { animation: slideIn 0.3s ease both; }
+
+  /* Extra Questions notice */
+  .extra-notice {
+    max-width: 860px;
+    margin: 0 auto 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .extra-notice-inner {
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">IS352 · Lecture 7</div>
+  <h1>SOA & Microservices<br>Quiz</h1>
+  <p>اختار الإجابة الصح وشوف نتيجتك فوراً 🎯</p>
+</div>
+
+<div class="scorebar">
+  <div class="score-item">
+    <div class="score-num" id="score-correct">0</div>
+    <div class="score-label">Correct</div>
+  </div>
+  <div class="score-item">
+    <div class="score-num" id="score-wrong">0</div>
+    <div class="score-label">Wrong</div>
+  </div>
+  <div class="score-item">
+    <div class="score-num" id="score-total">0</div>
+    <div class="score-label">Answered</div>
+  </div>
+  <div class="score-item">
+    <div class="score-num" id="score-pct" style="color:var(--gold)">—</div>
+    <div class="score-label">Score %</div>
+  </div>
+</div>
+
+<!-- ======== SECTION 1: Original Questions ======== -->
+<div class="section-header">
+  <span class="section-badge">Part A</span>
+  <span class="section-title">Original Questions (1–45)</span>
+  <div class="section-line"></div>
+</div>
+
+<div class="quiz-container" id="part-a"></div>
+
+<!-- ======== SECTION 2: Extra Questions ======== -->
+<div class="section-header" style="margin-top:60px">
+  <span class="section-badge" style="background:linear-gradient(135deg,var(--gold),#f97316)">Part B</span>
+  <span class="section-title">Extra Questions from Slides</span>
+  <div class="section-line"></div>
+</div>
+
+<div class="extra-notice">
+  <div class="extra-notice-inner">
+    ⚡ الأسئلة دي مستنياها من السلايدز مباشرةً — مش موجودة في الـ original sheet بس ممكن تيجي في الامتحان!
+  </div>
+</div>
+
+<div class="quiz-container" id="part-b" style="margin-top:20px"></div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">↺ Reset Quiz</button>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const partA = [
+  {
+    q: "1. ………… is an enterprise-wide approach to software development of application components that takes advantage of reusable software components, or service.",
+    type: "mcq",
+    options: ["Microservices", "Monolithic", "SOA", "None of the above"],
+    answer: 2
+  },
+  {
+    q: "2. ………… uses software components called services to create business applications.",
+    type: "mcq",
+    options: ["Microservices", "Monolithic", "SOA", "None of the above"],
+    answer: 2
+  },
+  {
+    q: "3. Developers use ………… to reuse services in different systems or combine several independent services to perform complex tasks.",
+    type: "mcq",
+    options: ["Microservices", "Monolithic", "SOA", "None of the above"],
+    answer: 2
+  },
+  {
+    q: "4. ………… is the maintainer of the service and the organization that makes available one or more services for others to use.",
+    type: "mcq",
+    options: ["Service provider", "Service consumer"],
+    answer: 0
+  },
+  {
+    q: "5. Applications with rich domains or many subdomains, it prefer to use ………… architecture.",
+    type: "mcq",
+    options: ["Microservices", "SOA", "Monolithic"],
+    answer: 0
+  },
+  {
+    q: "6. Service provider can publish services in …………",
+    type: "mcq",
+    options: ["Registry", "ESB", "Contract", "Interface"],
+    answer: 0
+  },
+  {
+    q: "7. ………… specifies the nature of the service, how to use it, the requirements for the service, and the fees charged.",
+    type: "mcq",
+    options: ["Registry", "ESB", "Service contract", "Interface"],
+    answer: 2
+  },
+  {
+    q: "8. ………… can publish them in a registry, together with a service contract.",
+    type: "mcq",
+    options: ["Service provider", "Service consumer"],
+    answer: 0
+  },
+  {
+    q: "9. ………… can locate the service metadata in the registry and develop the required client components to bind and use the service.",
+    type: "mcq",
+    options: ["Service provider", "Service consumer"],
+    answer: 1
+  },
+  {
+    q: "10. ………… provides communication by a common communication protocol, or communication bus, which has connections between the consumers and providers in SOA.",
+    type: "mcq",
+    options: ["Registry", "ESB", "Contract", "Interface"],
+    answer: 1
+  },
+  {
+    q: "11. ………… is a resource that provides controlled access to data necessary for the implementation and governance of SOA projects.",
+    type: "mcq",
+    options: ["Registry", "ESB", "Contract", "Interface"],
+    answer: 0
+  },
+  {
+    q: "12. ………… performs transformations of data models, handles connectivity and messaging, performs routing, converts communication protocols.",
+    type: "mcq",
+    options: ["Registry", "ESB", "Contract", "Interface"],
+    answer: 1
+  },
+  {
+    q: "13. ………… register their service in public.",
+    type: "mcq",
+    options: ["Service provider", "Service consumer"],
+    answer: 0
+  },
+  {
+    q: "14. ………… queries public registry for service that match certain criteria.",
+    type: "mcq",
+    options: ["Service provider", "Service consumer"],
+    answer: 1
+  },
+  {
+    q: "15. ………… which are critical for business applications.",
+    type: "mcq",
+    options: ["Functional services", "Enterprise services", "Application services", "Infrastructure services"],
+    answer: 0
+  },
+  {
+    q: "16. ………… which are used to develop and deploy apps.",
+    type: "mcq",
+    options: ["Functional services", "Enterprise services", "Application services", "Infrastructure services"],
+    answer: 2
+  },
+  {
+    q: "17. ………… which are instrumental for backend processes like security and authentication.",
+    type: "mcq",
+    options: ["Functional services", "Enterprise services", "Application services", "Infrastructure services"],
+    answer: 3
+  },
+  {
+    q: "18. ………… which serve to implement functionality.",
+    type: "mcq",
+    options: ["Functional services", "Enterprise services", "Application services", "Infrastructure services"],
+    answer: 1
+  },
+  {
+    q: "19. Each service consists of four components.",
+    type: "tf",
+    answer: false,
+    explanation: "Each service consists of THREE components: interface, contract, and implementation."
+  },
+  {
+    q: "20. The …………, which defines how a service provider will execute requests from a service consumer.",
+    type: "mcq",
+    options: ["Interface", "Contract", "Implementation"],
+    answer: 0
+  },
+  {
+    q: "21. The …………, which defines how the service provider and service consumer should interact.",
+    type: "mcq",
+    options: ["Interface", "Contract", "Implementation"],
+    answer: 1
+  },
+  {
+    q: "22. The …………, which is the service code.",
+    type: "mcq",
+    options: ["Interface", "Contract", "Implementation"],
+    answer: 2
+  },
+  {
+    q: "23. ESB can be bottlenecks and single point of failure in SOA.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – This is one of the main disadvantages of SOA: the ESB can become a single point of failure."
+  },
+  {
+    q: "24. There are some similarities; SOA and the microservices architecture are architectural styles that structure a system as a set of services.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – Both SOA and microservices structure a system as a set of services."
+  },
+  {
+    q: "25. ………… manages and exploits meta-data describing interaction endpoints and supports configuration of links that bridge between capabilities.",
+    type: "mcq",
+    options: ["Registry", "ESB", "Contract", "Interface"],
+    answer: 1
+  },
+  {
+    q: "26. In communication: …………, smart pipes as ESB and using heavyweight protocols such as SOAP.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "27. In communication: …………, Dumb pipes as message broker or direct service to service and using lightweight protocols such as REST or gRPC.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "28. In data: …………, Data model and database per service.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "29. In data: …………, Global data model and shared databases.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "30. In typical service: …………, large monolithic application.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "31. In typical service: …………, smaller service.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "32. SOA has an ………… scope.",
+    type: "mcq",
+    options: ["Enterprise scope", "Application scope"],
+    answer: 0
+  },
+  {
+    q: "33. The microservices architecture has ………… scope.",
+    type: "mcq",
+    options: ["Enterprise scope", "Application scope"],
+    answer: 1
+  },
+  {
+    q: "34. In …………, each service must share a common communication mechanism called an enterprise service bus (ESB).",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "35. In a ………… architecture, each service is developed independently, with its own communication protocol.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "36. In SOA, the ESB can become a single point of failure (SOF) for the whole enterprise, and if a single service slows down, the entire system can be affected.",
+    type: "tf",
+    answer: true,
+    explanation: "TRUE – The ESB is a central bottleneck; failure or slowdown there affects the entire system."
+  },
+  {
+    q: "37. ………… are more open to heterogeneous messaging protocols such as SOAP, AMQP and MSMQ.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "38. ………… use lightweight messaging protocols like HTTP/REST and JMS.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "39. ………… are made up of highly specialized services, each of which is designed to do one thing very well.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "40. The services that make up …………, on the other hand, can range from small, specialized services to enterprise-wide services.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "41. ………… simplify development and troubleshooting and operate more slowly.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "42. ………… architectures, which minimize sharing in favor of duplication.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 0
+  },
+  {
+    q: "43. In ………… architecture, database storage is shared between all services.",
+    type: "mcq",
+    options: ["Microservices", "SOA"],
+    answer: 1
+  },
+  {
+    q: "44. ESB provides communication by a common communication protocol, or com
