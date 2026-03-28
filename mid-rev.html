@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SA2 Midterm Revision Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06080b;--card:#0c1018;--border:#182030;
+    --accent:#f97316;--accent2:#38bdf8;
+    --correct:#22c55e;--wrong:#ef4444;
+    --text:#e2e8f0;--muted:#64748b;--gold:#f59e0b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:0 0 80px;}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(249,115,22,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(249,115,22,0.035) 1px,transparent 1px);
+    background-size:44px 44px;pointer-events:none;z-index:0;}
+
+  .hero{position:relative;text-align:center;padding:56px 20px 34px;z-index:1;}
+  .hero-tag{display:inline-block;background:rgba(249,115,22,0.12);border:1px solid var(--accent);
+    color:var(--accent);font-size:11px;letter-spacing:3px;padding:6px 16px;border-radius:2px;margin-bottom:16px;text-transform:uppercase;}
+  .hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.9rem,5vw,3.2rem);font-weight:800;line-height:1.1;
+    background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent2) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;}
+  .hero p{color:var(--muted);font-size:13px;letter-spacing:1px;}
+
+  .scorebar{position:sticky;top:0;z-index:100;background:rgba(6,8,11,0.94);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:36px;padding:13px 20px;flex-wrap:wrap;}
+  .score-item{text-align:center;}
+  .score-num{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;}
+  .score-label{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+  #sc{color:var(--correct);}#sw{color:var(--wrong);}#st{color:var(--accent2);}#sp{color:var(--gold);}
+
+  .section-header{position:relative;z-index:1;max-width:900px;margin:50px auto 22px;padding:0 20px;
+    display:flex;align-items:center;gap:13px;}
+  .section-badge{color:#fff;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;
+    padding:6px 14px;border-radius:2px;white-space:nowrap;text-transform:uppercase;}
+  .badge-orange{background:linear-gradient(135deg,#f97316,#ef4444);}
+  .badge-blue{background:linear-gradient(135deg,#38bdf8,#6366f1);}
+  .badge-green{background:linear-gradient(135deg,#22c55e,#14b8a6);}
+  .badge-purple{background:linear-gradient(135deg,#a855f7,#ec4899);}
+  .section-title{font-family:'Syne',sans-serif;font-size:1rem;color:#fff;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  .quiz-container{max-width:900px;margin:0 auto;padding:0 20px;position:relative;z-index:1;display:flex;flex-direction:column;gap:16px;}
+
+  .q-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;
+    transition:border-color 0.2s;animation:slideIn 0.3s ease both;}
+  .q-card:hover{border-color:#2a3040;}
+  .q-header{display:flex;align-items:flex-start;gap:13px;padding:18px 20px 14px;}
+  .q-num{background:rgba(249,115,22,0.1);color:var(--accent);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+    min-width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;border:1px solid rgba(249,115,22,0.22);}
+  .q-text{font-size:13px;line-height:1.78;color:var(--text);padding-top:4px;}
+
+  .tf-row{display:flex;gap:10px;padding:0 20px 18px;}
+  .tf-btn{flex:1;padding:11px;border:1px solid var(--border);background:transparent;color:var(--text);
+    font-family:'Space Mono',monospace;font-size:12px;border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+  .tf-btn.true-btn:hover:not(:disabled){border-color:var(--correct);background:rgba(34,197,94,0.08);color:var(--correct);}
+  .tf-btn.false-btn:hover:not(:disabled){border-color:var(--wrong);background:rgba(239,68,68,0.08);color:var(--wrong);}
+
+  .options{padding:0 20px 18px;display:flex;flex-direction:column;gap:9px;}
+  .option-btn{width:100%;text-align:left;padding:12px 14px;border:1px solid var(--border);
+    background:rgba(255,255,255,0.02);color:var(--text);font-family:'Space Mono',monospace;font-size:12px;
+    border-radius:6px;cursor:pointer;transition:all 0.17s;display:flex;align-items:center;gap:9px;line-height:1.5;}
+  .option-letter{background:rgba(255,255,255,0.06);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;
+    font-size:10px;min-width:24px;height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:all 0.17s;}
+  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(249,115,22,0.06);}
+  .option-btn:hover:not(:disabled) .option-letter{background:rgba(249,115,22,0.2);color:var(--accent);}
+
+  .option-btn.correct,.tf-btn.correct{border-color:var(--correct)!important;background:rgba(34,197,94,0.12)!important;color:var(--correct);}
+  .option-btn.correct .option-letter{background:var(--correct);color:#fff;}
+  .option-btn.wrong,.tf-btn.wrong{border-color:var(--wrong)!important;background:rgba(239,68,68,0.1)!important;color:var(--wrong);}
+  .option-btn.wrong .option-letter{background:var(--wrong);color:#fff;}
+  .option-btn.show-correct{border-color:rgba(34,197,94,0.5)!important;background:rgba(34,197,94,0.08)!important;color:var(--correct);}
+  .option-btn.show-correct .option-letter{background:rgba(34,197,94,0.3);color:var(--correct);}
+  .option-btn:disabled,.tf-btn:disabled{cursor:default;}
+
+  .feedback{margin:0 20px 16px;padding:11px 14px;border-radius:6px;font-size:11.5px;line-height:1.65;display:none;}
+  .feedback.show{display:block;}
+  .feedback.correct-fb{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.28);color:var(--correct);}
+  .feedback.wrong-fb{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.28);color:var(--wrong);}
+
+  .reset-wrap{max-width:900px;margin:44px auto 0;padding:0 20px;text-align:center;position:relative;z-index:1;}
+  .reset-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;
+    font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;
+    padding:15px 46px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:opacity 0.2s,transform 0.2s;}
+  .reset-btn:hover{opacity:0.85;transform:translateY(-2px);}
+
+  @keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pc{0%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+  @keyframes pw{0%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}70%{box-shadow:0 0 0 9px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+  .q-card.ac{animation:pc 0.6s ease;}
+  .q-card.aw{animation:pw 0.6s ease;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">IS352 · SA2 Midterm</div>
+  <h1>Full Midterm<br>Revision Quiz</h1>
+  <p>كل الأسئلة في مكان واحد — اتدرب وانت مرتاح 🎯</p>
+</div>
+
+<div class="scorebar">
+  <div class="score-item"><div class="score-num" id="sc">0</div><div class="score-label">Correct</div></div>
+  <div class="score-item"><div class="score-num" id="sw">0</div><div class="score-label">Wrong</div></div>
+  <div class="score-item"><div class="score-num" id="st">0</div><div class="score-label">Answered</div></div>
+  <div class="score-item"><div class="score-num" id="sp">—</div><div class="score-label">Score %</div></div>
+</div>
+
+<!-- Part 1 -->
+<div class="section-header">
+  <span class="section-badge badge-orange">Part 1</span>
+  <span class="section-title">Monolithic vs Microservices + DevOps + Scrum (MCQ)</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="p1"></div>
+
+<!-- Part 2 -->
+<div class="section-header" style="margin-top:54px">
+  <span class="section-badge badge-blue">Part 2</span>
+  <span class="section-title">True / False — Monolithic, Microservices & DevOps</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="p2"></div>
+
+<!-- Part 3 -->
+<div class="section-header" style="margin-top:54px">
+  <span class="section-badge badge-green">Part 3</span>
+  <span class="section-title">Interactive Test MCQ (NoSQL, Process Models, Agile, Scrum)</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="p3"></div>
+
+<!-- Part 4 -->
+<div class="section-header" style="margin-top:54px">
+  <span class="section-badge badge-purple">Part 4</span>
+  <span class="section-title">True / False — Process Models & Agile Manifesto</span>
+  <div class="section-line"></div>
+</div>
+<div class="quiz-container" id="p4"></div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">↺ Reset All</button>
+</div>
+
+<script>
+const L=['a','b','c','d','e'];
+
+/* ═══════════════════════════════════════════════════
+   PART 1 – MCQ (86 questions)
+═══════════════════════════════════════════════════ */
+const p1=[
+  {q:"1. What is the application that is easy in maintenance?",opts:["Monolithic","Microservices"],answer:1,
+   exp:"Microservices are easier to maintain because each service is independent and can be updated without affecting others."},
+  {q:"2. In data: …………, Data model and database per service.",opts:["Monolithic","Microservices"],answer:1,
+   exp:"Microservices use a separate database per service (Database per Service pattern)."},
+  {q:"3. Microservice could be considered as a subset of __________",opts:["POA","SOA","Cloud","Java","HTTP"],answer:1,
+   exp:"Microservices can be considered a subset/evolution of SOA (Service-Oriented Architecture)."},
+  {q:"4. Agile development and deployment is difficult in case of _________",opts:["Monolithic","Microservice","Both of the above","None of the above"],answer:0,
+   exp:"Agile development and deployment is difficult in Monolithic applications because the entire app must be rebuilt and redeployed."},
+  {q:"5. Single point failure example is __________",opts:["Monolithic","Microservice","Both of the above","None of the above"],answer:0,
+   exp:"Monolithic apps have a single point of failure — if one part fails, the entire application can go down."},
+  {q:"6. Complexity of developing, testing, and deploying distributed systems and handling partial failures is a disadvantage of _________",opts:["Monolithic","Microservice","Both of the above","None of the above"],answer:1,
+   exp:"This complexity (distributed systems, partial failures) is a known challenge/disadvantage of Microservices."},
+  {q:"7. The benefits of microservices include _______",opts:["Easy scaling","Improved fault tolerance","Faster to build and deploy","Scale development: Develop, Deploy & Scale","All of the above"],answer:4,
+   exp:"All listed options are benefits of Microservices."},
+  {q:"8. There is no centralized database in ______________",opts:["Monolithic","Microservices"],answer:1,
+   exp:"Microservices have NO centralized database — each service manages its own data."},
+  {q:"9. In the early days, what application was preferable?",opts:["Monolithic","Microservices"],answer:0,
+   exp:"Monolithic was the preferred approach in early software development before microservices matured."},
+  {q:"10. _____________ is preferable in applications with rich domains or many subdomains.",opts:["Monolithic","Microservices"],answer:1,
+   exp:"Microservices are preferred for applications with rich domains or many subdomains."},
+  {q:"11. The microservices architecture has ……………… scope.",opts:["Enterprise scope","Application scope"],answer:1,
+   exp:"Microservices have application scope; SOA has enterprise scope."},
+  {q:"12. In a ……………… architecture, each service is developed independently, with its own communication protocol.",opts:["Monolithic","Microservices"],answer:1,
+   exp:"In Microservices, each service is developed independently with its own protocol."},
+  {q:"13. In Monolithic, _________________",opts:["We can scale individual components separately","We scale all components in the project at the same time"],answer:1,
+   exp:"In Monolithic, you must scale the entire application — you cannot scale individual parts separately."},
+  {q:"14. ………………… is used to maintain different versions of the code.",opts:["GIT","Selenium","Maven","Jenkins"],answer:0,
+   exp:"GIT is the version control tool for maintaining different code versions."},
+  {q:"15. ………………… lets QAs test codes in parallel to ensure no errors, incompetencies, or flaws.",opts:["GIT","Selenium","Maven","Jenkins"],answer:1,
+   exp:"Selenium is the test automation tool used for parallel testing."},
+  {q:"16. ………………… is the tool used for continuous integration.",opts:["GIT","Selenium","Maven","Jenkins"],answer:3,
+   exp:"Jenkins is the CI (Continuous Integration) tool."},
+  {q:"17. ………………… is used to build/package the code into an executable file.",opts:["GIT","Stack/Splunk/Sensu","Maven","Jenkins"],answer:2,
+   exp:"Maven is the build tool that packages code into executable files."},
+  {q:"18. ………………… helps monitor applications and servers closely to check their health.",opts:["GIT","Stack/Splunk/Sensu","Maven","Jenkins"],answer:1,
+   exp:"Stack/Splunk/Sensu are monitoring tools that track application and server health."},
+  {q:"19. DevOps is an extension of _________________",opts:["Agile","Waterfall"],answer:0,
+   exp:"DevOps is an extension of Agile — it extends CI/CD practices into the operations domain."},
+  {q:"20. Which of the following team gets priority in DevOps?",opts:["Operational Team","Development Team","All of Them"],answer:2,
+   exp:"DevOps integrates BOTH Dev and Ops — no single team gets priority; they collaborate equally."},
+  {q:"21. ………………… was introduced to overcome the gap between developers and the operations team.",opts:["Agile","DevOps"],answer:1,
+   exp:"DevOps was introduced to bridge the gap between Developers and Operations."},
+  {q:"22. ………………… overcame the disadvantages of Waterfall and bridged the gap between Customers and Developers.",opts:["Agile","DevOps"],answer:0,
+   exp:"Agile bridged the gap between Customers and Developers (DevOps later bridged Dev and Ops)."},
+  {q:"23. The true value of Agile has often been negated at the final push by traditional operational requirements. [True/False]",type:"tf",answer:true,
+   exp:"TRUE – This gap between Agile dev practices and traditional ops requirements is exactly why DevOps was created."},
+  {q:"24. In DevOps, development has been trying to put releases into Production more frequently by delivering incremental changes. [True/False]",type:"tf",answer:true,
+   exp:"TRUE – DevOps Dev teams push frequent, incremental changes to production."},
+  {q:"25. In ………………… developers write the code on any platform.",opts:["Plan","Code","Build","Test"],answer:1,
+   exp:"In the CODE phase, developers write code on any platform."},
+  {q:"26. In ………………… developers build the version of their program in any extension depending upon the language.",opts:["Plan","Code","Build","Test"],answer:2,
+   exp:"In the BUILD phase, code is compiled into an executable version."},
+  {q:"27. In ………………… it gathers information from the monitoring stage and implements changes for better performance.",opts:["Plan","Code","Build","Test"],answer:0,
+   exp:"In the PLAN phase, monitoring feedback is used to plan improvements."},
+  {q:"28. In ………………… automation tools like Selenium are used.",opts:["Plan","Code","Build","Test"],answer:3,
+   exp:"In the TEST phase, tools like Selenium automate testing."},
+  {q:"29. In ………………… — managing, planning, scheduling, and controlling the build after testing and before deployment.",opts:["Plan","Release","Operate","Deploy"],answer:1,
+   exp:"The RELEASE phase manages the build across environments between testing and deployment."},
+  {q:"30. In ………………… phase it provides crucial information to ensure service uptime and optimal performance.",opts:["Monitor","Release","Operate","Deploy"],answer:0,
+   exp:"The MONITOR phase provides crucial performance and uptime information."},
+  {q:"31. In ………………… the application runs after deployment and clients use it in real-world scenarios.",opts:["Monitor","Release","Operate","Deploy"],answer:2,
+   exp:"The OPERATE phase is where clients interact with the live application."},
+  {q:"32. In ………………… phase all artifacts/code files are deployed/executed on the server.",opts:["Monitor","Release","Operate","Deploy"],answer:3,
+   exp:"The DEPLOY phase executes the code on the server."},
+  {q:"33. In Agile, Requirements are _________________",opts:["Strict","Flexible"],answer:1,
+   exp:"In Agile, requirements are FLEXIBLE and can change throughout development."},
+  {q:"34. In Waterfall, Requirements are _________________",opts:["Strict","Flexible"],answer:0,
+   exp:"In Waterfall, requirements are STRICT and locked upfront."},
+  {q:"35. _________ is only appropriate when requirements are well-understood and changes are limited.",opts:["Agile","Waterfall"],answer:1,
+   exp:"Waterfall is appropriate only when requirements are clear and unlikely to change."},
+  {q:"36. _________ is the primary measure of progress.",opts:["Working software","Customer collaboration","Individuals and interactions","Documentation"],answer:0,
+   exp:"Working software is the primary measure of progress — an Agile manifesto principle."},
+  {q:"36b. You can change in Agile _________________",opts:["During sprint","After sprint"],answer:1,
+   exp:"Changes in Agile Scrum happen AFTER a sprint (between sprints), not during one."},
+  {q:"37. There is change during the sprint. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – No changes are allowed during a sprint. Plan sprint durations to keep change out."},
+  {q:"38. ………………… Represents management to the project.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master represents management to the project."},
+  {q:"39. ………………… is Responsible for enacting Scrum values and practices.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master enacts Scrum values and practices."},
+  {q:"40. In Scrum, Members should be full-time even the database administrator. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – Members should be full-time, BUT the database administrator is listed as a possible exception."},
+  {q:"41. Membership can change during a sprint. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – Membership changes only BETWEEN sprints."},
+  {q:"42. ………………… selects items from the product backlog they can commit to completing.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team selects items from the product backlog during Sprint Planning."},
+  {q:"43. Sprint backlog is created in …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","None of the above"],answer:1,
+   exp:"The Sprint Backlog is created during Sprint Planning."},
+  {q:"44. Tasks are identified and each estimated (1–16 hours) in …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","None of the above"],answer:1,
+   exp:"Tasks are identified and estimated 1–16 hours during Sprint Planning."},
+  {q:"45. Sprint backlog creation is done collaboratively, not done alone by the …………………",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The sprint backlog is NOT created alone by the ScrumMaster — it's a team effort."},
+  {q:"46. The stand-up meeting is …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum is the 15-minute daily stand-up meeting."},
+  {q:"47. The feedback meeting is …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is the feedback meeting (Start/Stop/Continue)."},
+  {q:"48. The daily scrum is for problem solving. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – The Daily Scrum is NOT for problem solving; it is a brief sync/coordination meeting."},
+  {q:"49. ………………… helps avoid other unnecessary meetings.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum helps avoid other unnecessary meetings by keeping everyone aligned."},
+  {q:"50. In ………………… the team presents what it accomplished during the sprint.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:0,
+   exp:"The Sprint Review is where the team presents/demos its accomplished work."},
+  {q:"51. ………………… is done after every sprint.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is done after every sprint."},
+  {q:"52. In ………………… only team members, ScrumMaster, and product owner can talk.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"In the Daily Scrum, only team members, ScrumMaster, and Product Owner can speak."},
+  {q:"53. ………………… typically takes the form of a demo of new features or underlying architecture.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:0,
+   exp:"The Sprint Review is a demo of new features or architecture to stakeholders."},
+  {q:"18b. Everyone answers 3 questions in …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The 3 Daily Scrum questions: What did I do yesterday? What will I do today? Is anything in my way?"},
+  {q:"54. ………………… is between Scrum Team only.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"The Sprint Retrospective is attended by the Scrum Team ONLY."},
+  {q:"55. ………………… is exactly 15 minutes, daily.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:3,
+   exp:"The Daily Scrum is exactly 15 minutes, held every day."},
+  {q:"56. ………………… is 15–30 minutes between the Scrum team.",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"Sprint Retrospective: 15–30 minutes, Scrum team only."},
+  {q:"57. Start / Stop / Continue doing exists in …………………",opts:["Sprint Review","Sprint Planning","Sprint Retrospective","The Daily Scrum"],answer:2,
+   exp:"Start/Stop/Continue is a Sprint Retrospective format."},
+  {q:"58. Start / Stop / Continue is the ONLY way to do a sprint retrospective. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – It is explicitly noted as 'just one of many ways' to do a sprint retrospective."},
+  {q:"59. ………………… is a short statement of what the work will be focused on during the sprint.",opts:["Sprint Backlog","Sprint Goal","Product Backlog"],answer:1,
+   exp:"The Sprint Goal is the short focus statement for the sprint."},
+  {q:"60. ………………… is a list of all desired work on the project.",opts:["Product Backlog","Sprint Backlog"],answer:0,
+   exp:"The Product Backlog is the master list of all desired work."},
+  {q:"61. ………………… is prioritized by …………………",opts:["Product Backlog / Scrum Master","Sprint Backlog / Scrum Master","Product Backlog / Product Owner"],answer:2,
+   exp:"The Product Backlog is prioritized by the Product Owner."},
+  {q:"62. Product backlog is reprioritized at the END of each sprint. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – It is reprioritized at the START of each sprint."},
+  {q:"63. In the sprint backlog, work is assigned. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – Team members voluntarily sign up for work; it is NEVER assigned."},
+  {q:"64. ………………… can add, delete or change the sprint backlog.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"Any team member can add, delete, or change the sprint backlog."},
+  {q:"65. In Agile Manifesto: Individuals & interactions over …………………",opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:1,
+   exp:"Individuals & interactions over PROCESS AND TOOLS."},
+  {q:"66. In Agile Manifesto: Respond to change over …………………",opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:3,
+   exp:"Respond to change over FOLLOWING A PLAN."},
+  {q:"67. Definition of Done occurs in …………………",opts:["Sprint Review","Sprint Retrospective","Sprint Planning","Daily Scrum Meeting"],answer:2,
+   exp:"Definition of Done is established during Sprint Planning."},
+  {q:"68. The demo occurs in …………………",opts:["Daily Scrum Meeting","Sprint Retrospective","Sprint Planning","Sprint Review"],answer:3,
+   exp:"The demo happens in the Sprint Review."},
+  {q:"69. In Scrum the team size is ……… to ………",opts:["5–9","6–9","5–10","None of the above"],answer:0,
+   exp:"Scrum teams are typically 5–9 people."},
+  {q:"70. Scrum team demos work results to …………………",opts:["Scrum Master","Product Owner","Client","Business Analyst"],answer:2,
+   exp:"The Scrum team demos results to the client (and other stakeholders)."},
+  {q:"71. Cross functional team means everyone must know everything. [True/False]",type:"tf",answer:false,
+   exp:"FALSE – Cross-functional means the TEAM collectively has all needed skills, not every individual."},
+  {q:"72. ………………… organizes itself and its work.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team is self-organizing."},
+  {q:"73. ………………… defines the features of the product.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner defines product features."},
+  {q:"74. ………………… enables close cooperation across all roles and functions.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master enables close cooperation across roles."},
+  {q:"75. ………………… has the right to do everything within project guidelines to reach the Sprint goal.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team has the right to do whatever is needed within guidelines."},
+  {q:"76. ………………… adjusts features and priority every iteration, as needed.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner adjusts features and priorities every iteration."},
+  {q:"77. ………………… prioritizes features according to market value.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner prioritizes features by market value."},
+  {q:"78. ………………… shields the team from external interferences during the Sprint.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master shields the team from external interference."},
+  {q:"79. ………………… selects the Sprint goal and specifies work results.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:0,
+   exp:"The Scrum Team selects the Sprint goal and specifies deliverables."},
+  {q:"80. ………………… is responsible for the profitability of the product (ROI).",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner is responsible for ROI."},
+  {q:"81. ………………… removes barriers.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master removes barriers/impediments."},
+  {q:"82. ………………… decides on release date and content.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner decides release dates and content."},
+  {q:"83. ………………… ensures that the team is fully functional and productive.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master ensures the team is functional and productive."},
+  {q:"84. ………………… accepts or rejects work results.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:2,
+   exp:"The Product Owner accepts or rejects work results."},
+  {q:"85. ………………… ensures the process is followed, including issuing invitations to Daily Scrum, Sprint Review, and Sprint Planning.",opts:["Scrum Team","Scrum Master","Product Owner","Business Analyst"],answer:1,
+   exp:"The Scrum Master ensures the process is followed and issues invitations to all Scrum ceremonies."},
+  {q:"86. In Agile Manifesto: Individuals & interactions over …………………",opts:["Comprehensive documentation","Process and tools","Contract negotiation","Following a plan"],answer:1,
+   exp:"Individuals & interactions over PROCESS AND TOOLS (same principle, often repeated in exams)."}
+];
+
+/* ═══════════════════════════════════════════════════
+   PART 2 – T/F (28 questions)
+═══════════════════════════════════════════════════ */
+const p2=[
+  {q:"1. Monolithic application is preferable in an organization that consists of small development teams.",type:"tf",answer:false,
+   exp:"FALSE – Microservices are preferred for small development teams. Monolithic suits simple/early-stage apps."},
+  {q:"2. Data consistency (Data integrity) is easily achieved in Monolithic.",type:"tf",answer:true,
+   exp:"TRUE – Monolithic uses a single shared database, making data consistency easier to manage."},
+  {q:"3. Data consistency (Data integrity) is difficult to achieve in Microservices.",type:"tf",answer:true,
+   exp:"TRUE – Each microservice has its own database, making cross-service data consistency a challenge."},
+  {q:"4. Monolithic is a software development technique that arranges an application as a collection of loosely coupled services.",type:"tf",answer:false,
+   exp:"FALSE – This describes Microservices. Monolithic is a single, tightly coupled codebase."},
+  {q:"5. Monolithic is the evolution of service-oriented architecture (SOA).",type:"tf",answer:false,
+   exp:"FALSE – Microservices is the evolution of SOA, not Monolithic."},
+  {q:"6. Software built as microservices can by definition be broken down into multiple component services.",type:"tf",answer:true,
+   exp:"TRUE – Microservices by definition consist of multiple independent, deployable component services."},
+  {q:"7. Microservices has only one centralized database.",type:"tf",answer:false,
+   exp:"FALSE – Microservices have NO centralized database. Each service manages its own data store."},
+  {q:"8. Monolithic application is preferable in complex applications that need to be highly scalable.",type:"tf",answer:false,
+   exp:"FALSE – Microservices are preferred for highly scalable, complex applications."},
+  {q:"9. Microservices applications are preferable in large applications that require a high release velocity.",type:"tf",answer:true,
+   exp:"TRUE – Large apps needing high release velocity are a primary use-case for Microservices."},
+  {q:"10. The team typically deploys updates to production once a month in Microservices.",type:"tf",answer:false,
+   exp:"FALSE – Microservices enable continuous/frequent deployments (days/hours). Monthly deployment is a Monolithic trait."},
+  {q:"11. We can't scale individual components in Microservices.",type:"tf",answer:false,
+   exp:"FALSE – In Microservices, you CAN scale individual components separately. That's one of its main advantages."},
+  {q:"12. We can scale individual components separately in Microservices.",type:"tf",answer:true,
+   exp:"TRUE – Independent scalability per service is a key Microservices advantage."},
+  {q:"13. DevOps is a replacement for Agile.",type:"tf",answer:false,
+   exp:"FALSE – DevOps is an EXTENSION of Agile, not a replacement. DevOps is typically implemented on top of Agile."},
+  {q:"14. Agile achieves Customer Collaboration.",type:"tf",answer:true,
+   exp:"TRUE – Customer collaboration over contract negotiation is one of the four Agile Manifesto values."},
+  {q:"15. Agile Methodology's main focus is to help internal teams work efficiently. It excludes end-users/clients.",type:"tf",answer:false,
+   exp:"FALSE – This describes Waterfall. Agile actively involves customers/end-users throughout development."},
+  {q:"16. DevOps strives to increase the feedback cycle and delivery loops which, in turn, increases customer satisfaction.",type:"tf",answer:true,
+   exp:"TRUE – Faster feedback loops and delivery are core DevOps goals that lead to higher customer satisfaction."},
+  {q:"17. With DevOps, the workforce becomes more creative and productive while reducing retention issues and improving turnover.",type:"tf",answer:true,
+   exp:"TRUE – A DevOps performance-oriented culture improves creativity, productivity, and employee engagement."},
+  {q:"18. Agile is usually implemented on top of the DevOps model.",type:"tf",answer:false,
+   exp:"FALSE – It's the opposite: DevOps is implemented on top of Agile."},
+  {q:"19. DevOps does not impact the speed of software development and deployment.",type:"tf",answer:false,
+   exp:"FALSE – DevOps significantly INCREASES the speed of development and deployment through automation and collaboration."},
+  {q:"20. The Deploy phase of the DevOps lifecycle involves executing code on servers.",type:"tf",answer:true,
+   exp:"TRUE – The Deploy phase gets all artifacts ready and executes/deploys them on the server."},
+  {q:"21. Agile Manifesto values 'following a plan' over 'responding to change'.",type:"tf",answer:false,
+   exp:"FALSE – Agile values Responding to change over Following a plan."},
+  {q:"22. Agile Manifesto values 'comprehensive documentation' over 'working software'.",type:"tf",answer:false,
+   exp:"FALSE – Agile values Working software over Comprehensive documentation."},
+  {q:"23. Agile focuses on content rather than representation.",type:"tf",answer:true,
+   exp:"TRUE – Agile modeling focuses on content/substance rather than heavyweight documentation/representation."},
+  {q:"24. All process activities in Agile are planned in advance and progress is measured against this plan.",type:"tf",answer:false,
+   exp:"FALSE – This describes Plan-driven (Waterfall). Agile uses incremental, adaptive planning."},
+  {q:"25. Agile is the right software process.",type:"tf",answer:false,
+   exp:"FALSE – There are no right or wrong software processes; appropriateness depends on the project context."},
+  {q:"26. There are no right or wrong software processes.",type:"tf",answer:true,
+   exp:"TRUE – No single software process is universally right or wrong; it depends on context."},
+  {q:"27. There is high collaboration in the Waterfall model.",type:"tf",answer:false,
+   exp:"FALSE – Waterfall has LOW collaboration between phases/teams. High collaboration is an Agile characteristic."},
+  {q:"28. In Waterfall there is fixed scope while flexible in time and cost.",type:"tf",answer:false,
+   exp:"FALSE – In Waterfall (traditional), scope, time, AND cost are all FIXED. In Agile, time and cost are fixed while scope is flexible."}
+];
+
+/* ═══════════════════════════════════════════════════
+   PART 3 – Interactive Test MCQ
+═══════════════════════════════════════════════════ */
+const p3=[
+  {q:"In NoSQL systems, ………… ensures that at some future point in time the data assumes a consistent state.",
+   opts:["Immediate consistency","Eventually consistency","Partition tolerance","Isolation"],answer:1,
+   exp:"Eventually consistency means data will become consistent across nodes at some future point, not immediately."},
+  {q:"………… is an abstract representation of a process AND presents a description of a process from some particular perspective.",
+   opts:["A software process model","A software modeling","A software analysis","A software validation"],answer:0,
+   exp:"A software process MODEL is both an abstract representation AND a perspective-based description of a process."},
+  {q:"Software Development Life Cycle involves which of the following processes?",
+   opts:["Requirement analysis","Design","Testing","All of the above"],answer:3,
+   exp:"SDLC involves all phases: Requirement analysis, Design, Implementation, Testing, Deployment, and Maintenance."},
+  {q:"Which of the following is an example of a plan-driven software process model?",
+   opts:["Scrum","Waterfall","Kanban","eXtreme Programming"],answer:1,
+   exp:"Waterfall is plan-driven. Scrum, Kanban, and XP are Agile approaches."},
+  {q:"Which of the triple constraints is fixed when implementing the Waterfall methodology?",
+   opts:["Time","Cost","Scope","All of them (Time, Cost & Scope)"],answer:3,
+   exp:"In Waterfall, all three constraints — Time, Cost, and Scope — are FIXED upfront."},
+  {q:"………… is a structured set of activities required to develop a software system.",
+   opts:["A software process model","A software process","An agile sprint","A burndown chart"],answer:1,
+   exp:"A software PROCESS is the structured set of activities required to develop a software system."},
+  {q:"According to Agile principles, the most efficient and effective method of conveying information to a development team is …………",
+   opts:["Face-to-face conversation","Chatting","Messaging","Phone calls"],answer:0,
+   exp:"Face-to-face conversation is the most efficient and effective method per the Agile principles."},
+  {q:"All of the following are Agile methodologies EXCEPT:",
+   opts:["eXtreme Programming","Spiral","Kanban","Scrum"],answer:1,
+   exp:"Spiral is a Plan-driven methodology, NOT Agile. XP, Kanban, and Scrum are all Agile."},
+  {q:"In ………… the team selects items from the product backlog they can commit to completing.",
+   opts:["Sprint Planning","Sprint Review","Sprint Retrospective","Daily Scrum Meeting"],answer:0,
+   exp:"During Sprint Planning, the team selects backlog items they commit to completing."},
+  {q:"………… removes barriers and ensures that the Scrum team is fully functional and productive.",
+   opts:["Product Owner","Coach","Tracker","Scrum Master"],answer:3,
+   exp:"The Scrum Master removes barriers and ensures team productivity."},
+  {q:"………… defines the features of the product and prioritizes the features according to market value.",
+   opts:["Scrum Master","Product Owner","Tracker","Coach"],answer:1,
+   exp:"The Product Owner defines features and prioritizes by market value."},
+  {q:"'What did you do yesterday?', 'What will you do today?' and 'Is anything in your way?' — everyone answers during …………",
+   opts:["Sprint Retrospective","Sprint Planning","Daily Scrum Meeting","Sprint Review"],answer:2,
+   exp:"These three questions are answered in the Daily Scrum Meeting."},
+  {q:"At ………… the team presents what it accomplished during the sprint.",
+   opts:["Daily Scrum Meeting","Sprint Planning","Sprint Retrospective","Sprint Review"],answer:3,
+   exp:"The Sprint Review is where the team presents/demos accomplished work."},
+  {q:"………… is a list of all desired work on the project.",
+   opts:["Sprint Backlog","Product Backlog","Burndown Chart","None of the above"],answer:1,
+   exp:"The Product Backlog is the master list of all desired work."},
+  {q:"………… is the tool that is used for continuous integration.",
+   opts:["Puppet","Splunk","Nagios","Jenkins"],answer:3,
+   exp:"Jenkins is the continuous integration tool."},
+  {q:"Which DevOps phase helps in providing crucial information that ensures service uptime and optimal performance?",
+   opts:["Monitor","Operate","Release","Test"],answer:0,
+   exp:"The Monitor phase provides uptime and performance information."}
+];
+
+/* ═══════════════════════════════════════════════════
+   PART 4 – T/F from Interactive Test
+═══════════════════════════════════════════════════ */
+const p4=[
+  {q:"15. The process of defining what the system should do is called specification.",type:"tf",answer:true,
+   exp:"TRUE – Specification is the activity of defining WHAT the system should do."},
+  {q:"16. In plan-driven software process models, all process activities are planned in advance and progress is measured against this plan.",type:"tf",answer:true,
+   exp:"TRUE – This is the definition of plan-driven processes (e.g. Waterfall)."},
+  {q:"17. Most practical software development processes include elements of both plan-driven and agile approaches.",type:"tf",answer:true,
+   exp:"TRUE – Real-world processes typically blend elements of both approaches."},
+  {q:"18. Waterfall methodology is only appropriate when requirements are well-understood and changes will be fairly limited during the design process.",type:"tf",answer:true,
+   exp:"TRUE – Waterfall works best with stable, well-understood requirements."},
+  {q:"19. Agile methodologies plan everything upfront.",type:"tf",answer:false,
+   exp:"FALSE – Agile uses incremental, adaptive planning, NOT upfront comprehensive planning."},
+  {q:"20. According to Agile manifesto, comprehensive documentation is given more importance over working software.",type:"tf",answer:false,
+   exp:"FALSE – Agile values Working software OVER comprehensive documentation."}
+];
+
+/* ═══════════════════════════════════════════════════
+   ENGINE
+═══════════════════════════════════════════════════ */
+let c=0,w=0,t=0;
+
+function upd(ok){
+  if(ok)c++;else w++;t++;
+  document.getElementById('sc').textContent=c;
+  document.getElementById('sw').textContent=w;
+  document.getElementById('st').textContent=t;
+  document.getElementById('sp').textContent=Math.round((c/t)*100)+'%';
+}
+
+function render(data,cid){
+  const box=document.getElementById(cid);
+  data.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='q-card';
+    card.style.animationDelay=(i*0.025)+'s';
+    card.id=`${cid}_${i}`;
+    const exp=(q.exp||'').replace(/`/g,"'");
+    const type=q.type||'mcq';
+    let body='';
+    if(type==='tf'){
+      body=`<div class="tf-row">
+        <button class="tf-btn true-btn"  onclick="doTF(this,true,${q.answer},'${cid}_${i}',\`${exp}\`)">✔ TRUE</button>
+        <button class="tf-btn false-btn" onclick="doTF(this,false,${q.answer},'${cid}_${i}',\`${exp}\`)">✘ FALSE</button>
+      </div>`;
+    } else {
+      body='<div class="options">'+q.opts.map((o,k)=>
+        `<button class="option-btn" onclick="doMCQ(this,${k},${q.answer},'${cid}_${i}',\`${exp}\`,${q.opts.length})">
+          <span class="option-letter">${L[k]}</span>${o}</button>`).join('')+'</div>';
+    }
+    card.innerHTML=`<div class="q-header"><div class="q-num">${i+1}</div><div class="q-text">${q.q}</div></div>`
+      +body+`<div class="feedback" id="fb_${cid}_${i}"></div>`;
+    box.appendChild(card);
+  });
+}
+
+function doMCQ(btn,chosen,correct,cid,exp,n){
+  const card=document.getElementById(cid);
+  card.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok) card.querySelectorAll('.option-btn')[correct].classList.add('show-correct');
+  card.classList.add(ok?'ac':'aw');
+  fb(cid,ok,exp);upd(ok);
+  setTimeout(()=>card.classList.remove('ac','aw'),700);
+}
+
+function doTF(btn,chosen,correct,cid,exp){
+  const card=document.getElementById(cid);
+  card.querySelectorAll('.tf-btn').forEach(b=>b.disabled=true);
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok){
+    card.querySelectorAll('.tf-btn').forEach(b=>{
+      if((b.classList.contains('true-btn')&&correct)||(b.classList.contains('false-btn')&&!correct))
+        b.classList.add('show-correct');
+    });
+  }
+  card.classList.add(ok?'ac':'aw');
+  fb(cid,ok,exp);upd(ok);
+  setTimeout(()=>card.classList.remove('ac','aw'),700);
+}
+
+function fb(cid,ok,exp){
+  const el=document.getElementById(`fb_${cid}`);
+  el.className=`feedback show ${ok?'correct-fb':'wrong-fb'}`;
+  el.innerHTML=(ok?'<span style="font-size:14px">✅</span> Correct! ':'<span style="font-size:14px">❌</span> Wrong. ')+(exp||'');
+}
+
+function resetAll(){
+  c=0;w=0;t=0;
+  ['sc','sw','st'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('sp').textContent='—';
+  ['p1','p2','p3','p4'].forEach(id=>document.getElementById(id).innerHTML='');
+  render(p1,'p1');render(p2,'p2');render(p3,'p3');render(p4,'p4');
+}
+
+render(p1,'p1');render(p2,'p2');render(p3,'p3');render(p4,'p4');
+</script>
+</body>
+</html>
