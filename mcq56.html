@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS352 — Exam Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --border: #2a2a38;
+    --accent: #6c63ff;
+    --accent2: #ff6b6b;
+    --green: #00e5a0;
+    --red: #ff4d6d;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --gold: #ffd166;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.4);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* SCOREBOARD */
+  #scoreboard {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 44px;
+    flex-wrap: wrap;
+  }
+
+  .score-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 22px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .score-pill span {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  .score-pill.correct span { color: var(--green); }
+  .score-pill.wrong span { color: var(--red); }
+  .score-pill.total span { color: var(--gold); }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+    margin: 48px 0 24px;
+  }
+
+  .section-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    margin-left: 15px;
+    letter-spacing: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 26px 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .q-card.answered::before { opacity: 1; }
+
+  .q-num {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 12px 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.4;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: rgba(108,99,255,0.1);
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .option-btn .letter {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-top: 0;
+  }
+
+  .option-btn:disabled { cursor: default; }
+
+  .option-btn.correct-ans {
+    background: rgba(0,229,160,0.1);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .option-btn.correct-ans .letter {
+    background: var(--green);
+    color: #000;
+  }
+
+  .option-btn.wrong-ans {
+    background: rgba(255,77,109,0.08);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .option-btn.wrong-ans .letter {
+    background: var(--red);
+    color: #fff;
+  }
+
+  .option-btn.reveal-correct {
+    border-color: var(--green);
+    background: rgba(0,229,160,0.05);
+  }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    display: none;
+    border-left: 3px solid;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.ok { border-color: var(--green); color: var(--green); background: rgba(0,229,160,0.06); }
+  .feedback.bad { border-color: var(--red); color: var(--red); background: rgba(255,77,109,0.06); }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 6px;
+    margin-bottom: 44px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 4px;
+  }
+
+  /* RESULTS MODAL */
+  #results-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  #results-modal.show { display: flex; }
+
+  .modal-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px 44px;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-emoji { font-size: 56px; margin-bottom: 16px; }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .modal-score {
+    font-size: 48px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 16px 0;
+  }
+
+  .modal-sub { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+
+  .btn-restart {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px 32px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(108,99,255,0.4);
+  }
+
+  /* ANIMATIONS */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-card { animation: slideIn 0.3s ease both; }
+  .q-card:nth-child(1) { animation-delay: 0.05s; }
+  .q-card:nth-child(2) { animation-delay: 0.1s; }
+  .q-card:nth-child(3) { animation-delay: 0.15s; }
+  .q-card:nth-child(4) { animation-delay: 0.2s; }
+  .q-card:nth-child(5) { animation-delay: 0.25s; }
+  .q-card:nth-child(6) { animation-delay: 0.3s; }
+  .q-card:nth-child(7) { animation-delay: 0.35s; }
+  .q-card:nth-child(8) { animation-delay: 0.4s; }
+
+  .finish-btn-wrap {
+    text-align: center;
+    margin-top: 52px;
+  }
+
+  .finish-btn {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 40px;
+    cursor: pointer;
+    border-radius: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .finish-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(108,99,255,0.35);
+  }
+
+  @media(max-width: 600px) {
+    .q-card { padding: 20px 16px; }
+    .q-text { font-size: 14px; }
+    .option-btn { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="tag">IS 352 · System Analysis & Design</div>
+    <h1>Exam Prep Quiz</h1>
+    <p class="subtitle">Microservices · DevOps · Monolithic Architecture</p>
+  </header>
+
+  <div id="scoreboard">
+    <div class="score-pill correct">✔ Correct <span id="sc-correct">0</span></div>
+    <div class="score-pill wrong">✘ Wrong <span id="sc-wrong">0</span></div>
+    <div class="score-pill total">◈ Total <span id="sc-total">0</span></div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+
+  <!-- ══════════════════════════════════════
+       SECTION A — YOUR QUESTIONS
+  ══════════════════════════════════════ -->
+  <div class="section-label">SECTION A — Your Provided Questions
+    <div class="section-desc">Questions supplied by you — exactly as given</div>
+  </div>
+
+  <div id="quiz-a"></div>
+
+  <!-- ══════════════════════════════════════
+       SECTION B — EXTRA FROM SLIDES
+  ══════════════════════════════════════ -->
+  <div class="section-label">SECTION B — Additional Slide-Based Questions
+    <div class="section-desc">Generated from lecture content — covering every remaining point</div>
+  </div>
+
+  <div id="quiz-b"></div>
+
+  <div class="finish-btn-wrap">
+    <button class="finish-btn" onclick="showResults()">See Final Score →</button>
+  </div>
+
+</div><!-- /wrapper -->
+
+<!-- RESULTS MODAL -->
+<div id="results-modal">
+  <div class="modal-box">
+    <div class="modal-emoji" id="modal-emoji">🎯</div>
+    <div class="modal-title" id="modal-title">Quiz Complete!</div>
+    <div class="modal-score" id="modal-score">0 / 0</div>
+    <div class="modal-sub" id="modal-sub">Keep reviewing the slides!</div>
+    <button class="btn-restart" onclick="restart()">↺ Restart Quiz</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+
+const sectionA = [
+  {
+    q: "Which of the following BEST describes a monolithic application in terms of how it must be built and delivered?",
+    opts: [
+      "Each module is compiled and deployed separately on different servers.",
+      "The code needs to be built, tested, and deployed as an entire unit, forcing teams to synchronize delivery dates.",
+      "Individual services are released independently via continuous deployment pipelines.",
+      "The application is broken into microservices that communicate over REST APIs."
+    ],
+    ans: 1,
+    exp: "Monolithic applications force multiple teams to synchronize because the entire codebase is built, tested, and deployed as ONE unit."
+  },
+  {
+    q: "In the early stages of a monolithic application, several advantages exist. Which of the following is NOT listed as an advantage of the monolithic architecture when the application is still small?",
+    opts: [
+      "Simple to develop because IDEs and tools focus on a single application.",
+      "Straightforward to deploy by copying a WAR file to a Tomcat server.",
+      "Each team can independently release their module without coordination.",
+      "Easy to make radical changes to both code and database schema."
+    ],
+    ans: 2,
+    exp: "Independent releases per team is a Microservices advantage, NOT a monolithic one. Monolithic apps require synchronized releases."
+  },
+  {
+    q: "The term 'monolithic hell' refers to a situation where:",
+    opts: [
+      "The application has been migrated to microservices too quickly.",
+      "The small, once-manageable monolith has grown so large that Agile development and deployment become impossible.",
+      "The DevOps team fails to implement continuous integration properly.",
+      "The SOA layer introduces too many network calls between services."
+    ],
+    ans: 1,
+    exp: "'Monolithic hell' = when a grown codebase and multiple Scrum teams make the path from commit to production slow and painful."
+  },
+  {
+    q: "According to the lecture, which of the following is a KEY disadvantage of the monolithic architecture related to technology choices?",
+    opts: [
+      "Developers must use a distributed message broker for every service.",
+      "The architecture forces the team to use a single, increasingly obsolete technology stack.",
+      "The application cannot be hosted behind a load balancer.",
+      "The monolith requires each module to maintain its own separate database."
+    ],
+    ans: 1,
+    exp: "Monolith = LOCKED into one tech stack. If it becomes obsolete, the whole application suffers — no flexibility."
+  },
+  {
+    q: "Which of the following BEST captures the definition of Microservices according to the lecture material?",
+    opts: [
+      "A tightly coupled system where all modules share a single process and database.",
+      "A collection of independently deployable, loosely coupled services each responsible for a single business capability.",
+      "A layered N-tier architecture where UI, logic, and data are separated into distinct layers.",
+      "A deployment pattern where one large WAR file is deployed on multiple servers behind a load balancer."
+    ],
+    ans: 1,
+    exp: "Microservices = independently deployable, loosely coupled, each focused on ONE business capability with its own data store."
+  },
+  {
+    q: "Which of the following Microservices principles states that each service should manage its own data and there is typically NO centralized database?",
+    opts: [
+      "Culture of Automation",
+      "Failure Isolation",
+      "Decentralization",
+      "Hide Implementation Details"
+    ],
+    ans: 2,
+    exp: "DECENTRALIZATION = no shared central database. Each service manages its own database independently."
+  },
+  {
+    q: "The Microservices principle 'Hide Implementation Details' primarily helps to:",
+    opts: [
+      "Increase the size of each individual service.",
+      "Ensure all services are written in the same programming language.",
+      "Reduce coupling so changes can be made without affecting the overall architecture.",
+      "Prevent services from communicating with each other."
+    ],
+    ans: 2,
+    exp: "Hiding internals REDUCES COUPLING — you can change/improve a service without breaking others."
+  },
+  {
+    q: "When comparing Monolithic, SOA, and Microservices architectures, which of the following correctly describes the progression?",
+    opts: [
+      "Single Unit → Smaller Units → Multi Units (N-Layer/SOA)",
+      "Multi Units (N-Layer/SOA) → Single Unit → Smaller Units (Microservices)",
+      "Single Unit (Monolithic) → Multi Units (N-Layer/SOA) → Smaller Units (Microservices)",
+      "Smaller Units (Microservices) → Single Unit (Monolithic) → Multi Units (SOA)"
+    ],
+    ans: 2,
+    exp: "The correct progression: Monolithic (Single Unit) → SOA/N-Layer (Multi Units) → Microservices (Smaller Units)."
+  },
+  {
+    q: "In the DevOps lifecycle, which stage involves managing, planning, scheduling, and controlling the build across different environments AFTER testing but BEFORE deployment?",
+    opts: [
+      "Deploy",
+      "Build",
+      "Release",
+      "Monitor"
+    ],
+    ans: 2,
+    exp: "RELEASE stage = managing and controlling builds in different environments after testing and before actual deployment."
+  },
+  {
+    q: "What tool is specifically mentioned in the lectures for Continuous Integration, allowing teams to pull the latest code from GIT and produce builds?",
+    opts: [
+      "Selenium",
+      "Maven",
+      "Jenkins",
+      "Nagios"
+    ],
+    ans: 2,
+    exp: "JENKINS is the CI tool mentioned. It pulls from GIT, builds, and deploys to test/production servers."
+  },
+  {
+    q: "Which DevOps benefit specifically addresses the problem of isolated teams that don't communicate — where each task was historically assigned to a specific team causing reduced flexibility?",
+    opts: [
+      "Minimized Failures",
+      "Breaking Silos",
+      "Continuous Improvement",
+      "Performance-oriented Culture"
+    ],
+    ans: 1,
+    exp: "BREAKING SILOS = removing the old departmental isolation pattern where teams were separated and didn't collaborate."
+  },
+  {
+    q: "Continuous Deployment (CD) in the DevOps lifecycle is best described as:",
+    opts: [
+      "Manually deploying changes to production after board approval.",
+      "Running automated tests in parallel using Selenium.",
+      "Automatically deploying changes to staging or production as soon as they are merged.",
+      "Monitoring application performance using Nagios and ELK Stack."
+    ],
+    ans: 2,
+    exp: "CD = automating the deployment process. Changes go to staging/prod automatically as soon as they're merged — no manual steps."
+  },
+];
+
+const sectionB = [
+  {
+    q: "A development team notices their application's modules all run within the same process and a bug in one module causes the entire application to crash. Which monolithic disadvantage does this BEST illustrate?",
+    opts: [
+      "Slow development due to large codebase.",
+      "Lack of fault isolation — all modules in one process affect each other.",
+      "Locked into an obsolete technology stack.",
+      "Difficulty scaling individual components."
+    ],
+    ans: 1,
+    exp: "LACK OF FAULT ISOLATION = all modules in one process. One failure brings down everything."
+  },
+  {
+    q: "According to the lecture, Microservices is described as the evolution of which earlier architecture?",
+    opts: [
+      "Model-View-Controller (MVC)",
+      "N-Tier Architecture",
+      "Service-Oriented Architecture (SOA)",
+      "Monolithic Architecture"
+    ],
+    ans: 2,
+    exp: "Microservices evolved from SOA (Service-Oriented Architecture). They share similar concepts but with finer granularity."
+  },
+  {
+    q: "Which Microservices principle requires that each service only impacts ITSELF when it fails, ensuring other services continue running normally?",
+    opts: [
+      "Highly Observable",
+      "Deploy Independently",
+      "Failure Isolation",
+      "Culture of Automation"
+    ],
+    ans: 2,
+    exp: "FAILURE ISOLATION = a failure in one microservice affects only that service. Others keep running. This is a major advantage over monolithic."
+  },
+  {
+    q: "The 'Highly Observable' Microservices principle means that each service should:",
+    opts: [
+      "Be visible to end users through a public API gateway.",
+      "Collect logs, events, and stats to analyze what is happening within each service.",
+      "Share a centralized database so all data can be monitored in one place.",
+      "Use the same technology stack so monitoring tools work uniformly."
+    ],
+    ans: 1,
+    exp: "HIGHLY OBSERVABLE = services collect logs, events, and metrics so you can analyze behavior and detect problems."
+  },
+  {
+    q: "The 'Culture of Automation' principle in Microservices architecture requires designing services for:",
+    opts: [
+      "Manual testing and approval workflows.",
+      "Continuous Integration and Continuous Delivery (CI/CD).",
+      "Centralized deployment by a single operations team.",
+      "Tightly coupled modules that are released together."
+    ],
+    ans: 1,
+    exp: "Culture of Automation = design for CI/CD pipelines. Automate testing, building, and deployment."
+  },
+  {
+    q: "Which statement about Microservices is TRUE regarding technology stack?",
+    opts: [
+      "All services must use the same programming language for compatibility.",
+      "Services must share the same database management system.",
+      "Different services can use different technology stacks, libraries, and frameworks.",
+      "Services must be built using only Java and Spring Boot."
+    ],
+    ans: 2,
+    exp: "Microservices allow POLYGLOT — each service can use its own language, framework, and tools independently."
+  },
+  {
+    q: "In the DevOps lifecycle, which stage is responsible for ensuring service uptime and optimal performance by collecting crucial operational information?",
+    opts: [
+      "Release",
+      "Deploy",
+      "Monitor",
+      "Plan"
+    ],
+    ans: 2,
+    exp: "MONITOR stage = ensures uptime and optimal performance. Tools like Nagios, Splunk, ELK Stack are used here."
+  },
+  {
+    q: "Which monitoring tools are explicitly mentioned in the DevOps lecture for monitoring applications and servers?",
+    opts: [
+      "Jenkins, Maven, GIT",
+      "Selenium, Tomcat, Docker",
+      "Nagios, Splunk, ELK Stack, Sensu",
+      "Kubernetes, Ansible, Terraform"
+    ],
+    ans: 2,
+    exp: "Monitoring tools from the lecture: Nagios, Splunk, ELK Stack, and Sensu."
+  },
+  {
+    q: "In Continuous Development, which tool is mentioned for maintaining different versions of code (version control)?",
+    opts: [
+      "Jenkins",
+      "Selenium",
+      "Maven",
+      "GIT"
+    ],
+    ans: 3,
+    exp: "GIT is used for version control (tracking code versions). Maven is used for building/packaging — both are mentioned together."
+  },
+  {
+    q: "Continuous Testing in DevOps specifically aims to achieve:",
+    opts: [
+      "Deploying changes automatically to production servers.",
+      "Detecting bugs using automated tools like Selenium running tests in parallel.",
+      "Planning sprint tasks based on monitoring feedback.",
+      "Packaging the source code into an executable WAR file."
+    ],
+    ans: 1,
+    exp: "Continuous Testing = automated tools (Selenium) test code in parallel to find bugs before deployment."
+  },
+  {
+    q: "The DevOps lifecycle stage 'Plan' is best described as:",
+    opts: [
+      "The first stage where developers write initial code for the sprint.",
+      "The stage that gathers information from monitoring feedback and implements changes for better performance.",
+      "The stage responsible for running automated unit tests.",
+      "The stage where the release schedule is communicated to clients."
+    ],
+    ans: 1,
+    exp: "PLAN = uses feedback from MONITOR stage to plan improvements. It closes the feedback loop."
+  },
+  {
+    q: "The DevOps benefit 'Minimized Failures' is achieved partly because DevOps is usually implemented on top of which development methodology?",
+    opts: [
+      "Waterfall Model",
+      "Spiral Model",
+      "Agile Model",
+      "V-Model"
+    ],
+    ans: 2,
+    exp: "DevOps is typically on top of AGILE, which promotes collaboration, modular programming, and fault detection — minimizing failures."
+  },
+  {
+    q: "The 'Operate' stage in the DevOps lifecycle is BEST described as:",
+    opts: [
+      "Running automated test scripts before each deployment.",
+      "Compiling and packaging the application into a deployable artifact.",
+      "The phase where the application runs in production and clients use it in real-world scenarios.",
+      "The planning phase where sprint backlog items are assigned to teams."
+    ],
+    ans: 2,
+    exp: "OPERATE = the app is live in production, being used by real clients in real scenarios."
+  },
+  {
+    q: "Which of the following CORRECTLY identifies why testing a monolithic application is difficult, leading to bugs reaching production?",
+    opts: [
+      "Monolithic applications cannot be tested with REST APIs.",
+      "The large size of the application makes thorough testing difficult, and lack of fault isolation means bugs spread easily.",
+      "Monolithic applications require a separate testing server that is hard to configure.",
+      "Automated testing tools do not support monolithic architectures."
+    ],
+    ans: 1,
+    exp: "Large size = hard to test thoroughly. No fault isolation = bugs spread. Both together = unreliable production."
+  },
+  {
+    q: "In the Continuous Development stage of DevOps, what is Maven specifically used for?",
+    opts: [
+      "Version control and tracking code changes.",
+      "Monitoring the production server for errors.",
+      "Building and packaging the code into an executable file.",
+      "Running automated end-to-end browser tests."
+    ],
+    ans: 2,
+    exp: "Maven = BUILD tool. It takes your source code and packages it into an executable (like a JAR or WAR). GIT handles version control."
+  },
+  {
+    q: "Which of the following is a defining characteristic that SEPARATES Microservices from traditional SOA (Service-Oriented Architecture)?",
+    opts: [
+      "SOA services are loosely coupled while Microservices are tightly coupled.",
+      "Microservices are smaller, independently deployable units each owning their own data, while SOA typically involves larger services sharing an Enterprise Service Bus.",
+      "SOA uses multiple databases while Microservices use a single centralized database.",
+      "Microservices require all services to use the same technology framework."
+    ],
+    ans: 1,
+    exp: "Microservices = finer granularity than SOA, each owning its own data. SOA often uses an ESB for communication; Microservices avoid that central dependency."
+  },
+  {
+    q: "The 'Modelled Around Business Domain' Microservices principle means that:",
+    opts: [
+      "Each microservice must map to a database table.",
+      "The entire system is built as a single module focused on the core business logic.",
+      "System capabilities are separated into different domains, each focused on one business area and its associated logic.",
+      "Microservices must follow the Model-View-Controller pattern."
+    ],
+    ans: 2,
+    exp: "Business Domain = separate capabilities into domains (e.g., payments, users, orders), each service owns ONE domain."
+  },
+  {
+    q: "The DevOps benefit 'Continuous Improvement' achieves higher customer satisfaction mainly by:",
+    opts: [
+      "Increasing the number of developers in each team.",
+      "Reducing the feedback cycle and delivery loops by aligning business with IT.",
+      "Deploying the application to multiple cloud regions simultaneously.",
+      "Using more monitoring tools to detect failures faster."
+    ],
+    ans: 1,
+    exp: "Continuous Improvement = shorter feedback cycles + tighter business/IT alignment → faster response to customer needs."
+  },
+  {
+    q: "A company wants to scale ONLY their payment processing module because it handles peak load during sales. This is IMPOSSIBLE in which architecture?",
+    opts: [
+      "Microservices architecture",
+      "SOA architecture with independent deployment units",
+      "Monolithic architecture",
+      "Serverless architecture"
+    ],
+    ans: 2,
+    exp: "Monolithic = you CANNOT scale individual components. You must scale the ENTIRE application even if only one part needs it."
+  },
+  {
+    q: "In the DevOps lifecycle, what is the correct order of stages starting from when a developer writes code?",
+    opts: [
+      "Code → Test → Build → Release → Deploy → Operate → Monitor → Plan",
+      "Code → Build → Test → Release → Deploy → Operate → Monitor → Plan",
+      "Plan → Code → Test → Build → Monitor → Deploy → Release → Operate",
+      "Build → Code → Test → Plan → Deploy → Release → Operate → Monitor"
+    ],
+    ans: 1,
+    exp: "Correct DevOps order: Code → Build → Test → Release → Deploy → Operate → Monitor → Plan (then loops back)."
+  },
+  {
+    q: "The hexagonal architecture model mentioned for monolithic applications consists of:",
+    opts: [
+      "Six independent microservices connected through an API gateway.",
+      "Business logic at the core, surrounded by adapters that implement UIs and interfaces with external systems.",
+      "A six-layer stack: UI, Presentation, Business, Service, Data Access, and Database.",
+      "Six separate deployment units managed by different DevOps teams."
+    ],
+    ans: 1,
+    exp: "Hexagonal = Business Logic CENTER surrounded by ADAPTERS that handle UI and external systems (payments, messaging, email)."
+  }
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let correct = 0, wrong = 0, answered = 0;
+const total = sectionA.length + sectionB.length;
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderQuestions(data, containerId, offset) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const idx = offset + i;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `q-${idx}`;
+
+    const letters = ['A','B','C','D','E'];
+    const optsHtml = item.opts.map((o, oi) =>
+      `<button class="option-btn" onclick="selectAnswer(${idx}, ${oi})" data-qi="${idx}" data-oi="${oi}">
+        <span class="letter">${letters[oi]}</span>${o}
+      </button>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="q-num">Q${idx + 1}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options">${optsHtml}</div>
+      <div class="feedback" id="fb-${idx}"></div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+const allQuestions = [...sectionA, ...sectionB];
+
+renderQuestions(sectionA, 'quiz-a', 0);
+renderQuestions(sectionB, 'quiz-b', sectionA.length);
+
+// ─────────────────────────────────────────────
+// ANSWER LOGIC
+// ─────────────────────────────────────────────
+function selectAnswer(qIdx, optIdx) {
+  const item = allQuestions[qIdx];
+  const card = document.getElementById(`q-${qIdx}`);
+  if (card.classList.contains('answered')) return;
+
+  card.classList.add('answered');
+
+  // Disable all buttons
+  const btns = card.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = optIdx === item.ans;
+
+  // Style chosen
+  btns[optIdx].classList.add(isCorrect ? 'correct-ans' : 'wrong-ans');
+
+  // If wrong, reveal correct
+  if (!isCorrect) {
+    btns[item.ans].classList.add('reveal-correct');
+  }
+
+  // Feedback
+  const fb = document.getElementById(`fb-${qIdx}`);
+  fb.classList.add('show', isCorrect ? 'ok' : 'bad');
+  fb.textContent = (isCorrect ? '✔ Correct — ' : '✘ Wrong — ') + item.exp;
+
+  // Score
+  if (isCorrect) correct++; else wrong++;
+  answered++;
+
+  document.getElementById('sc-correct').textContent = correct;
+  document.getElementById('sc-wrong').textContent = wrong;
+  document.getElementById('sc-total').textContent = answered;
+
+  // Progress
+  document.getElementById('prog-bar').style.width = `${(answered / total) * 100}%`;
+}
+
+// ─────────────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────────────
+function showResults() {
+  const pct = Math.round((correct / total) * 100);
+  let emoji = '💀', title = 'Keep Studying!', sub = 'Review the slides thoroughly before the exam.';
+  if (pct >= 90) { emoji = '🏆'; title = 'Excellent!'; sub = "You're ready for the exam. Outstanding performance!"; }
+  else if (pct >= 75) { emoji = '🎯'; title = 'Great Job!'; sub = 'Almost there! Review the questions you missed.'; }
+  else if (pct >= 55) { emoji = '📚'; title = 'Not Bad!'; sub = 'Focus on the topics you missed and try again.'; }
+
+  document.getElementById('modal-emoji').textContent = emoji;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-score').textContent = `${correct} / ${total}`;
+  document.getElementById('modal-sub').textContent = sub;
+  document.getElementById('results-modal').classList.add('show');
+}
+
+function restart() {
+  location.reload();
+}
+</script>
+</body>
+</html>
