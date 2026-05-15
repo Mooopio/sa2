@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IS-352 | Microservices Data Management Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1628;
+    --bg3: #151d35;
+    --card: #111827;
+    --border: rgba(99,179,237,0.15);
+    --accent: #63b3ed;
+    --accent2: #f6ad55;
+    --accent3: #68d391;
+    --accent4: #fc8181;
+    --accent5: #b794f4;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --glow: rgba(99,179,237,0.12);
+    --tag-bg: rgba(99,179,237,0.1);
+  }
+  [data-theme="light"] {
+    --bg: #f0f4ff;
+    --bg2: #e8eef8;
+    --bg3: #dce6f5;
+    --card: #ffffff;
+    --border: rgba(59,130,246,0.2);
+    --accent: #2563eb;
+    --accent2: #d97706;
+    --accent3: #059669;
+    --accent4: #dc2626;
+    --accent5: #7c3aed;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --glow: rgba(59,130,246,0.08);
+    --tag-bg: rgba(59,130,246,0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Lora', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  [data-theme="light"] header { background: rgba(240,244,255,0.9); }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+  }
+  .logo span { color: var(--text2); font-weight: 400; font-size: 0.85rem; display: block; letter-spacing: 0.12em; }
+  nav { display: flex; gap: 0.25rem; align-items: center; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--glow);
+  }
+  .theme-toggle {
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border: 1px solid rgba(246,173,85,0.3);
+    background: rgba(246,173,85,0.08);
+    padding: 0.35rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text2);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* SECTIONS */
+  .section { display: none; position: relative; z-index: 1; padding: 2rem; max-width: 1000px; margin: 0 auto 4rem; }
+  .section.active { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-title .icon { font-size: 1.5rem; }
+  .section-sub { color: var(--text2); margin-bottom: 2.5rem; font-size: 0.95rem; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent5));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover { box-shadow: 0 8px 40px var(--glow); border-color: rgba(99,179,237,0.3); }
+  .card:hover::before { opacity: 1; }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card p { color: var(--text2); line-height: 1.8; margin-bottom: 0.8rem; }
+  .card p:last-child { margin-bottom: 0; }
+  .card strong { color: var(--text); }
+
+  /* LISTS */
+  ul.styled, ol.styled { padding-left: 1.5rem; }
+  ul.styled li, ol.styled li { color: var(--text2); line-height: 1.8; margin-bottom: 0.4rem; }
+  ul.styled li strong, ol.styled li strong { color: var(--text); }
+
+  /* TAGS */
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin: 0.2rem;
+  }
+  .tag.blue { background: rgba(99,179,237,0.15); color: var(--accent); border: 1px solid rgba(99,179,237,0.25); }
+  .tag.orange { background: rgba(246,173,85,0.15); color: var(--accent2); border: 1px solid rgba(246,173,85,0.25); }
+  .tag.green { background: rgba(104,211,145,0.15); color: var(--accent3); border: 1px solid rgba(104,211,145,0.25); }
+  .tag.red { background: rgba(252,129,129,0.15); color: var(--accent4); border: 1px solid rgba(252,129,129,0.25); }
+  .tag.purple { background: rgba(183,148,244,0.15); color: var(--accent5); border: 1px solid rgba(183,148,244,0.25); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin: 1.5rem 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 0.85rem 1.25rem;
+    background: var(--bg3);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.85rem 1.25rem;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+  td strong { color: var(--text); }
+
+  /* MCQ */
+  .mcq-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    transition: all 0.2s;
+  }
+  .mcq-q {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .mcq-num {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    background: rgba(246,173,85,0.1);
+    border: 1px solid rgba(246,173,85,0.25);
+    border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .diff { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .diff.easy { background: rgba(104,211,145,0.1); color: var(--accent3); border: 1px solid rgba(104,211,145,0.2); }
+  .diff.medium { background: rgba(246,173,85,0.1); color: var(--accent2); border: 1px solid rgba(246,173,85,0.2); }
+  .diff.hard { background: rgba(252,129,129,0.1); color: var(--accent4); border: 1px solid rgba(252,129,129,0.2); }
+  .options { list-style: none; }
+  .options li {
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.4rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .options li .opt-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    min-width: 18px;
+  }
+  .options li:hover { border-color: var(--accent); background: var(--tag-bg); color: var(--text); }
+  .options li.correct { background: rgba(104,211,145,0.12); border-color: var(--accent3); color: var(--accent3); }
+  .options li.wrong { background: rgba(252,129,129,0.1); border-color: var(--accent4); color: var(--accent4); }
+  .explain-box {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg3);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+  .explain-box strong { color: var(--accent); }
+  .mcq-card.answered .explain-box { display: block; }
+
+  /* WRITTEN Q */
+  .wq-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .wq-type { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent5); margin-bottom: 0.5rem; }
+  .wq-q { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.5; }
+  .wq-toggle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .wq-toggle:hover { border-color: var(--accent5); color: var(--accent5); background: rgba(183,148,244,0.1); }
+  .wq-answer {
+    display: none;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--bg3);
+    border-radius: 10px;
+    color: var(--text2);
+    line-height: 1.8;
+    font-size: 0.9rem;
+  }
+  .wq-answer.open { display: block; }
+  .wq-answer h4 { font-family: 'Syne', sans-serif; color: var(--accent5); font-size: 0.85rem; margin-bottom: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
+
+  /* REVISION */
+  .rev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .rev-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .rev-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--glow);
+    transform: translate(20px, 20px);
+  }
+  .rev-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rev-card ul { list-style: none; }
+  .rev-card ul li {
+    font-size: 0.83rem;
+    color: var(--text2);
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  .rev-card ul li:last-child { border-bottom: none; }
+  .rev-card ul li strong { color: var(--text); }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .callout .ci { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .callout.info { background: rgba(99,179,237,0.08); border: 1px solid rgba(99,179,237,0.2); color: var(--text2); }
+  .callout.warn { background: rgba(246,173,85,0.08); border: 1px solid rgba(246,173,85,0.2); color: var(--text2); }
+  .callout.tip { background: rgba(104,211,145,0.08); border: 1px solid rgba(104,211,145,0.2); color: var(--text2); }
+  .callout.danger { background: rgba(252,129,129,0.08); border: 1px solid rgba(252,129,129,0.2); color: var(--text2); }
+  .callout strong { color: var(--text); }
+
+  /* MNEMONIC BOX */
+  .mnemonic {
+    background: linear-gradient(135deg, rgba(183,148,244,0.1), rgba(99,179,237,0.08));
+    border: 1px solid rgba(183,148,244,0.25);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .mnemonic-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent5);
+    margin-bottom: 0.5rem;
+  }
+  .mnemonic-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .mnemonic-detail { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+  .mnemonic-detail span { color: var(--accent5); font-weight: 700; }
+
+  /* PROGRESS */
+  .mcq-progress {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text2);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .score-display { color: var(--accent3); font-size: 0.9rem; font-weight: 500; }
+
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  /* COLLAPSIBLE */
+  .collapsible-header {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+  }
+  .collapsible-header:hover { border-color: var(--accent); background: var(--tag-bg); }
+  .collapsible-header .chevron { transition: transform 0.3s; font-size: 0.8rem; color: var(--text3); }
+  .collapsible-header.open .chevron { transform: rotate(180deg); }
+  .collapsible-body { display: none; padding: 0 0.25rem 0.75rem; }
+  .collapsible-body.open { display: block; animation: fadeUp 0.25s ease; }
+
+  @media(max-width:768px){
+    header { padding: 0 1rem; }
+    nav { gap: 0.2rem; }
+    .nav-btn { font-size: 0.6rem; padding: 0.35rem 0.6rem; }
+    .section { padding: 1rem; }
+    .hero { padding: 3rem 1rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS-352 <span>Lecture 10 · Dr. Wael Abbas · 2023-2024</span></div>
+  <nav>
+    <button class="nav-btn active" onclick="show('explain')">📖 Learn</button>
+    <button class="nav-btn" onclick="show('summary')">📋 Summary</button>
+    <button class="nav-btn" onclick="show('mcq')">🧩 MCQ</button>
+    <button class="nav-btn" onclick="show('written')">✍️ Written</button>
+    <button class="nav-btn" onclick="show('revision')">⚡ Revision</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+  </nav>
+</header>
+
+<div class="hero" id="hero-block">
+  <div class="hero-badge">System Analysis & Design II · Microservices</div>
+  <h1><em>Data Management</em><br/>Design Patterns</h1>
+  <p>Complete exam preparation: deep explanations, smart summaries, 30+ MCQs, written Q&A, and a rapid revision sheet — all in one place.</p>
+</div>
+
+<!-- ============================= SECTION: EXPLAIN ============================= -->
+<div id="s-explain" class="section active">
+  <div class="section-title"><span class="icon">📖</span> Deep Understanding</div>
+  <p class="section-sub">Every concept explained clearly, with real-world analogies and exam-critical details.</p>
+
+  <!-- Overview -->
+  <div class="card">
+    <div class="card-title">🗂️ Overview: The 6 Data Management Patterns</div>
+    <p>In a microservices architecture, each service is an independent unit. The biggest challenge is: <strong>How do we manage data when services are isolated?</strong> These 6 patterns solve that problem:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;">
+      <span class="tag blue">Database per Service</span>
+      <span class="tag orange">Shared Database</span>
+      <span class="tag green">SAGA</span>
+      <span class="tag purple">CQRS</span>
+      <span class="tag red">Event Sourcing</span>
+      <span class="tag blue">Domain Event</span>
+    </div>
+    <div class="callout info" style="margin-top:1rem;">
+      <span class="ci">💡</span><span>Think of a microservices system like a <strong>city of shops</strong>. Each shop (service) has its own storage room. The patterns define how the shops share information, keep records in sync, and handle transactions across multiple shops.</span>
+    </div>
+  </div>
+
+  <!-- Pattern 1: DB per service -->
+  <div class="collapsible-header open" onclick="toggleCollapse(this)">
+    <span>1️⃣ Database per Service Pattern</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body open">
+    <div class="card">
+      <div class="card-title">What is it?</div>
+      <p>Each microservice has its <strong>own private database</strong>, accessible only through that service's API. No other service can directly query or write to it.</p>
+      <div class="callout tip"><span class="ci">🏪</span><span><strong>Analogy:</strong> Imagine Amazon, where the Orders department has its own filing cabinets, and the Customers department has its own separate cabinets. One department cannot open the other's drawers — they must ask each other formally via phone (API).</span></div>
+      <p><strong>Three implementation options (know all three!):</strong></p>
+      <ul class="styled">
+        <li><strong>Private-tables-per-service:</strong> All services share one DB server, but each service owns specific tables. Lowest overhead but weakest isolation.</li>
+        <li><strong>Schema-per-service:</strong> Each service gets its own database schema. Clearer ownership. Good balance of isolation and simplicity.</li>
+        <li><strong>Database-server-per-service:</strong> Each service has a completely separate DB server. Highest isolation. Used for high-throughput services.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ Benefits</div>
+      <ul class="styled">
+        <li><strong>Loose coupling:</strong> Changes in one service's DB don't break other services.</li>
+        <li><strong>Technology freedom:</strong> Each service can use the best DB type for its needs. (e.g., ElasticSearch for text search, Neo4j for social graphs)</li>
+      </ul>
+      <div class="card-title" style="margin-top:1rem;">❌ Drawbacks</div>
+      <ul class="styled">
+        <li><strong>Distributed transactions:</strong> Business operations spanning multiple services are hard (CAP theorem limits this).</li>
+        <li><strong>Cross-service joins:</strong> Querying data across multiple databases is complex.</li>
+        <li><strong>Operational complexity:</strong> Managing many different databases (SQL + NoSQL) increases DevOps overhead.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CAP Theorem -->
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <span>⚖️ CAP Theorem (Critical Exam Topic)</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="card">
+      <div class="card-title">The CAP Theorem</div>
+      <p>It is <strong>impossible</strong> for a distributed system to simultaneously guarantee all three properties:</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Property</th><th>Meaning</th></tr>
+          <tr><td><strong>Consistency (C)</strong></td><td>All nodes see the same data at the same time</td></tr>
+          <tr><td><strong>Availability (A)</strong></td><td>Every request gets a response (success or failure)</td></tr>
+          <tr><td><strong>Partition Tolerance (P)</strong></td><td>System keeps running even if network splits</td></tr>
+        </table>
+      </div>
+      <div class="callout warn"><span class="ci">⚠️</span><span>A distributed system can satisfy <strong>only 2 of the 3</strong> at a time. You MUST choose which one to sacrifice.</span></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>DB Type</th><th>Choice</th><th>Trade-off</th></tr>
+          <tr><td><strong>RDBMS (SQL)</strong></td><td>C + A (no P)</td><td>Not distributed; no network partitions assumed</td></tr>
+          <tr><td><strong>NoSQL (want P)</strong></td><td>C + P or A + P</td><td>Drop A → wait for consistency; Drop C → accept stale data</td></tr>
+        </table>
+      </div>
+      <div class="mnemonic">
+        <div class="mnemonic-label">🧠 Mnemonic</div>
+        <div class="mnemonic-text">CAP = Can't All Please</div>
+        <div class="mnemonic-detail"><span>C</span>an't (Consistency) <span>A</span>ll (Availability) <span>P</span>lease (Partition tolerance) — You can only satisfy two at once!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACID vs BASE -->
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <span>🧪 ACID vs BASE (SQL vs NoSQL Guarantees)</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="card">
+      <div class="card-title">ACID (SQL Databases)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Letter</th><th>Property</th><th>Meaning</th></tr>
+          <tr><td><strong>A</strong></td><td>Atomicity</td><td>All operations complete, or NONE do (all-or-nothing)</td></tr>
+          <tr><td><strong>C</strong></td><td>Consistency</td><td>Transactions never cause or observe invalid/inconsistent data</td></tr>
+          <tr><td><strong>I</strong></td><td>Isolation</td><td>Each transaction behaves as if it's the only one running; uncommitted changes are hidden</td></tr>
+          <tr><td><strong>D</strong></td><td>Durability</td><td>Once committed, changes are permanent — not reversed</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">BASE (NoSQL Databases)</div>
+      <div class="callout info"><span class="ci">💡</span><span>NoSQL sacrifices ACID for <strong>scalability and performance</strong>.</span></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Letter</th><th>Property</th><th>Meaning</th></tr>
+          <tr><td><strong>B</strong>A</td><td>Basically Available</td><td>System always responds, even if parts of the data are temporarily unavailable. Uses replication + sharding to minimize failures.</td></tr>
+          <tr><td><strong>S</strong></td><td>Soft State</td><td>Data can be inconsistent at any given moment; consistency is NOT enforced strictly. State may change even without input.</td></tr>
+          <tr><td><strong>E</strong></td><td>Eventual Consistency</td><td>At some future point, all nodes WILL agree on the same data — but not immediately. ACID is pessimistic; BASE is optimistic.</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Feature</th><th>ACID</th><th>BASE</th></tr>
+        <tr><td>DB Type</td><td>SQL / RDBMS</td><td>NoSQL</td></tr>
+        <tr><td>Consistency</td><td>Immediate, strict</td><td>Eventual</td></tr>
+        <tr><td>Focus</td><td>Safety & correctness</td><td>Scalability & performance</td></tr>
+        <tr><td>Attitude</td><td>Pessimistic</td><td>Optimistic</td></tr>
+        <tr><td>Enforcement</td><td>At commit time</td><td>At some undefined future time</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pattern 2: Shared DB -->
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <span>2️⃣ Shared Database Pattern</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="card">
+      <div class="card-title">What is it?</div>
+      <p>Multiple services share a <strong>single common database</strong>. Any service can freely access data owned by another service directly using local ACID transactions.</p>
+      <div class="callout warn"><span class="ci">⚠️</span><span><strong>Anti-pattern alert:</strong> This is generally considered an anti-pattern in microservices because it tightly couples services. But it has legitimate use cases for small systems.</span></div>
+      <p><strong>Benefits:</strong></p>
+      <ul class="styled">
+        <li>Developers use familiar <strong>ACID transactions</strong> for data consistency.</li>
+        <li>Simpler to operate — just one database to manage.</li>
+      </ul>
+      <p><strong>Drawbacks:</strong></p>
+      <ul class="styled">
+        <li><strong>Development-time coupling:</strong> Changing a schema requires coordination with all teams using that schema.</li>
+        <li><strong>Runtime coupling:</strong> A long-running transaction in Service A can lock tables and block Service B.</li>
+        <li><strong>Technology lock-in:</strong> One DB may not fit the needs of all services.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- NoSQL Types -->
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <span>🗄️ NoSQL Database Types (4 Types — High Exam Weight)</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="card">
+      <div class="card-title">📄 1. Document Database</div>
+      <p><strong>Structure:</strong> Collections → Documents → Key-Value Pairs. Each document has a unique key and flexible content.</p>
+      <p><strong>Best for:</strong> Content management systems, blogging platforms, e-commerce, real-time analytics, flexible schema queries.</p>
+      <p><strong>Avoid when:</strong> Queries against varying aggregates.</p>
+      <p><strong>Example:</strong> <span class="tag blue">MongoDB</span></p>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 2. Column Database</div>
+      <p><strong>Structure:</strong> Keyspace → Column Families → Rows → Columns (key-value pairs). Each row is identified by a unique row key. Different rows can have different numbers of columns.</p>
+      <p><strong>Best for:</strong> Heavy write operations, large data volumes, OLAP queries, high performance/availability/scalability, real-time analytics, web analytics.</p>
+      <p><strong>Avoid when:</strong> Query patterns change frequently; early-stage development.</p>
+      <p><strong>Example:</strong> <span class="tag orange">Cassandra</span></p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔑 3. Key-Value Database</div>
+      <p><strong>Structure:</strong> Simplest NoSQL model. Just pairs of key → value. Keys are unique identifiers; values can be simple or complex. Retrieve values using atomic keys.</p>
+      <p><strong>Best for:</strong> Session data, user profiles, preferences, blog comments, product recommendations. High read/write velocity without frequent updates.</p>
+      <p><strong>Avoid when:</strong> (1) Multiple unique key operations needed. (2) Relationships between values needed (joins). (3) Queries by specific data fields. (4) Part of the value needs frequent updates.</p>
+      <p><strong>Example:</strong> <span class="tag red">Redis</span></p>
+    </div>
+    <div class="card">
+      <div class="card-title">🕸️ 4. Graph Database</div>
+      <p><strong>Structure:</strong> Composed of:</p>
+      <ul class="styled">
+        <li><strong>Nodes:</strong> Main entities (like rows in RDBMS)</li>
+        <li><strong>Edges (Relationships):</strong> Connections between nodes (like foreign keys in RDBMS)</li>
+        <li><strong>Labels:</strong> Attributes that group similar nodes</li>
+        <li><strong>Properties:</strong> Key/value pairs stored within nodes or relationships</li>
+      </ul>
+      <p style="margin-top:0.8rem;"><strong>Key Differentiator:</strong> Relationships are <strong>first-class citizens</strong> — stored explicitly, not calculated at query time (unlike RDBMS joins). Traversal is very fast.</p>
+      <p><strong>Best for:</strong> Social networks, recommendation systems, fraud detection, bioinformatics, security/access control, network/cloud management, complex graph-based queries.</p>
+      <p><strong>Avoid when:</strong> Connections between data are NOT the primary focus, and data is transactional in nature.</p>
+      <p><strong>Example:</strong> <span class="tag purple">Neo4j</span></p>
+      <div class="callout info" style="margin-top:1rem;"><span class="ci">🔍</span><span>In RDBMS, relationships are stored in <strong>foreign key fields or junction tables</strong>, and joins are <strong>calculated at query time</strong> — expensive! In graph DBs, relationships are <strong>persisted directly</strong> and traversal is instant.</span></div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type</th><th>Structure</th><th>Best For</th><th>Avoid When</th><th>Example</th></tr>
+        <tr>
+          <td><strong>Document</strong></td>
+          <td>Collections → Documents → KV pairs</td>
+          <td>CMS, blogs, e-commerce, flexible queries</td>
+          <td>Varying aggregate queries</td>
+          <td>MongoDB</td>
+        </tr>
+        <tr>
+          <td><strong>Column</strong></td>
+          <td>Keyspace → Column Families → Rows → KV Columns</td>
+          <td>OLAP, heavy writes, large data, analytics</td>
+          <td>Frequently changing query patterns, early dev</td>
+          <td>Cassandra</td>
+        </tr>
+        <tr>
+          <td><strong>Key-Value</strong></td>
+          <td>Key → Value pairs</td>
+          <td>Sessions, profiles, caching, recommendations</td>
+          <td>Joins, relational data, partial value updates</td>
+          <td>Redis</td>
+        </tr>
+        <tr>
+          <td><strong>Graph</strong></td>
+          <td>Nodes + Edges + Labels + Properties</td>
+          <td>Social graphs, fraud detection, recommendations</td>
+          <td>Non-relational, transactional data</td>
+          <td>Neo4j</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Other Patterns Mentioned -->
+  <div class="collapsible-header" onclick="toggleCollapse(this)">
+    <span>🔗 Other Patterns Overview (SAGA, CQRS, Event Sourcing, Domain Event)</span><span class="chevron">▼</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="card">
+      <div class="card-title">SAGA Pattern</div>
+      <p>A sequence of <strong>local transactions</strong> used to maintain data consistency across services. Instead of a single distributed transaction, each service performs a local transaction and publishes an event/message to trigger the next step. If a step fails, compensating transactions are executed to undo previous steps.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">CQRS (Command Query Responsibility Segregation)</div>
+      <p>Implement queries by maintaining one or more <strong>materialized views</strong> that can be efficiently queried. Separates the "read" model (Query) from the "write" model (Command). Solves the problem of joining data across multiple microservice databases.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Event Sourcing</div>
+      <p>Instead of storing the current state of data, store a <strong>sequence of events</strong> (the history of changes). The current state is reconstructed by replaying these events.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Domain Event</div>
+      <p>Publish an <strong>event whenever data changes</strong>. Other services can subscribe and react to these events, enabling loose coupling and real-time data synchronization.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= SECTION: SUMMARY ============================= -->
+<div id="s-summary" class="section">
+  <div class="section-title"><span class="icon">📋</span> Smart Summary</div>
+  <p class="section-sub">Hierarchical, high-yield summary optimized for fast review.</p>
+
+  <div class="card">
+    <div class="card-title">🗂️ 6 Data Management Patterns</div>
+    <ul class="styled">
+      <li><strong>Database per Service:</strong> Each service → its own private DB, only via API</li>
+      <li><strong>Shared Database:</strong> All services share one DB (anti-pattern in most cases)</li>
+      <li><strong>SAGA:</strong> Sequence of local transactions for cross-service consistency</li>
+      <li><strong>CQRS:</strong> Materialized views for efficient queries; separates read/write</li>
+      <li><strong>Event Sourcing:</strong> Store events as history, not current state</li>
+      <li><strong>Domain Event:</strong> Publish events when data changes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗄️ DB per Service — 3 Implementation Options</div>
+    <ul class="styled">
+      <li><strong>Private tables:</strong> Same server, different tables → lowest overhead</li>
+      <li><strong>Schema per service:</strong> Same server, different schemas → clearer ownership</li>
+      <li><strong>DB server per service:</strong> Separate servers → highest isolation, for high-throughput</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ CAP Theorem — 3 Properties, Choose 2</div>
+    <ul class="styled">
+      <li><strong>Consistency (C):</strong> All nodes see same data at same time</li>
+      <li><strong>Availability (A):</strong> Every request gets a response</li>
+      <li><strong>Partition Tolerance (P):</strong> System works despite network splits</li>
+      <li>RDBMS = C + A (no P) | NoSQL = P + (C or A)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧪 ACID vs BASE</div>
+    <ul class="styled">
+      <li><strong>ACID:</strong> Atomic, Consistent, Isolated, Durable → SQL, pessimistic, immediate consistency</li>
+      <li><strong>BASE:</strong> Basically Available, Soft state, Eventually consistent → NoSQL, optimistic, scalable</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗄️ 4 NoSQL Types + Key Facts</div>
+    <ul class="styled">
+      <li><strong>Document (MongoDB):</strong> Collections → Documents → KV. Best: CMS, e-commerce, blogs.</li>
+      <li><strong>Column (Cassandra):</strong> Keyspace → Column Families → Rows. Best: OLAP, heavy writes, analytics.</li>
+      <li><strong>Key-Value (Redis):</strong> Key → Value. Best: sessions, caching, profiles. Avoid: joins, relations.</li>
+      <li><strong>Graph (Neo4j):</strong> Nodes + Edges + Labels + Properties. Relationships stored explicitly. Best: social networks, fraud detection.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 Graph DB Key Distinction</div>
+    <ul class="styled">
+      <li>Relationships are <strong>first-class citizens</strong> — stored explicitly, not computed at query time</li>
+      <li>RDBMS uses foreign keys/junction tables + expensive join operations</li>
+      <li>Graph DB stores relationships as persisted data → instant traversal</li>
+    </ul>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Master Mnemonic</div>
+    <div class="mnemonic-text">ACID = All Changes In Disk</div>
+    <div class="mnemonic-detail"><span>A</span>tomicity · <span>C</span>onsistency · <span>I</span>solation · <span>D</span>urability</div>
+  </div>
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 NoSQL Types Mnemonic</div>
+    <div class="mnemonic-text">DCKG = "Data Can Keep Going"</div>
+    <div class="mnemonic-detail"><span>D</span>ocument · <span>C</span>olumn · <span>K</span>ey-Value · <span>G</span>raph</div>
+  </div>
+</div>
+
+<!-- ============================= SECTION: MCQ ============================= -->
+<div id="s-mcq" class="section">
+  <div class="section-title"><span class="icon">🧩</span> MCQ Exam Training</div>
+  <p class="section-sub">30 questions — easy, medium, and hard. Click an option to reveal the answer and explanation.</p>
+
+  <div class="mcq-progress">
+    <span>Questions answered: <span id="answered-count">0</span> / 30</span>
+    <span class="score-display">Score: <span id="score-val">0</span> / <span id="total-answered">0</span></span>
+  </div>
+
+  <div id="mcq-container"></div>
+</div>
+
+<!-- ============================= SECTION: WRITTEN ============================= -->
+<div id="s-written" class="section">
+  <div class="section-title"><span class="icon">✍️</span> Written Questions</div>
+  <p class="section-sub">Short answer and long-form exam questions with model answers.</p>
+  <div id="written-container"></div>
+</div>
+
+<!-- ============================= SECTION: REVISION ============================= -->
+<div id="s-revision" class="section">
+  <div class="section-title"><span class="icon">⚡</span> Rapid Revision Sheet</div>
+  <p class="section-sub">The night-before-exam cheat sheet. One glance = everything you need.</p>
+
+  <div class="rev-grid">
+    <div class="rev-card">
+      <div class="rev-title">6 Patterns</div>
+      <ul>
+        <li><strong>DB/Service</strong> — private DB, via API only</li>
+        <li><strong>Shared DB</strong> — one DB, all services</li>
+        <li><strong>SAGA</strong> — local txns, cross-service</li>
+        <li><strong>CQRS</strong> — materialized views</li>
+        <li><strong>Event Sourcing</strong> — store events, not state</li>
+        <li><strong>Domain Event</strong> — publish on data change</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">DB/Service Options</div>
+      <ul>
+        <li><strong>Private tables</strong> — lowest overhead</li>
+        <li><strong>Schema/service</strong> — clear ownership</li>
+        <li><strong>DB server/service</strong> — max isolation</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">CAP Theorem</div>
+      <ul>
+        <li><strong>C</strong> — same data, all nodes</li>
+        <li><strong>A</strong> — always responds</li>
+        <li><strong>P</strong> — survives network splits</li>
+        <li>SQL = C+A | NoSQL = P+(C or A)</li>
+        <li>Can ONLY satisfy 2 of 3</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">ACID</div>
+      <ul>
+        <li><strong>A</strong>tomicity — all or nothing</li>
+        <li><strong>C</strong>onsistency — valid data always</li>
+        <li><strong>I</strong>solation — no dirty reads</li>
+        <li><strong>D</strong>urability — committed = permanent</li>
+        <li>→ SQL · Pessimistic · Strict</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">BASE</div>
+      <ul>
+        <li><strong>B</strong>asically Available — partial OK</li>
+        <li><strong>S</strong>oft State — may be inconsistent</li>
+        <li><strong>E</strong>ventually Consistent — future agree</li>
+        <li>→ NoSQL · Optimistic · Scalable</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">4 NoSQL Types</div>
+      <ul>
+        <li><strong>Document</strong> → MongoDB (CMS, e-comm)</li>
+        <li><strong>Column</strong> → Cassandra (OLAP, writes)</li>
+        <li><strong>Key-Value</strong> → Redis (sessions, cache)</li>
+        <li><strong>Graph</strong> → Neo4j (social, fraud)</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">Graph DB Unique Feature</div>
+      <ul>
+        <li>Nodes = entities (like rows)</li>
+        <li>Edges = relationships (like FK)</li>
+        <li>Labels = group similar nodes</li>
+        <li>Properties = KV in nodes/edges</li>
+        <li>Relationships = <strong>first-class citizens</strong></li>
+        <li>Stored explicitly → instant traversal</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">Key Avoidances</div>
+      <ul>
+        <li>Key-Value: avoid joins, relations</li>
+        <li>Column: avoid changing query patterns</li>
+        <li>Graph: avoid transactional data</li>
+        <li>Document: avoid varying aggregates</li>
+        <li>Shared DB: avoid in true microservices</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">DB Examples</div>
+      <ul>
+        <li>Text search → <strong>ElasticSearch</strong></li>
+        <li>Social graph → <strong>Neo4j</strong></li>
+        <li>Sessions/cache → <strong>Redis</strong></li>
+        <li>Analytics → <strong>Cassandra</strong></li>
+        <li>Documents → <strong>MongoDB</strong></li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <div class="rev-title">Common Traps</div>
+      <ul>
+        <li>CAP = can satisfy <strong>only 2, not 3</strong></li>
+        <li>BASE ≠ BASE chemistry; it's NoSQL guarantees</li>
+        <li>Graph edges are stored, not <strong>computed</strong></li>
+        <li>RDBMS = C+A (no P), not C+P</li>
+        <li>Sharding is a BASE technique (replication too)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout danger" style="margin-top:2rem;">
+    <span class="ci">🎯</span>
+    <span><strong>Night-before top 5:</strong> (1) CAP: only 2 of 3. (2) ACID = SQL, BASE = NoSQL. (3) Graph relationships stored explicitly. (4) Redis = Key-Value. (5) Column DB (Cassandra) = heavy writes + OLAP.</span>
+  </div>
+</div>
+
+<script>
+// ---- DATA ----
+const mcqs = [
+  // EASY
+  { q: "Which pattern gives each microservice its own private database accessible only through its API?", opts: ["Shared Database", "Database per Service", "SAGA", "CQRS"], correct: 1, diff: "easy", explain: "Database per Service pattern ensures each service has its own private database. No other service can access it directly — only through the service's API." },
+  { q: "Which NoSQL database is a well-known example of a document database?", opts: ["Redis", "Cassandra", "MongoDB", "Neo4j"], correct: 2, diff: "easy", explain: "MongoDB is the primary example of a document database given in the lecture. It stores data as collections of documents with key-value pairs." },
+  { q: "Which NoSQL database is commonly used as a key-value database?", opts: ["Neo4j", "Cassandra", "MongoDB", "Redis"], correct: 3, diff: "easy", explain: "Redis is the classic example of a key-value database. It provides high read/write velocity and is used for sessions, caching, profiles, and recommendations." },
+  { q: "In the CAP Theorem, what does 'A' stand for?", opts: ["Atomicity", "Availability", "Aggregation", "Authorization"], correct: 1, diff: "easy", explain: "In CAP Theorem, A stands for Availability — meaning every request definitely receives a response (success or failure)." },
+  { q: "Which database is used for social graph manipulation in microservices?", opts: ["MongoDB", "Redis", "Cassandra", "Neo4j"], correct: 3, diff: "easy", explain: "The lecture specifically states: 'A service that manipulates a social graph could use Neo4j.' Neo4j is a graph database." },
+  { q: "What does ACID stand for in database transactions?", opts: ["Available, Consistent, Isolated, Durable", "Atomic, Consistent, Isolated, Durable", "Atomic, Complete, Isolated, Durable", "Atomic, Consistent, Integrated, Durable"], correct: 1, diff: "easy", explain: "ACID = Atomic (all or nothing), Consistent (no invalid data), Isolated (as if it's the only transaction), Durable (committed = permanent)." },
+  { q: "Which database type uses the concept of a 'keyspace' with 'column families'?", opts: ["Document Database", "Key-Value Database", "Column Database", "Graph Database"], correct: 2, diff: "easy", explain: "Column databases use keyspace → column families → rows. Cassandra is the main example of this structure." },
+
+  // MEDIUM
+  { q: "A company's OrderService needs to query data from CustomerService. With the Database per Service pattern, what challenge does this present?", opts: ["It's straightforward using SQL joins", "Implementing queries that join data across multiple databases is challenging", "You can directly query the CustomerService database", "It only works with NoSQL databases"], correct: 1, diff: "medium", explain: "One of the main drawbacks of Database per Service is that cross-service data queries (joins) become very challenging since each service's data is in a separate database." },
+  { q: "What is the key difference between 'schema-per-service' and 'private-tables-per-service' in Database per Service pattern?", opts: ["They are identical implementations", "Schema-per-service provides clearer ownership; both are on the same DB server", "Private-tables-per-service uses separate servers", "Schema-per-service requires separate servers"], correct: 1, diff: "medium", explain: "Both use the same database server, but schema-per-service gives each service its own schema (clearer ownership), while private-tables-per-service just assigns specific tables to each service." },
+  { q: "According to the CAP Theorem, a distributed NoSQL system that prioritizes Partition Tolerance and Availability sacrifices which property?", opts: ["Durability", "Consistency", "Atomicity", "Isolation"], correct: 1, diff: "medium", explain: "CAP theorem: you can only have 2 of 3. If NoSQL prioritizes P + A, it must sacrifice Consistency — meaning nodes may temporarily see different data." },
+  { q: "Which statement best describes 'Eventual Consistency' in BASE?", opts: ["Data is always immediately consistent", "Data will reach a consistent state at some undefined future point", "Data is never consistent", "Consistency is guaranteed at transaction commit"], correct: 1, diff: "medium", explain: "BASE's Eventual Consistency means: at some future point, all nodes WILL agree on the same data — but not necessarily right now. ACID enforces consistency at commit; BASE does not." },
+  { q: "A runtime coupling drawback of Shared Database is best described as:", opts: ["Developers need to coordinate schema changes", "A long transaction in one service can lock tables and block other services", "Each service cannot use its ideal database type", "Managing multiple SQL and NoSQL databases is complex"], correct: 1, diff: "medium", explain: "Runtime coupling means services interfere at runtime. Example from lecture: if CustomerService has a long lock on the ORDER table, OrderService gets blocked." },
+  { q: "Which NoSQL type stores relationships as 'first-class citizens'?", opts: ["Document Database", "Key-Value Database", "Column Database", "Graph Database"], correct: 3, diff: "medium", explain: "In Graph databases, relationships (edges) are explicitly stored as data — they are 'first-class citizens.' This is the key differentiator from RDBMS where relationships are computed via joins." },
+  { q: "In RDBMS, how are relationships between data stored?", opts: ["As graph edges persisted in storage", "In foreign key fields or junction tables, computed at query time via joins", "As label properties on nodes", "As column families in keyspaces"], correct: 1, diff: "medium", explain: "RDBMS stores relationships in foreign key fields or junction tables. When queried, the database performs join operations — which are computed (costly) at query time, unlike graph databases where relationships are pre-stored." },
+  { q: "Which property is sacrificed by RDBMS according to the CAP theorem?", opts: ["Consistency", "Availability", "Partition Tolerance", "Atomicity"], correct: 2, diff: "medium", explain: "RDBMS achieves Consistency + Availability but does NOT support Partition Tolerance, because it assumes a single centralized system without network partitions." },
+  { q: "What is the 'Soft State' property in BASE?", opts: ["Data is permanently locked", "Data state may change over time even without new input, due to eventual consistency", "Data is never updated", "State changes only on explicit write operations"], correct: 1, diff: "medium", explain: "Soft State means the system's state may change over time even WITHOUT new input — because of the ongoing process of reaching eventual consistency across nodes." },
+  { q: "Which NoSQL type is MOST appropriate for an Online Analytical Processing (OLAP) system with heavy write operations?", opts: ["Document Database", "Key-Value Database", "Column Database", "Graph Database"], correct: 2, diff: "medium", explain: "Column databases (like Cassandra) are specifically suited for heavy write operations, large data volumes, and OLAP queries. The lecture explicitly states this use case." },
+
+  // HARD
+  { q: "A developer needs to implement a business transaction that involves debiting an account in PaymentService and creating an order in OrderService. With Database per Service, why are distributed ACID transactions problematic?", opts: ["They are too expensive to code", "The CAP theorem and many NoSQL databases don't support distributed transactions", "SQL databases don't support multi-table operations", "It requires a shared database"], correct: 1, diff: "hard", explain: "Distributed transactions across multiple services violate CAP theorem constraints. Many NoSQL databases don't support distributed ACID transactions. This is why SAGA pattern exists as an alternative." },
+  { q: "Company A uses Database per Service. The text search service uses ElasticSearch. The customer service uses PostgreSQL. What core benefit does this demonstrate?", opts: ["Shared Database simplicity", "Technology freedom — each service uses the DB type best suited to its needs", "CAP theorem compliance", "ACID guarantees across services"], correct: 1, diff: "hard", explain: "Database per Service allows each service to use the database technology best suited to its specific needs. Text search → ElasticSearch; relational data → PostgreSQL; social graphs → Neo4j. This is impossible with Shared Database pattern." },
+  { q: "In Shared Database pattern, 'development-time coupling' means:", opts: ["Services interfere with each other's locks at runtime", "Schema changes in one service require coordination with all teams using shared tables", "Services cannot use different database technologies", "Transactions cannot span multiple tables"], correct: 1, diff: "hard", explain: "Development-time coupling: if Service A changes its schema (e.g., renames a column), every other team whose service reads that table must coordinate and update their code simultaneously — slowing development." },
+  { q: "Which combination is CORRECT about CAP theorem for SQL vs NoSQL?", opts: ["SQL = C+P; NoSQL = A+P", "SQL = C+A (no P); NoSQL = P + (C or A)", "SQL = A+P; NoSQL = C+A", "Both SQL and NoSQL satisfy all three CAP properties"], correct: 1, diff: "hard", explain: "SQL (RDBMS) achieves Consistency + Availability but sacrifices Partition Tolerance (assumes no network partition). NoSQL must handle Partition Tolerance and then chooses to sacrifice either Consistency or Availability." },
+  { q: "A recommendation engine that needs to traverse friend-of-a-friend relationships 5 levels deep would MOST benefit from which NoSQL type?", opts: ["Key-Value (Redis) for fast lookups", "Column (Cassandra) for large data", "Graph (Neo4j) for relationship traversal", "Document (MongoDB) for flexible schema"], correct: 2, diff: "hard", explain: "Graph databases excel at multi-level relationship traversal. The reason: relationships are stored explicitly (not computed). Traversing 5 levels in Neo4j is fast because each relationship is a direct pointer, not an expensive join." },
+  { q: "The lecture states Graph database relationships are NOT 'calculated at query time.' What does this mean in practical terms?", opts: ["Graph queries always run slower than SQL", "Finding connected nodes requires no join computation — edges are stored as direct references", "Graph databases use more storage", "Query results are cached in memory"], correct: 1, diff: "hard", explain: "In RDBMS, finding related records requires JOIN operations computed at runtime (expensive). In Graph DB, edges ARE stored as actual data pointers — traversing a relationship is O(1), not a computed scan of a table." },
+  { q: "A Key-Value database (Redis) is being considered for an inventory system that tracks product quantities and frequently updates partial stock counts. Is this appropriate?", opts: ["Yes, Redis is perfect for all storage needs", "No, Redis is unsuitable when parts of a value need frequent updates", "Yes, Redis handles partial updates natively", "No, Redis doesn't support numerical values"], correct: 1, diff: "hard", explain: "The lecture lists 'when a part of the value is frequently updated' as a negative use case for Key-Value databases. Redis stores values atomically — partial updates to a complex value structure are problematic." },
+  { q: "A system uses BASE (NoSQL). A user updates their profile picture. Immediately after, a friend's request sees the OLD picture. 10 seconds later, the friend sees the NEW picture. This is an example of:", opts: ["ACID Durability", "Consistency violation (broken system)", "Eventual Consistency in action", "Atomic transaction failure"], correct: 2, diff: "hard", explain: "This is a perfect example of Eventual Consistency — a BASE property. Immediately after the write, some nodes haven't yet received the update. But at a 'future undefined time' (10 seconds), all nodes converge to the correct state." },
+  { q: "Why might the 'Database-server-per-service' option be chosen over 'schema-per-service' despite higher cost?", opts: ["It is cheaper to operate", "It provides higher isolation and is suited for high-throughput services needing dedicated resources", "It allows services to share data directly", "It eliminates the need for APIs"], correct: 1, diff: "hard", explain: "Database-server-per-service provides complete physical isolation between services. High-throughput services (that need maximum performance, dedicated I/O, and no resource contention) benefit from having their own server." },
+  { q: "ACID's 'Isolation' property specifically prevents which scenario?", opts: ["Data being lost after commit", "One transaction reading uncommitted (dirty) changes from another transaction", "Data becoming inconsistent after update", "All-or-nothing transaction failure"], correct: 1, diff: "hard", explain: "Isolation means each transaction behaves as if it is the only one running. Practically, this prevents 'dirty reads' — reading uncommitted data from a concurrent transaction. Uncommitted changes are invisible to other transactions." },
+  { q: "The lecture mentions 'complexity of managing multiple SQL and NoSQL databases' as a drawback. Which architectural decision directly causes this?", opts: ["Using SAGA pattern", "Using Database per Service pattern with technology freedom", "Implementing CQRS", "Using Event Sourcing"], correct: 1, diff: "hard", explain: "Database per Service's benefit (each service uses the best DB type) directly causes its own drawback: you now have multiple different database systems (MongoDB, Redis, Cassandra, Neo4j, PostgreSQL) to operate, monitor, backup, and scale." },
+];
+
+const writtenQs = [
+  { type: "Short Answer", q: "What are the three implementation options for the Database per Service pattern? List them from lowest to highest overhead.", answer: `<h4>Model Answer:</h4>
+    <ol style="padding-left:1.25rem;line-height:2;">
+      <li><strong>Private-tables-per-service</strong> — Lowest overhead. All services use the same DB server, but each service is assigned specific tables that only it may access.</li>
+      <li><strong>Schema-per-service</strong> — Medium overhead. Each service has its own database schema on the same DB server. Provides clearer ownership and stronger logical boundaries.</li>
+      <li><strong>Database-server-per-service</strong> — Highest overhead. Each service has a completely separate database server. Provides maximum isolation and is recommended for high-throughput services.</li>
+    </ol>` },
+  { type: "Short Answer", q: "State the CAP Theorem and explain how RDBMS and NoSQL databases differ in their CAP choices.", answer: `<h4>Model Answer:</h4>
+    <p>The CAP Theorem states it is <strong>impossible</strong> for a distributed system to simultaneously guarantee all three: <strong>Consistency</strong> (all nodes see the same data), <strong>Availability</strong> (every request gets a response), and <strong>Partition Tolerance</strong> (system operates despite network splits). A distributed system can only satisfy TWO of the three.</p>
+    <p><strong>RDBMS:</strong> Achieves C + A (no P). RDBMS assumes no network partitions (operates as a centralized system), so it can guarantee consistency and availability.</p>
+    <p><strong>NoSQL:</strong> Must support P (network partitions are unavoidable in distributed systems). Must then choose between: <br>• Drop A → wait until data is consistent (C + P)<br>• Drop C → accept temporarily inconsistent data (A + P)</p>` },
+  { type: "Short Answer", q: "Differentiate between ACID and BASE models. State 4 properties of each.", answer: `<h4>Model Answer:</h4>
+    <p><strong>ACID (SQL databases — pessimistic, strict):</strong></p>
+    <ul style="padding-left:1.25rem;line-height:1.9;">
+      <li><strong>Atomicity:</strong> All operations in a transaction complete, or none do.</li>
+      <li><strong>Consistency:</strong> Transactions never cause invalid data states.</li>
+      <li><strong>Isolation:</strong> Transactions are hidden from each other until committed.</li>
+      <li><strong>Durability:</strong> Committed transactions are permanent — never reversed.</li>
+    </ul>
+    <p style="margin-top:0.75rem;"><strong>BASE (NoSQL databases — optimistic, scalable):</strong></p>
+    <ul style="padding-left:1.25rem;line-height:1.9;">
+      <li><strong>Basically Available:</strong> System always responds, even if some data is temporarily unavailable (uses replication + sharding).</li>
+      <li><strong>Soft State:</strong> Data may be inconsistent at any moment; state can change even without input.</li>
+      <li><strong>Eventually Consistent:</strong> At some future point, all nodes will agree on the same data value.</li>
+    </ul>` },
+  { type: "Long Answer", q: "Compare and contrast the four NoSQL database types (Document, Column, Key-Value, Graph). For each, describe its structure, best use cases, negative use cases, and a real-world example database.", answer: `<h4>Model Answer:</h4>
+    <p><strong>1. Document Database (MongoDB)</strong><br>Structure: Collections containing documents, each with a unique key and flexible key-value content.<br>Best for: CMS, blogs, e-commerce, real-time analytics, web apps needing flexible schemas.<br>Avoid: Queries against varying aggregates.</p>
+    <p style="margin-top:0.75rem;"><strong>2. Column Database (Cassandra)</strong><br>Structure: Keyspace → Column Families → Rows (each identified by unique row key) → Columns (KV pairs). Different rows can have different column counts.<br>Best for: Large volumes of data with heavy write operations, OLAP queries, high performance/availability/scalability, real-time analytics.<br>Avoid: Frequently changing query patterns; systems in early development.</p>
+    <p style="margin-top:0.75rem;"><strong>3. Key-Value Database (Redis)</strong><br>Structure: Simplest model. Unique key maps to a value (simple or complex). Retrieved using atomic keys.<br>Best for: Session data, user profiles, preferences, blog comments, product recommendations. High read/write without frequent updates.<br>Avoid: Multiple unique key operations; relationships/joins between data; queries by specific field; partial value updates.</p>
+    <p style="margin-top:0.75rem;"><strong>4. Graph Database (Neo4j)</strong><br>Structure: Nodes (entities), Edges/Relationships (connections), Labels (grouping attributes), Properties (KV in nodes/edges). Relationships are FIRST-CLASS CITIZENS — stored explicitly, not computed at query time.<br>Best for: Social networks, recommendation systems, fraud detection, bioinformatics, security/access control, network management, complex traversal queries.<br>Avoid: Data where connections are NOT the primary focus; transactional data.</p>` },
+  { type: "Long Answer", q: "Describe the Database per Service pattern. What are its 3 implementation options, 2 benefits, and 3 drawbacks? Give a concrete example.", answer: `<h4>Model Answer:</h4>
+    <p><strong>Definition:</strong> In this pattern, each microservice has its own private database. This database is accessible ONLY through the service's API — no other service can directly access it. The database is effectively part of the service's implementation.</p>
+    <p style="margin-top:0.75rem;"><strong>Example:</strong> In an online store: OrderService stores order data in its own DB; CustomerService stores customer data in its own separate DB. OrderService cannot directly query CustomerService's DB — it must call CustomerService's API.</p>
+    <p style="margin-top:0.75rem;"><strong>3 Implementation Options:</strong><br>1. Private-tables-per-service: Same DB server, service owns specific tables. Lowest overhead.<br>2. Schema-per-service: Same DB server, each service has its own schema. Clearer ownership.<br>3. Database-server-per-service: Fully separate servers. Maximum isolation for high-throughput services.</p>
+    <p style="margin-top:0.75rem;"><strong>2 Benefits:</strong><br>1. Loose coupling: Changes in one service's DB don't affect others.<br>2. Technology freedom: Services can use the best DB type (ElasticSearch for text, Neo4j for graphs, etc.)</p>
+    <p style="margin-top:0.75rem;"><strong>3 Drawbacks:</strong><br>1. Distributed transactions spanning multiple services are complex (CAP theorem, NoSQL limitations).<br>2. Cross-service data joins are challenging.<br>3. Managing multiple SQL and NoSQL databases increases operational complexity.</p>` },
+  { type: "Short Answer", q: "Explain why Graph databases outperform relational databases for multi-level relationship traversal.", answer: `<h4>Model Answer:</h4>
+    <p>In <strong>RDBMS</strong>, relationships between entities are stored in foreign key fields or junction tables. When querying related data, the database must perform JOIN operations — which are computed at query time by scanning and matching table rows. This becomes exponentially expensive as the depth of traversal increases.</p>
+    <p style="margin-top:0.5rem;">In <strong>Graph databases</strong>, relationships (edges) are <strong>first-class citizens</strong> — they are explicitly persisted as direct pointers between nodes, just like the data about entities (nodes) themselves. Traversing a relationship requires following a stored pointer, not computing a join. Therefore, traversing 5 levels of 'friend-of-a-friend' relationships in a graph DB is much faster than 5 nested joins in an RDBMS, because each step is a direct pointer dereference, not a table scan.</p>` },
+];
+
+// ---- RENDER MCQ ----
+let answeredCount = 0, correctCount = 0;
+const mcqContainer = document.getElementById('mcq-container');
+
+mcqs.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'mcq-card';
+  div.id = `mcq-${i}`;
+  const letters = ['A','B','C','D'];
+  div.innerHTML = `
+    <div class="mcq-num">Q${i+1}</div><span class="diff ${item.diff}">${item.diff}</span>
+    <div class="mcq-q">${item.q}</div>
+    <ul class="options">
+      ${item.opts.map((o,j)=>`<li onclick="answerMCQ(${i},${j})" id="mcq-${i}-opt-${j}"><span class="opt-letter">${letters[j]}.</span>${o}</li>`).join('')}
+    </ul>
+    <div class="explain-box"><strong>✅ Explanation:</strong> ${item.explain}</div>
+  `;
+  mcqContainer.appendChild(div);
+});
+
+function answerMCQ(qi, chosen) {
+  const card = document.getElementById(`mcq-${qi}`);
+  if(card.classList.contains('answered')) return;
+  card.classList.add('answered');
+  const opts = card.querySelectorAll('.options li');
+  opts.forEach((li, j) => {
+    li.style.pointerEvents = 'none';
+    if(j === mcqs[qi].correct) li.classList.add('correct');
+    else if(j === chosen) li.classList.add('wrong');
+  });
+  answeredCount++;
+  if(chosen === mcqs[qi].correct) correctCount++;
+  document.getElementById('answered-count').textContent = answeredCount;
+  document.getElementById('score-val').textContent = correctCount;
+  document.getElementById('total-answered').textContent = answeredCount;
+}
+
+// ---- RENDER WRITTEN ----
+const wqContainer = document.getElementById('written-container');
+writtenQs.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'wq-card';
+  div.innerHTML = `
+    <div class="wq-type">${item.type}</div>
+    <div class="wq-q">Q${i+1}. ${item.q}</div>
+    <button class="wq-toggle" onclick="toggleWQ(this)">Show Model Answer ▼</button>
+    <div class="wq-answer">${item.answer}</div>
+  `;
+  wqContainer.appendChild(div);
+});
+
+function toggleWQ(btn) {
+  const ans = btn.nextElementSibling;
+  ans.classList.toggle('open');
+  btn.textContent = ans.classList.contains('open') ? 'Hide Answer ▲' : 'Show Model Answer ▼';
+}
+
+// ---- NAVIGATION ----
+const sections = ['explain','summary','mcq','written','revision'];
+function show(name) {
+  sections.forEach(s => {
+    document.getElementById(`s-${s}`).classList.remove('active');
+  });
+  document.getElementById(`s-${name}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>{
+    b.classList.toggle('active', sections[i]===name);
+  });
+  document.getElementById('hero-block').style.display = name==='explain'?'block':'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---- COLLAPSIBLE ----
+function toggleCollapse(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ---- THEME ----
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  document.querySelector('header').style.background = isDark
+    ? 'rgba(240,244,255,0.9)' : 'rgba(10,14,26,0.85)';
+}
+</script>
+</body>
+</html>
