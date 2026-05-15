@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS352 — Microservices Communication Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e29;
+    --surface: #1f2433;
+    --surface2: #252b3b;
+    --border: #2e3650;
+    --accent: #4f8ef7;
+    --accent2: #7c5af6;
+    --accent3: #2dd4bf;
+    --accent4: #f97316;
+    --accent5: #f43f5e;
+    --text: #e8eaf0;
+    --text2: #9aa3b8;
+    --text3: #5a6380;
+    --success: #22c55e;
+    --danger: #f43f5e;
+    --warn: #f59e0b;
+    --tag-rest: #1e3a5f;
+    --tag-rest-t: #60a5fa;
+    --tag-grpc: #2d1f5e;
+    --tag-grpc-t: #a78bfa;
+    --tag-soap: #1f3a2d;
+    --tag-soap-t: #34d399;
+  }
+  .light {
+    --bg: #f5f6fa;
+    --bg2: #eef0f7;
+    --bg3: #e4e8f4;
+    --surface: #ffffff;
+    --surface2: #f0f2fb;
+    --border: #d4d9ee;
+    --text: #0f1529;
+    --text2: #4a5270;
+    --text3: #8892b0;
+    --tag-rest: #dbeafe;
+    --tag-rest-t: #1d4ed8;
+    --tag-grpc: #ede9fe;
+    --tag-grpc-t: #6d28d9;
+    --tag-soap: #d1fae5;
+    --tag-soap-t: #065f46;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--text2); font-weight: 400; font-size: 0.8rem; margin-left: 8px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .theme-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 8px;
+    padding: 6px 14px; font-size: 0.8rem; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── NAV TABS ── */
+  nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 14px 20px;
+    font-size: 0.82rem; font-weight: 500;
+    color: var(--text3); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── SECTIONS ── */
+  .section { display: none; max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .section.active { display: block; }
+
+  /* ── TYPOGRAPHY ── */
+  h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; color: var(--text); }
+  h2 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 2rem 0 1rem; }
+  h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent); margin: 1.5rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  p { color: var(--text2); margin-bottom: 1rem; font-size: 0.95rem; }
+  strong { color: var(--text); font-weight: 500; }
+  code { font-family: 'DM Mono', monospace; background: var(--surface); color: var(--accent3); padding: 2px 8px; border-radius: 4px; font-size: 0.85em; }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, var(--bg3) 0%, var(--surface) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 2rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(79,142,247,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-meta { font-size: 0.75rem; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .hero-subtitle { color: var(--text2); font-size: 0.95rem; margin-top: 0.5rem; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+  .badge {
+    padding: 4px 12px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em;
+    border: 1px solid var(--border);
+    color: var(--text3); background: var(--surface);
+  }
+
+  /* ── CONCEPT CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .dot.green { background: var(--accent3); }
+  .dot.orange { background: var(--accent4); }
+  .dot.pink { background: var(--accent5); }
+  .dot.purple { background: var(--accent2); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--bg3);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.9rem; color: var(--text2);
+  }
+  .callout.warn { border-color: var(--warn); }
+  .callout.danger { border-color: var(--danger); }
+  .callout.success { border-color: var(--success); }
+  .callout strong { color: var(--text); }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  th { background: var(--surface2); color: var(--text); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; color: var(--text2); border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .check { color: var(--success); font-size: 1rem; }
+  .cross { color: var(--danger); font-size: 1rem; }
+
+  /* ── TAG ── */
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; margin: 2px; }
+  .tag.rest { background: var(--tag-rest); color: var(--tag-rest-t); }
+  .tag.grpc { background: var(--tag-grpc); color: var(--tag-grpc-t); }
+  .tag.soap { background: var(--tag-soap); color: var(--tag-soap-t); }
+
+  /* ── DIAGRAM ── */
+  .diagram {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+  .diagram-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-radius: 8px; overflow: hidden;
+    margin: 1rem 0;
+  }
+  .diagram-cell {
+    background: var(--surface);
+    padding: 12px 10px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  .diagram-cell .label { color: var(--text3); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 4px; }
+  .diagram-cell .value { color: var(--text); font-weight: 600; font-size: 0.85rem; }
+  .flow {
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center;
+    margin: 1rem 0;
+  }
+  .flow-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 500; color: var(--text);
+    text-align: center;
+  }
+  .flow-arrow { color: var(--accent); padding: 0 8px; font-size: 1.2rem; }
+
+  /* ── MCQ ── */
+  .mcq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  .mcq-item:hover { border-color: var(--accent); }
+  .mcq-meta { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; display: flex; gap: 8px; align-items: center; }
+  .mcq-q { font-size: 0.92rem; color: var(--text); font-weight: 500; margin-bottom: 1rem; line-height: 1.5; }
+  .mcq-opts { display: flex; flex-direction: column; gap: 8px; }
+  .mcq-opt {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.87rem;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    background: var(--bg3);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .mcq-opt:hover { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .mcq-opt.correct { border-color: var(--success) !important; background: rgba(34,197,94,0.1) !important; color: var(--text) !important; }
+  .mcq-opt.wrong { border-color: var(--danger) !important; background: rgba(244,63,94,0.1) !important; opacity: 0.7; }
+  .mcq-opt .letter { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text3); min-width: 20px; margin-top: 1px; }
+  .mcq-explanation {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-radius: 8px;
+    font-size: 0.85rem; color: var(--text2);
+    display: none;
+  }
+  .mcq-explanation.show { display: block; }
+  .mcq-explanation strong { color: var(--success); }
+  .diff-pill {
+    font-size: 0.65rem; padding: 2px 8px; border-radius: 100px; font-weight: 600; letter-spacing: 0.05em;
+  }
+  .diff-easy { background: rgba(34,197,94,0.15); color: var(--success); }
+  .diff-medium { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .diff-hard { background: rgba(244,63,94,0.15); color: var(--danger); }
+  .mcq-number { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
+
+  /* ── WRITTEN QS ── */
+  .wq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .wq-header {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: background 0.2s;
+  }
+  .wq-header:hover { background: var(--surface2); }
+  .wq-q { font-size: 0.92rem; font-weight: 500; color: var(--text); flex: 1; line-height: 1.5; }
+  .wq-toggle { color: var(--accent); font-size: 1.2rem; transition: transform 0.25s; }
+  .wq-answer {
+    border-top: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    display: none;
+    background: var(--bg3);
+  }
+  .wq-answer.show { display: block; }
+  .wq-answer p { font-size: 0.88rem; }
+  .wq-answer ul { padding-left: 1.5rem; color: var(--text2); font-size: 0.88rem; }
+  .wq-answer li { margin-bottom: 6px; line-height: 1.6; }
+  .model-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 600; margin-bottom: 0.75rem; }
+
+  /* ── REVISION SHEET ── */
+  .rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media (max-width: 600px) { .rev-grid { grid-template-columns: 1fr; } }
+  .rev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .rev-card h4 { font-family: 'Syne', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.75rem; }
+  .rev-card ul { padding-left: 1.25rem; }
+  .rev-card li { font-size: 0.82rem; color: var(--text2); margin-bottom: 5px; line-height: 1.5; }
+  .rev-card li strong { color: var(--text); font-size: 0.82rem; }
+  .mnemo {
+    background: linear-gradient(135deg, var(--bg3), var(--surface2));
+    border: 1px dashed var(--accent2);
+    border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0;
+    font-size: 0.88rem; color: var(--text2);
+  }
+  .mnemo .title { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--accent2); font-weight: 500; margin-bottom: 0.5rem; }
+  .sheet-footer { text-align: center; padding: 1.5rem; color: var(--text3); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+
+  /* ── PROGRESS ── */
+  .progress-bar { background: var(--bg3); border-radius: 100px; height: 4px; margin-top: 1.5rem; margin-bottom: 0.25rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.4s ease; }
+  .progress-label { font-size: 0.72rem; color: var(--text3); text-align: right; }
+
+  /* ── SCORE WIDGET ── */
+  .score-widget {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .score-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .score-label { font-size: 0.8rem; color: var(--text3); }
+  .reset-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 8px; padding: 8px 16px;
+    font-size: 0.82rem; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+
+  /* ── SUMMARY BULLETS ── */
+  .summ-group { margin-bottom: 1.5rem; }
+  .summ-group h3 { margin-bottom: 0.75rem; }
+  .summ-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .summ-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 14px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.88rem; color: var(--text2);
+  }
+  .summ-list li::before { content: '›'; color: var(--accent); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+  .summ-list li strong { color: var(--text); }
+
+  /* ── WQ TYPE BADGE ── */
+  .wq-type { font-size: 0.65rem; padding: 2px 8px; border-radius: 100px; font-weight: 600; letter-spacing: 0.05em; margin-right: 8px; }
+  .wq-short { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .wq-long { background: rgba(124,90,246,0.15); color: var(--accent2); }
+
+  /* ── ANIMATIONS ── */
+  .section.active { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS352 <span>Lecture 8 — Microservices Communication Patterns</span></div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀ Light Mode</button>
+  </div>
+</header>
+
+<nav>
+  <div class="tab active" onclick="showSection('explain', this)">📖 Explanation</div>
+  <div class="tab" onclick="showSection('summary', this)">📋 Summary</div>
+  <div class="tab" onclick="showSection('memory', this)">🧠 Memory</div>
+  <div class="tab" onclick="showSection('mcq', this)">❓ MCQs</div>
+  <div class="tab" onclick="showSection('written', this)">✍️ Written Q&A</div>
+  <div class="tab" onclick="showSection('revision', this)">⚡ Revision Sheet</div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════ EXPLANATION ═══════════════════════════════════════════════════ -->
+<div class="section active" id="explain">
+  <div class="hero">
+    <div class="hero-meta">System Analysis & Design · IS352 · Lecture 8</div>
+    <h1>Microservices Communication Patterns</h1>
+    <div class="hero-subtitle">A complete deep-dive into how microservices talk to each other — from synchronous REST calls to the nuances of HATEOAS and SOAP.</div>
+    <div class="badge-row">
+      <span class="badge">Request/Response</span>
+      <span class="badge">Synchronous</span>
+      <span class="badge">REST</span>
+      <span class="badge">gRPC</span>
+      <span class="badge">SOAP</span>
+      <span class="badge">HATEOAS</span>
+    </div>
+  </div>
+
+  <h2>1. The Big Picture: Microservices Design Patterns</h2>
+  <p>Before diving into communication, understand where it fits in the overall microservices universe. There are six categories of patterns:</p>
+
+  <div class="diagram-grid">
+    <div class="diagram-cell"><div class="label">Decomposition</div><div class="value">By Capability / Subdomain / Strangler</div></div>
+    <div class="diagram-cell" style="border: 1px solid var(--accent);"><div class="label" style="color:var(--accent)">👉 Communication</div><div class="value" style="color:var(--accent)">Request/Response, Messaging, Event-Driven</div></div>
+    <div class="diagram-cell"><div class="label">Integration</div><div class="value">API Gateway, Aggregator, UI Composition</div></div>
+    <div class="diagram-cell"><div class="label">Database</div><div class="value">DB per Service, CQRS, Saga</div></div>
+    <div class="diagram-cell"><div class="label">Deployment</div><div class="value">Serverless, Service Instance per Host</div></div>
+    <div class="diagram-cell"><div class="label">Observability</div><div class="value">Log Aggregation, Distributed Tracing</div></div>
+  </div>
+  <p><strong>This lecture focuses on Communication Patterns</strong>, specifically the Request/Response pattern.</p>
+
+  <h2>2. Interaction Styles: The 2×2 Matrix</h2>
+  <p>Every service-to-service interaction can be classified on two dimensions:</p>
+  <ul style="color:var(--text2); padding-left: 1.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+    <li style="margin-bottom:6px"><strong>Dimension 1 — Cardinality:</strong> Is this one client talking to one service, or one client broadcasting to many services?</li>
+    <li><strong>Dimension 2 — Timing:</strong> Does the client wait (block) for the response, or does it fire and forget?</li>
+  </ul>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Style</th><th>Description</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>One-to-One</strong></td><td>Request/Response (Sync)</td><td>Client sends, waits, blocks until done</td><td>HTTP REST API call</td></tr>
+        <tr><td><strong>One-to-One</strong></td><td>Async Request/Response</td><td>Client sends, does NOT block, reply comes later</td><td>Message queues</td></tr>
+        <tr><td><strong>One-to-One</strong></td><td>One-Way Notification</td><td>Client sends, no reply expected at all</td><td>Fire-and-forget log</td></tr>
+        <tr><td><strong>One-to-Many</strong></td><td>Publish/Subscribe</td><td>Client publishes to a topic, zero or more services consume</td><td>Kafka topic</td></tr>
+        <tr><td><strong>One-to-Many</strong></td><td>Publish/Async Responses</td><td>Client publishes, waits a limited time for responses</td><td>Price aggregator</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn"><strong>⚠️ Exam Trap:</strong> One-to-one sync and one-to-many do NOT overlap in the table. There is NO synchronous one-to-many interaction style in the slides.</div>
+
+  <h2>3. Synchronous vs. Asynchronous Communication</h2>
+  <p>The lecture divides microservice communication into two broad types:</p>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Synchronous — Request/Response Pattern</div>
+    <p><strong>Analogy:</strong> Like a phone call. You call someone and you wait, listening, until they answer. You can't do anything else while waiting.</p>
+    <p>Both the client and the service must be <strong>alive and reachable</strong> for the entire duration of the exchange. This creates <strong>tight coupling</strong>. Examples: REST, gRPC, Apache Thrift.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot green"></span> Asynchronous — Messaging Pattern</div>
+    <p><strong>Analogy:</strong> Like sending a text message. You send it and go on with your life. The reply arrives in your inbox whenever the other person responds.</p>
+    <p>Client and service don't need to be online at the same time. Creates <strong>loose coupling</strong>. Examples: RabbitMQ, Kafka, ActiveMQ.</p>
+  </div>
+
+  <h2>4. REST — The Core of Request/Response</h2>
+  <h3>What is REST?</h3>
+  <p><strong>REST</strong> = Representational State Transfer. It is a set of architectural <em>constraints</em> (not a protocol). <strong>RESTful</strong> = an API that adheres to those constraints. REST is built entirely on top of <strong>HTTP</strong>.</p>
+
+  <p><strong>Key concept — Resource:</strong> A resource is any entity you want to expose to the outside world. Think of it as a "noun" in your API (e.g., <code>/users</code>, <code>/orders/42</code>). HTTP's entire design centers around resources.</p>
+
+  <h3>REST Advantages</h3>
+  <div class="card">
+    <div class="card-title"><span class="dot green"></span> Why developers love REST</div>
+    <ul style="color:var(--text2); padding-left: 1.5rem; font-size: 0.88rem;">
+      <li style="margin-bottom:6px"><strong>Simple and familiar</strong> — almost every developer knows HTTP</li>
+      <li style="margin-bottom:6px"><strong>Easy to test</strong> — use Postman, curl, or even a browser</li>
+      <li style="margin-bottom:6px"><strong>Directly supports request/response</strong> — natural fit for client-server interaction</li>
+      <li style="margin-bottom:6px"><strong>Firewall friendly</strong> — standard HTTP port 80/443 almost always allowed</li>
+      <li><strong>No intermediate broker needed</strong> — simpler system architecture</li>
+    </ul>
+  </div>
+
+  <h3>REST Disadvantages</h3>
+  <div class="card">
+    <div class="card-title"><span class="dot pink"></span> Where REST falls short</div>
+    <ul style="color:var(--text2); padding-left: 1.5rem; font-size: 0.88rem;">
+      <li style="margin-bottom:6px"><strong>Only request/response style</strong> — can't do notifications, publish/subscribe natively</li>
+      <li style="margin-bottom:6px"><strong>Reduced availability</strong> — both client and service must be running simultaneously</li>
+      <li><strong>Location problem</strong> — clients must know the URLs of service instances; needs a <strong>service discovery mechanism</strong></li>
+    </ul>
+  </div>
+
+  <h2>5. SOAP — The Old Heavyweight</h2>
+  <p>SOAP (Simple Object Access Protocol) is another approach you can use in microservices, though it's older and less commonly used today.</p>
+
+  <div class="card">
+    <div class="card-title"><span class="dot orange"></span> How SOAP works</div>
+    <p>SOAP uses HTTP but is more flexible — it can also send messages via <strong>JMS</strong> (Java Message Service) or <strong>SMTP/POP</strong> (email). This transport flexibility is a key differentiator from REST.</p>
+    <p><strong>Message Forwarding &amp; Partial Encryption:</strong> A sender can encrypt only certain parts of a SOAP message. The message can then be forwarded through multiple intermediary stations. Each station processes its relevant part, and only the final recipient decrypts and processes the encrypted section. This is enabled by the <strong>WS-Security</strong> standard.</p>
+  </div>
+
+  <h3>SOAP Disadvantages</h3>
+  <div class="card">
+    <div class="card-title"><span class="dot pink"></span> SOAP's limitations</div>
+    <ul style="color:var(--text2); padding-left: 1.5rem; font-size: 0.88rem;">
+      <li style="margin-bottom:6px"><strong>Only uses POST</strong> — it's essentially an RPC (Remote Procedure Call) mechanism; ignores REST verbs</li>
+      <li style="margin-bottom:6px"><strong>No HATEOAS support</strong> — means relationships between services are rigid and hard-coded</li>
+      <li><strong>Tight coupling</strong> — interfaces must be fully defined by server and completely known on client upfront</li>
+    </ul>
+  </div>
+
+  <h2>6. HATEOAS — The Secret Sauce of True REST</h2>
+  <p><strong>HATEOAS</strong> = Hypermedia as the Engine of Application State</p>
+  <p><strong>Core idea:</strong> Instead of the client hard-coding URLs, the server <em>tells</em> the client what actions are available and where they are — dynamically, in the response itself.</p>
+
+  <div class="callout"><strong>Real-world analogy:</strong> Imagine arriving at an unfamiliar city. Without HATEOAS, you need a complete map memorized before you leave home. With HATEOAS, every road sign tells you where the next road leads. You don't need the full map — you just follow the signs.</div>
+
+  <h3>Without HATEOAS</h3>
+  <div class="card">
+    <p style="font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--accent3);">
+      GET /users/123<br><br>
+      { "id": 123, "name": "Mohamed", "balance": 500 }
+    </p>
+    <p style="margin-top: 0.75rem;">The client receives data but has no idea what operations are possible. It must have pre-programmed knowledge of every URL.</p>
+  </div>
+
+  <h3>With HATEOAS (JSON format)</h3>
+  <div class="card">
+    <p style="font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--accent3);">
+      GET /users/123<br><br>
+      {<br>
+      &nbsp;"id": 123,<br>
+      &nbsp;"name": "Mohamed",<br>
+      &nbsp;"balance": 500,<br>
+      &nbsp;"links": [<br>
+      &nbsp;&nbsp;{ "rel": "self", "href": "/users/123" },<br>
+      &nbsp;&nbsp;{ "rel": "deposit", "href": "/users/123/deposit" },<br>
+      &nbsp;&nbsp;{ "rel": "withdraw", "href": "/users/123/withdraw" }<br>
+      &nbsp;]<br>
+      }
+    </p>
+    <p style="margin-top: 0.75rem;">The server tells the client exactly what it can do next. If a URL ever changes, the server just updates the response — the client never breaks.</p>
+  </div>
+
+  <h3>Why HATEOAS Matters for Microservices</h3>
+  <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 0.5rem;">
+    <li class="callout success" style="margin: 0;"><strong>Loose Coupling:</strong> Client doesn't need to hard-code URLs → no tight dependency on server structure</li>
+    <li class="callout" style="margin: 0;"><strong>Resilience to Change:</strong> URLs are generated server-side and sent dynamically → changes don't break clients</li>
+    <li class="callout warn" style="margin: 0;"><strong>Without HATEOAS:</strong> URL changes in the server require updates in EVERY client app → tight coupling, fragile systems</li>
+  </ul>
+
+  <h2>7. Benefits &amp; Drawbacks of the Request/Response Pattern (Summary)</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>✅ Benefits</th><th>❌ Drawbacks</th></tr></thead>
+      <tbody>
+        <tr><td>Simple and familiar to developers</td><td>Only supports request/reply — no pub/sub, notifications</td></tr>
+        <tr><td>Request/reply is easy to implement</td><td>Reduced availability — both parties must be running</td></tr>
+        <tr><td>No intermediate broker needed</td><td>Client needs to discover service instance locations</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ SUMMARY ═══════════════════════════════════════════════════ -->
+<div class="section" id="summary">
+  <h1>Smart Summary</h1>
+  <p>High-yield, bullet-point structured summary. Everything you need to know, nothing extra.</p>
+
+  <div class="summ-group">
+    <h3>🗺️ Microservices Pattern Categories</h3>
+    <ul class="summ-list">
+      <li><strong>6 categories:</strong> Decomposition, Communication, Integration, Database, Deployment, Observability</li>
+      <li><strong>This lecture = Communication Patterns:</strong> Request/Response, Messaging, Event-Driven</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>🔢 Interaction Style Matrix</h3>
+    <ul class="summ-list">
+      <li><strong>2 dimensions:</strong> cardinality (1-to-1 vs 1-to-many) × timing (sync vs async)</li>
+      <li><strong>Sync 1-to-1:</strong> Request/Response — client blocks and waits</li>
+      <li><strong>Async 1-to-1:</strong> Async Request/Response — client doesn't block</li>
+      <li><strong>1-to-1:</strong> One-way notification — no reply expected</li>
+      <li><strong>1-to-many:</strong> Publish/Subscribe — zero or more services consume</li>
+      <li><strong>1-to-many:</strong> Publish/Async Responses — client waits limited time for replies</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>⚡ Synchronous Communication (Request/Response)</h3>
+    <ul class="summ-list">
+      <li><strong>Definition:</strong> Client expects timely response, may block while waiting</li>
+      <li><strong>Result:</strong> Tight runtime coupling — both parties must be available throughout</li>
+      <li><strong>Implementations:</strong> REST, gRPC, Apache Thrift</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>🌐 REST</h3>
+    <ul class="summ-list">
+      <li><strong>REST</strong> = set of constraints; <strong>RESTful</strong> = API adhering to those constraints</li>
+      <li>Built entirely on <strong>HTTP</strong></li>
+      <li><strong>Resource</strong> = key abstraction — anything exposed to the world through your app</li>
+      <li>✅ Advantages: simple, testable (Postman/curl), firewall friendly, no broker</li>
+      <li>❌ Disadvantages: only request/reply, reduced availability, needs service discovery</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>📦 SOAP</h3>
+    <ul class="summ-list">
+      <li>Uses HTTP but also supports <strong>JMS and SMTP/POP</strong> transport</li>
+      <li>Supports <strong>WS-Security</strong> for partial message encryption and forwarding</li>
+      <li>❌ Only uses POST (RPC mechanism); no HATEOAS; tightly coupled interfaces</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>🔗 HATEOAS</h3>
+    <ul class="summ-list">
+      <li>= <strong>Hypermedia as the Engine of Application State</strong></li>
+      <li>Component of RESTful API design</li>
+      <li>Server dynamically sends available actions and URLs in each response</li>
+      <li><strong>Goal:</strong> Loose coupling — client needs minimal pre-knowledge</li>
+      <li>Without it: URLs are hard-coded → tight coupling → brittle systems</li>
+      <li>With it: URL changes on server don't break clients</li>
+    </ul>
+  </div>
+
+  <div class="summ-group">
+    <h3>⚖️ Request/Response Pattern: Benefits vs. Drawbacks</h3>
+    <ul class="summ-list">
+      <li>✅ Simple, familiar, no broker, easy request/reply</li>
+      <li>❌ Only request/reply pattern; reduced availability; clients need service discovery</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ MEMORY ═══════════════════════════════════════════════════ -->
+<div class="section" id="memory">
+  <h1>Memory Optimization</h1>
+  <p>Advanced techniques to make this material stick permanently.</p>
+
+  <h2>Mnemonics</h2>
+
+  <div class="mnemo">
+    <div class="title">🧠 MNEMONIC: REST Advantages — "STIFF"</div>
+    <strong>S</strong>imple and familiar<br>
+    <strong>T</strong>estable (Postman, curl)<br>
+    <strong>I</strong>mmediate request/response support<br>
+    <strong>F</strong>irewall friendly<br>
+    <strong>F</strong>ree from brokers (no intermediary)
+  </div>
+
+  <div class="mnemo">
+    <div class="title">🧠 MNEMONIC: REST Disadvantages — "ROL"</div>
+    <strong>R</strong>educed availability (both must be running)<br>
+    <strong>O</strong>nly request/reply (no pub/sub etc.)<br>
+    <strong>L</strong>ocation problem (needs service discovery)
+  </div>
+
+  <div class="mnemo">
+    <div class="title">🧠 MNEMONIC: Request/Response Pattern Benefits — "SNB"</div>
+    <strong>S</strong>imple and familiar<br>
+    <strong>N</strong>o broker needed<br>
+    <strong>B</strong>asic request/reply is easy
+  </div>
+
+  <div class="mnemo">
+    <div class="title">🧠 MNEMONIC: Interaction Types — "RAOPP"</div>
+    <strong>R</strong>equest/Response (sync 1-1)<br>
+    <strong>A</strong>sync Request/Response (async 1-1)<br>
+    <strong>O</strong>ne-way notification (1-1, no reply)<br>
+    <strong>P</strong>ublish/Subscribe (1-many)<br>
+    <strong>P</strong>ublish/Async Responses (1-many, timed wait)
+  </div>
+
+  <h2>Comparison Tables (Chunked)</h2>
+
+  <h3>REST vs. SOAP</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>REST</th><th>SOAP</th></tr></thead>
+      <tbody>
+        <tr><td>Transport</td><td>HTTP only</td><td>HTTP, JMS, SMTP/POP</td></tr>
+        <tr><td>Message format</td><td>JSON, XML, etc.</td><td>XML only</td></tr>
+        <tr><td>HTTP verbs used</td><td>GET, POST, PUT, DELETE, PATCH</td><td>Only POST</td></tr>
+        <tr><td>HATEOAS support</td><td><span class="check">✓</span> Yes</td><td><span class="cross">✗</span> No</td></tr>
+        <tr><td>Coupling style</td><td>Looser (with HATEOAS)</td><td>Tight</td></tr>
+        <tr><td>Security standard</td><td>HTTPS / OAuth</td><td>WS-Security</td></tr>
+        <tr><td>Complexity</td><td>Simple</td><td>Complex (verbose XML)</td></tr>
+        <tr><td>Testing ease</td><td><span class="check">✓</span> Easy (Postman)</td><td><span class="cross">✗</span> Hard</td></tr>
+        <tr><td>Mechanism type</td><td>Resource-oriented</td><td>RPC (procedure calls)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Synchronous vs. Asynchronous</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Synchronous (Req/Res)</th><th>Asynchronous (Messaging)</th></tr></thead>
+      <tbody>
+        <tr><td>Client blocks?</td><td><span class="check">✓</span> Yes, waits</td><td><span class="cross">✗</span> No, continues</td></tr>
+        <tr><td>Coupling</td><td>Tight runtime coupling</td><td>Loose coupling</td></tr>
+        <tr><td>Both parties online?</td><td>Must be simultaneously</td><td>Not required</td></tr>
+        <tr><td>Broker needed?</td><td>No</td><td>Yes (Kafka, RabbitMQ)</td></tr>
+        <tr><td>Pattern type</td><td>Request/Response</td><td>Messaging/Event-Driven</td></tr>
+        <tr><td>Example tech</td><td>REST, gRPC, Thrift</td><td>Kafka, RabbitMQ, ActiveMQ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>With HATEOAS vs. Without HATEOAS</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Without HATEOAS</th><th>With HATEOAS</th></tr></thead>
+      <tbody>
+        <tr><td>URL source</td><td>Hard-coded in client</td><td>Dynamically sent by server</td></tr>
+        <tr><td>Coupling</td><td>Tight</td><td>Loose</td></tr>
+        <tr><td>URL change impact</td><td>All clients break</td><td>Only server updated</td></tr>
+        <tr><td>Client knowledge needed</td><td>Full API structure upfront</td><td>Minimal</td></tr>
+        <tr><td>SOAP compatible</td><td>N/A</td><td>No — SOAP lacks this</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Common Exam Traps ⚠️</h2>
+  <div class="callout danger"><strong>Trap 1:</strong> "REST is a protocol." → FALSE. REST is a set of <strong>architectural constraints</strong>. HTTP is the protocol.</div>
+  <div class="callout danger"><strong>Trap 2:</strong> "SOAP only uses HTTP." → FALSE. SOAP can use HTTP, JMS, SMTP/POP.</div>
+  <div class="callout danger"><strong>Trap 3:</strong> "HATEOAS is optional for REST." → Technically true, but in exams, HATEOAS is presented as a KEY differentiator that enables loose coupling in REST.</div>
+  <div class="callout danger"><strong>Trap 4:</strong> "Synchronous communication doesn't require both parties online." → FALSE. Both must be running for the full duration.</div>
+  <div class="callout danger"><strong>Trap 5:</strong> "The Request/Response pattern supports pub/sub." → FALSE. This is explicitly listed as a disadvantage.</div>
+  <div class="callout warn"><strong>Spaced Repetition Hint:</strong> Review these comparison tables again after 1 day, then 3 days, then 1 week. Focus especially on the SOAP vs REST and HATEOAS tables.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ MCQ ═══════════════════════════════════════════════════ -->
+<div class="section" id="mcq">
+  <h1>MCQ Exam Training</h1>
+  <p>Click an answer to check it. Score tracking included.</p>
+
+  <div class="score-widget">
+    <div>
+      <div class="score-num" id="scoreNum">0 / 0</div>
+      <div class="score-label">Correct answers</div>
+    </div>
+    <div class="progress-bar" style="flex:1; margin: 0 1rem;">
+      <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+    </div>
+    <button class="reset-btn" onclick="resetQuiz()">↺ Reset All</button>
+  </div>
+
+  <div id="mcq-container"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ WRITTEN ═══════════════════════════════════════════════════ -->
+<div class="section" id="written">
+  <h1>Written Questions &amp; Model Answers</h1>
+  <p>Click any question to reveal the model answer. Perfect for exam preparation.</p>
+  <div id="wq-container"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ REVISION ═══════════════════════════════════════════════════ -->
+<div class="section" id="revision">
+  <h1>⚡ Rapid Revision Sheet</h1>
+  <p style="color:var(--accent); font-weight: 500; font-size: 0.9rem;">Night-before-exam cheat sheet. Read this in 5 minutes and walk in confident.</p>
+
+  <div class="rev-grid">
+    <div class="rev-card">
+      <h4>6 Pattern Categories</h4>
+      <ul>
+        <li><strong>Decomposition</strong> — By Capability, Subdomain, Strangler</li>
+        <li><strong>Communication</strong> — Req/Res, Messaging, Event-Driven ← THIS LECTURE</li>
+        <li><strong>Integration</strong> — API Gateway, Aggregator</li>
+        <li><strong>Database</strong> — DB per Service, CQRS, Saga</li>
+        <li><strong>Deployment</strong> — Serverless, Service Instance per Host</li>
+        <li><strong>Observability</strong> — Log Aggregation, Tracing, Health Check</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>5 Interaction Styles</h4>
+      <ul>
+        <li><strong>Request/Response</strong> — Sync 1-1, client blocks</li>
+        <li><strong>Async Req/Res</strong> — Async 1-1, client doesn't block</li>
+        <li><strong>One-Way Notification</strong> — 1-1, no reply</li>
+        <li><strong>Pub/Sub</strong> — 1-many, consumed by interested services</li>
+        <li><strong>Pub/Async Responses</strong> — 1-many, wait limited time</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>REST Quick Facts</h4>
+      <ul>
+        <li>= REpresentational State Transfer (constraints)</li>
+        <li>Built on HTTP</li>
+        <li>Resource = key abstraction</li>
+        <li>✅ Simple, testable, firewall-friendly, no broker</li>
+        <li>❌ Only req/reply, needs both online, needs service discovery</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>SOAP Quick Facts</h4>
+      <ul>
+        <li>Uses HTTP + JMS + SMTP/POP</li>
+        <li>WS-Security for partial encryption</li>
+        <li>❌ Only POST, no HATEOAS, tight coupling</li>
+        <li>RPC mechanism (calls methods on objects)</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>HATEOAS Quick Facts</h4>
+      <ul>
+        <li>= Hypermedia as Engine of Application State</li>
+        <li>Component of RESTful API design</li>
+        <li>Server sends URLs dynamically in response</li>
+        <li>Goal: Loose coupling, minimal client knowledge</li>
+        <li>Without it → hard-coded URLs → tight coupling → fragile</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Pattern Benefits / Drawbacks</h4>
+      <ul>
+        <li>✅ Simple, no broker, easy req/reply</li>
+        <li>❌ Only req/reply (no pub/sub, notifications)</li>
+        <li>❌ Reduced availability (both must be online)</li>
+        <li>❌ Client needs service discovery for URLs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mnemo" style="margin-top: 1rem;">
+    <div class="title">⚡ LAST-MINUTE MNEMONICS</div>
+    <strong>REST advantages = STIFF</strong> (Simple, Testable, Immediate, Firewall-friendly, Free from brokers)<br>
+    <strong>REST disadvantages = ROL</strong> (Reduced availability, Only req/reply, Location problem)<br>
+    <strong>Interaction types = RAOPP</strong> (Request/Response, Async Req/Res, One-way, Pub/Sub, Pub/Async)<br>
+    <strong>HATEOAS = H</strong>ypermedia <strong>A</strong>s <strong>T</strong>he <strong>E</strong>ngine <strong>O</strong>f <strong>A</strong>pplication <strong>S</strong>tate
+  </div>
+
+  <div class="tbl-wrap" style="margin-top: 1rem;">
+    <table>
+      <thead><tr><th>Keyword</th><th>Definition (One Line)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>REST</strong></td><td>Architectural constraints for HTTP-based stateless APIs; resources are key abstraction</td></tr>
+        <tr><td><strong>RESTful API</strong></td><td>An API that adheres to REST constraints</td></tr>
+        <tr><td><strong>SOAP</strong></td><td>Protocol using XML over HTTP/JMS/SMTP with WS-Security; RPC-based</td></tr>
+        <tr><td><strong>HATEOAS</strong></td><td>REST feature where server dynamically sends next-action URLs in responses</td></tr>
+        <tr><td><strong>Synchronous</strong></td><td>Client waits and blocks until service responds; tight coupling</td></tr>
+        <tr><td><strong>Asynchronous</strong></td><td>Client sends and continues; reply comes later; loose coupling</td></tr>
+        <tr><td><strong>gRPC</strong></td><td>Google's high-performance RPC framework; alternative to REST for req/res</td></tr>
+        <tr><td><strong>Service Discovery</strong></td><td>Mechanism for clients to dynamically find service instance URLs</td></tr>
+        <tr><td><strong>WS-Security</strong></td><td>SOAP security standard enabling partial message encryption</td></tr>
+        <tr><td><strong>RPC</strong></td><td>Remote Procedure Call — calling a method on a remote object</td></tr>
+        <tr><td><strong>Tight Coupling</strong></td><td>Both parties must be available simultaneously; changes in one break the other</td></tr>
+        <tr><td><strong>Loose Coupling</strong></td><td>Services don't depend on each other's availability or internal details</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sheet-footer">IS352 · Lecture 8 · Microservices Communication Patterns · Request/Response · Dr. Wael Abbas 2023-2024</div>
+</div>
+
+<script>
+// ── DATA ──
+const questions = [
+  { q: "What does REST stand for?", opts: ["Remote Execution Service Technology", "REpresentational State Transfer", "Resource Encapsulated Service Transfer", "Reliable Endpoint Service Transmission"], ans: 1, diff: "Easy", exp: "REST = REpresentational State Transfer. It is a set of architectural constraints, not a protocol. RESTful refers to an API adhering to those constraints." },
+  { q: "REST is built on top of which technology?", opts: ["SMTP", "FTP", "HTTP", "TCP only"], ans: 2, diff: "Easy", exp: "REST is completely built on top of HTTP. This is a fundamental fact stated directly in the lecture." },
+  { q: "What is the key abstraction that HTTP centers around in REST?", opts: ["Endpoint", "Resource", "Method", "Schema"], ans: 1, diff: "Easy", exp: "A 'Resource' is the key abstraction. It is anything you want to expose to the outside world through your application." },
+  { q: "Which of the following is NOT an advantage of REST?", opts: ["It is firewall friendly", "It doesn't require an intermediate broker", "It supports publish/subscribe communication", "It is simple and familiar"], ans: 2, diff: "Easy", exp: "Supporting publish/subscribe is NOT a REST advantage. This is explicitly listed as a disadvantage: 'It only supports the request/response style of communication.'" },
+  { q: "Which of the following IS a disadvantage of REST?", opts: ["It requires an intermediate broker", "It is not firewall friendly", "Clients must use a service discovery mechanism", "It only uses POST messages"], ans: 2, diff: "Easy", exp: "Clients must know service instance URLs — a non-trivial problem requiring a 'service discovery mechanism.' The others describe SOAP's characteristics, not REST." },
+  { q: "HATEOAS stands for:", opts: ["Hyperlink And Transfer Engine Of Application State", "Hypermedia as the Engine of Application State", "HTTP Advanced Transfer Engine Object Application Standard", "High-Availability Transfer Engine Over Application Stacks"], ans: 1, diff: "Easy", exp: "HATEOAS = Hypermedia as the Engine of Application State. It is a component of RESTful API architecture." },
+  { q: "Which interaction style involves a client waiting (blocking) for a response?", opts: ["Publish/Subscribe", "One-way notification", "Asynchronous request/response", "Synchronous request/response"], ans: 3, diff: "Easy", exp: "Synchronous request/response: the client makes a request and waits (may block) for the timely response." },
+  { q: "In which interaction style does the client send a request but no reply is expected?", opts: ["Request/Response", "Async Request/Response", "One-Way Notification", "Publish/Subscribe"], ans: 2, diff: "Easy", exp: "One-way notification: a client sends a request to a service, but no reply is expected or sent." },
+  { q: "Which of the following is an example of a Request/Response implementation?", opts: ["Apache Kafka", "RabbitMQ", "gRPC", "ActiveMQ"], ans: 2, diff: "Medium", exp: "gRPC is listed alongside REST and Apache Thrift as examples of Request/Response pattern implementations. Kafka and RabbitMQ are messaging/async tools." },
+  { q: "SOAP can convey messages using which transport mechanisms? (Select best answer)", opts: ["HTTP only", "HTTP and HTTPS only", "HTTP, JMS, and SMTP/POP", "HTTP and gRPC"], ans: 2, diff: "Medium", exp: "SOAP supports multiple transports: HTTP, JMS (Java Message Service), and SMTP/POP (email). This transport flexibility distinguishes it from REST." },
+  { q: "The first dimension of the client-service interaction style matrix refers to:", opts: ["Whether the interaction is synchronous or asynchronous", "Whether the interaction is one-to-one or one-to-many", "Whether the interaction uses REST or SOAP", "Whether the interaction is encrypted or plain text"], ans: 1, diff: "Medium", exp: "The two dimensions are: (1) one-to-one vs. one-to-many cardinality, and (2) synchronous vs. asynchronous timing." },
+  { q: "Which security standard does SOAP support for partial message encryption?", opts: ["HTTPS", "OAuth 2.0", "WS-Security", "JWT"], ans: 2, diff: "Medium", exp: "WS-Security is the SOAP security standard that can encrypt or sign parts of a message, allowing it to be forwarded to different services without full decryption at each stage." },
+  { q: "What is the main reason HATEOAS is important?", opts: ["It makes APIs faster", "It enables loose coupling by providing URLs dynamically", "It encrypts API responses automatically", "It removes the need for authentication"], ans: 1, diff: "Medium", exp: "The single most important reason for HATEOAS is loose coupling. By providing URLs dynamically, the client has no tight dependency on the URI structure." },
+  { q: "Without HATEOAS, what happens when a server changes an API endpoint URL?", opts: ["The server automatically updates all clients", "Only the server needs updating", "All client applications that hard-coded the URL will break", "Nothing changes as REST is stateless"], ans: 2, diff: "Medium", exp: "Without HATEOAS, URLs are hard-coded in clients. Any change to an endpoint means every client application must be updated — a key example of tight coupling." },
+  { q: "Synchronous communication results in:", opts: ["Loose coupling because no broker is needed", "Tight runtime coupling because both parties must be available", "Asynchronous processing of messages", "Reduced system complexity through event streams"], ans: 1, diff: "Medium", exp: "Synchronous communication results in tight runtime coupling — both the client and service must be available for the duration of the request." },
+  { q: "Which pattern type is SOAP considered, given that it only uses POST messages?", opts: ["REST pattern", "HATEOAS pattern", "RPC (Remote Procedure Call) mechanism", "Publish/Subscribe pattern"], ans: 2, diff: "Medium", exp: "Because SOAP uses POST to run a method on a remote object, it is an RPC (remote procedure call) mechanism. This is explicitly stated as a SOAP characteristic." },
+  { q: "In Publish/Subscribe interaction, how many services consume the published message?", opts: ["Exactly one service", "Exactly two services", "Zero or more interested services", "All registered services without exception"], ans: 2, diff: "Medium", exp: "In Publish/Subscribe, a client publishes a notification message consumed by zero or more interested services. Zero is possible if no services are currently subscribed." },
+  { q: "Which of the following is a DISADVANTAGE of the Request/Response pattern as stated in the lecture?", opts: ["It is too complex to implement", "It requires a message broker", "It only supports request/reply and not notifications or pub/sub", "It only works with REST, not gRPC"], ans: 2, diff: "Medium", exp: "The lecture explicitly states: 'Usually only supports request/reply and not other interaction patterns such as notifications, request/async response, publish/subscribe, publish/async response.'" },
+  { q: "What does a RESTful API specifically mean?", opts: ["Any API that uses HTTP", "An API built using Java", "An API adhering to REST constraints", "An API that uses JSON format only"], ans: 2, diff: "Medium", exp: "'RESTful' specifically refers to an API adhering to REST constraints. REST itself is the set of constraints; RESTful is the adjective for an API following them." },
+  { q: "Which of the following is listed as a Cross-Cutting Concern Pattern in microservices?", opts: ["Database per Service", "Circuit Breaker Pattern", "Aggregator Pattern", "Saga Pattern"], ans: 1, diff: "Medium", exp: "Circuit Breaker Pattern is listed under Cross-Cutting Concern Patterns (along with Externalized Configuration and Service Discovery Pattern). The others belong to Database and Integration pattern categories." },
+  { q: "A REST client that uses HATEOAS needs to know:", opts: ["All possible URLs before making any request", "The full API structure including every endpoint", "Only minimal information — the server provides URLs dynamically", "The server's internal database schema"], ans: 2, diff: "Hard", exp: "With HATEOAS, 'the client-side needs minimal knowledge about how to interact with a server' — URLs are generated server-side and sent in JSON responses, so the client only needs to follow the links it receives." },
+  { q: "Consider a system where Service A calls Service B synchronously. Service B is down. What happens?", opts: ["Service A queues the request and retries later", "Service A continues processing independently", "The request fails because both must be available simultaneously", "Service B processes the request when it restarts"], ans: 2, diff: "Hard", exp: "Synchronous communication requires both parties to be running for the duration. Since Service B is down, the request fails — this is the 'reduced availability' disadvantage of the pattern." },
+  { q: "SOAP lacks which concept that enables flexible handling of relationships between microservices?", opts: ["WS-Security", "SMTP transport", "HATEOAS", "POST method support"], ans: 2, diff: "Hard", exp: "The lecture states: 'SOAP lacks concepts such as HATEOAS that enable relationships between microservices to be handled flexibly.' HATEOAS is absent from SOAP, making it tightly coupled." },
+  { q: "In a Publish/Async Responses interaction, the client:", opts: ["Waits forever for all services to respond", "Publishes a request and waits a limited time for responses from interested services", "Sends directly to one specific service", "Expects no response at all"], ans: 1, diff: "Hard", exp: "Publish/async responses: a client publishes a request message and then waits for a certain amount of time for responses from interested services. The key detail is 'certain amount of time' — not forever." },
+  { q: "In the WS-Security SOAP scenario, which station decrypts the encrypted parts of a message?", opts: ["The first intermediary station that receives it", "Every station along the route", "Only the final intended recipient", "The original sender"], ans: 2, diff: "Hard", exp: "According to the lecture: 'Finally, the encrypted parts will arrive at their final recipients — and only there do they have to be decrypted and processed.' Intermediary stations process but don't decrypt." },
+  { q: "Which of the following best describes why REST is called 'firewall friendly'?", opts: ["REST encrypts all data before transmission", "REST uses standard HTTP ports which firewalls typically allow", "REST bypasses firewalls using tunneling", "REST doesn't require network connections"], ans: 1, diff: "Hard", exp: "HTTP uses standard ports (80, 443) that are almost universally allowed through enterprise firewalls. This makes REST-based services accessible without special firewall configuration." },
+  { q: "The 'Strangler Pattern' belongs to which microservices design pattern category?", opts: ["Communication Patterns", "Deployment Patterns", "Decomposition Patterns", "Observability Patterns"], ans: 2, diff: "Hard", exp: "The Strangler Pattern is listed under Decomposition Patterns, alongside Decompose by Business Capability and Decompose by Subdomain." },
+  { q: "Which of these is NOT listed as an Observability Pattern?", opts: ["Log Aggregation", "Health Check", "Distributed Tracing", "Service Discovery Pattern"], ans: 3, diff: "Hard", exp: "Service Discovery Pattern is a Cross-Cutting Concern Pattern, NOT an Observability Pattern. Observability includes: Log Aggregation, Performance Metrics, Distributed Tracing, and Health Check." },
+  { q: "An API that returns JSON responses containing 'links' arrays with rel and href fields is implementing:", opts: ["gRPC streaming", "WS-Security", "HATEOAS", "Publish/Subscribe"], ans: 2, diff: "Hard", exp: "HATEOAS in JSON format returns links arrays containing rel (relationship type) and href (URL) fields. This is exactly the format shown in the lecture's HATEOAS JSON example." },
+  { q: "Which statement about REST and SOAP is MOST accurate?", opts: ["Both REST and SOAP are protocols", "REST is a set of constraints; SOAP is a protocol that can use multiple transports", "SOAP is simpler and more developer-friendly than REST", "REST supports partial message encryption natively"], ans: 1, diff: "Hard", exp: "REST is a set of architectural constraints (not a protocol) built on HTTP. SOAP is a protocol that can use HTTP, JMS, and SMTP/POP. REST doesn't natively support partial encryption (that's WS-Security in SOAP)." },
+];
+
+const writtenQs = [
+  { type: "short", q: "Define REST and explain the difference between REST and RESTful.", answer: `<p><strong>REST</strong> (REpresentational State Transfer) is a set of architectural constraints — not a protocol — for designing networked applications. It is built entirely on top of HTTP.</p><p><strong>RESTful</strong> refers to an API that adheres to REST constraints. In other words: REST is the ruleset; RESTful is the adjective for any API following those rules. For example, an HTTP API using proper resource URLs, standard verbs (GET, POST, PUT, DELETE), and stateless communication would be called a RESTful API.</p>` },
+  { type: "short", q: "What is a 'Resource' in the context of REST?", answer: `<p>A <strong>resource</strong> is the key abstraction in REST. It refers to <em>anything you want to expose to the outside world through your application</em>. Resources are identified by URLs (URIs). Examples include:</p><ul><li>A user: <code>/users/123</code></li><li>An order: <code>/orders/42</code></li><li>A list of products: <code>/products</code></li></ul><p>HTTP's entire design centers around resources, which is why REST aligns naturally with HTTP.</p>` },
+  { type: "short", q: "List and briefly explain the two dimensions used to categorize client-service interaction styles.", answer: `<p>Interaction styles are categorized on two dimensions:</p><ul><li><strong>Dimension 1 — Cardinality:</strong> Whether the interaction is <em>one-to-one</em> (each request processed by exactly one service) or <em>one-to-many</em> (each request processed by multiple services).</li><li><strong>Dimension 2 — Timing:</strong> Whether the interaction is <em>synchronous</em> (client blocks and waits) or <em>asynchronous</em> (client does not block; response may arrive later).</li></ul>` },
+  { type: "short", q: "What is the key difference between 'Async Request/Response' and 'One-Way Notification'?", answer: `<p>Both are asynchronous one-to-one interaction styles, but they differ in reply expectation:</p><ul><li><strong>Async Request/Response:</strong> The client sends a request and a response IS expected — but the client doesn't block while waiting. The service will eventually send a reply.</li><li><strong>One-Way Notification:</strong> The client sends a request and <em>no reply is expected or sent</em>. It's a fire-and-forget communication.</li></ul>` },
+  { type: "short", q: "State THREE advantages and THREE disadvantages of REST.", answer: `<p><strong>Advantages:</strong></p><ul><li>Simple and familiar to developers</li><li>Easy to test (using Postman, curl, or a browser)</li><li>Directly supports request/response communication</li><li>Firewall friendly (uses standard HTTP ports)</li><li>No intermediate broker needed, simplifying architecture</li></ul><p><strong>Disadvantages:</strong></p><ul><li>Only supports request/response style — no notifications or pub/sub natively</li><li>Reduced availability — both client and service must be online simultaneously</li><li>Clients must discover service instance URLs (requires a service discovery mechanism)</li></ul>` },
+  { type: "long", q: "Explain HATEOAS in detail: what it is, why we need it, and compare a system with and without it using an example.", answer: `<div class="model-label">MODEL ANSWER</div><p><strong>Definition:</strong> HATEOAS (Hypermedia as the Engine of Application State) is a component of RESTful API architecture where the server provides clients with dynamically generated URLs and available actions in each response, rather than requiring clients to hard-code endpoint locations.</p><p><strong>Why we need it — The Loose Coupling Problem:</strong></p><ul><li>The single most important reason for HATEOAS is <em>loose coupling</em>.</li><li>Without HATEOAS, clients hard-code API endpoint URLs. Any URL change on the server breaks all clients. This creates tight coupling — every client app must be updated whenever the server's URI structure changes.</li><li>With HATEOAS, URLs are generated on the fly server-side and sent to the client in the JSON/XML response. Clients follow links from responses rather than pre-programmed routes.</li></ul><p><strong>Without HATEOAS Example:</strong></p><p style="font-family:'DM Mono',monospace; font-size:0.82rem; color:var(--accent3);">Response: { "id": 123, "name": "Mohamed", "balance": 500 }<br>Client must know: "/users/123/deposit" and "/users/123/withdraw" from documentation.</p><p><strong>With HATEOAS Example (JSON):</strong></p><p style="font-family:'DM Mono',monospace; font-size:0.82rem; color:var(--accent3);">Response: { "id": 123, "name": "Mohamed", "balance": 500, "links": [{ "rel": "deposit", "href": "/users/123/deposit" }, { "rel": "withdraw", "href": "/users/123/withdraw" }] }</p><p>The client reads the links from the response and uses them directly. If the server changes "/users/123/deposit" to "/accounts/123/fund", only the server changes — the client automatically receives the new URL in the next response and continues working without modification.</p>` },
+  { type: "long", q: "Compare REST and SOAP as approaches to implementing the Request/Response communication pattern in microservices, covering transport, advantages, disadvantages, and coupling.", answer: `<div class="model-label">MODEL ANSWER</div><p><strong>Transport:</strong> REST operates exclusively on HTTP. SOAP is more flexible — it can use HTTP, JMS (Java Message Service), or SMTP/POP (email), allowing it to transport messages across different protocols.</p><p><strong>REST Advantages:</strong> Simple, familiar, easy to test with standard tools, firewall-friendly, no intermediate broker needed, directly supports request/response.</p><p><strong>REST Disadvantages:</strong> Only supports request/response style, requires both parties online simultaneously (reduced availability), clients need service discovery for URLs.</p><p><strong>SOAP Characteristics:</strong></p><ul><li>Supports WS-Security for partial message encryption and forwarding</li><li>Messages can pass through intermediary stations, each processing a relevant part</li><li>Only uses POST (RPC mechanism — calls methods on remote objects)</li></ul><p><strong>SOAP Disadvantages:</strong></p><ul><li>Lacks HATEOAS — relationships between services are rigid</li><li>Interfaces must be fully defined upfront — tight coupling</li><li>No flexible resource-oriented design</li></ul><p><strong>Coupling Comparison:</strong> REST with HATEOAS achieves loose coupling since URLs are dynamic. SOAP inherently creates tight coupling because clients must fully know the interface definition, and there is no mechanism for dynamic discovery. If a SOAP endpoint changes, all clients need updating — similar to REST without HATEOAS.</p>` },
+  { type: "long", q: "Explain the five types of client-service interaction styles, classifying each by cardinality and timing.", answer: `<div class="model-label">MODEL ANSWER</div><p>Interaction styles are organized along two dimensions: cardinality (one-to-one vs. one-to-many) and timing (synchronous vs. asynchronous).</p><p><strong>One-to-One Styles:</strong></p><ul><li><strong>Request/Response (Synchronous):</strong> Client sends a request and waits (may block) for a timely response. Both client and service must be available simultaneously. Results in tight coupling. Example: HTTP REST call.</li><li><strong>Asynchronous Request/Response:</strong> Client sends a request but does NOT block. The service may take a long time, and the reply arrives later. Example: message queue with callback.</li><li><strong>One-Way Notification:</strong> Client sends a request but no reply is expected or sent at all. Pure fire-and-forget. Example: logging a system event.</li></ul><p><strong>One-to-Many Styles:</strong></p><ul><li><strong>Publish/Subscribe:</strong> Client publishes a notification message consumed by zero or more interested services. Services subscribe to topics of interest. Example: Apache Kafka topic.</li><li><strong>Publish/Async Responses:</strong> Client publishes a request message and waits for a certain limited time period for responses from interested services. Example: a price aggregation service asking multiple pricing engines.</li></ul>` },
+  { type: "short", q: "What does it mean that synchronous communication creates 'tight runtime coupling'? Give an example.", answer: `<p><strong>Tight runtime coupling</strong> means that both the calling service (client) and the receiving service must be running and reachable at the same moment for the communication to succeed.</p><p><strong>Example:</strong> If Service A (Order Service) makes a synchronous REST call to Service B (Payment Service), and Service B is down for maintenance, Service A's request fails immediately. Service A cannot process orders until Service B is back online. They are "tightly coupled" at runtime — the failure of one directly impacts the other.</p><p>In contrast, with asynchronous messaging, Service A could place the order into a message queue and continue processing. Service B would pick up the message and process the payment when it comes back online — this is loose coupling.</p>` },
+];
+
+// ── STATE ──
+let score = 0;
+let answered = 0;
+let total = questions.length;
+
+// ── MCQ RENDERER ──
+function renderMCQ() {
+  const c = document.getElementById('mcq-container');
+  c.innerHTML = questions.map((q, qi) => `
+    <div class="mcq-item" id="mcq-${qi}">
+      <div class="mcq-meta">
+        <span class="mcq-number">Q${(qi+1).toString().padStart(2,'0')}</span>
+        <span class="diff-pill diff-${q.diff.toLowerCase()}">${q.diff}</span>
+      </div>
+      <div class="mcq-q">${q.q}</div>
+      <div class="mcq-opts">
+        ${q.opts.map((o, oi) => `
+          <div class="mcq-opt" id="opt-${qi}-${oi}" onclick="checkAnswer(${qi}, ${oi})">
+            <span class="letter">${String.fromCharCode(65+oi)}.</span>
+            <span>${o}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="mcq-explanation" id="exp-${qi}">
+        <strong>✓ Correct Answer: ${String.fromCharCode(65+q.ans)}</strong><br>
+        ${q.exp}
+      </div>
+    </div>
+  `).join('');
+}
+
+function checkAnswer(qi, oi) {
+  const q = questions[qi];
+  const item = document.getElementById(`mcq-${qi}`);
+  if (item.dataset.answered) return;
+  item.dataset.answered = '1';
+  answered++;
+
+  const opts = item.querySelectorAll('.mcq-opt');
+  opts.forEach((o, i) => {
+    o.style.pointerEvents = 'none';
+    if (i === q.ans) o.classList.add('correct');
+    else if (i === oi && oi !== q.ans) o.classList.add('wrong');
+  });
+
+  if (oi === q.ans) score++;
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById('scoreNum').textContent = `${score} / ${answered}`;
+  const pct = answered > 0 ? (score / answered) * 100 : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function resetQuiz() {
+  score = 0; answered = 0;
+  updateScore();
+  renderMCQ();
+}
+
+// ── WRITTEN QS RENDERER ──
+function renderWritten() {
+  const c = document.getElementById('wq-container');
+  c.innerHTML = writtenQs.map((wq, i) => `
+    <div class="wq-item">
+      <div class="wq-header" onclick="toggleWQ(${i})">
+        <div class="wq-q">
+          <span class="wq-type wq-${wq.type}">${wq.type === 'short' ? 'Short Answer' : 'Long Answer'}</span>
+          Q${i+1}: ${wq.q}
+        </div>
+        <div class="wq-toggle" id="wq-toggle-${i}">+</div>
+      </div>
+      <div class="wq-answer" id="wq-ans-${i}">
+        <div class="model-label">Model Answer</div>
+        ${wq.answer}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleWQ(i) {
+  const ans = document.getElementById(`wq-ans-${i}`);
+  const tog = document.getElementById(`wq-toggle-${i}`);
+  const open = ans.classList.toggle('show');
+  tog.textContent = open ? '−' : '+';
+  tog.style.transform = open ? 'rotate(45deg)' : 'rotate(0)';
+}
+
+// ── NAVIGATION ──
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── THEME ──
+function toggleTheme() {
+  const isDark = !document.body.classList.contains('light');
+  document.body.classList.toggle('light', isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '🌙 Dark Mode' : '☀ Light Mode';
+}
+
+// ── INIT ──
+renderMCQ();
+renderWritten();
+</script>
+</body>
+</html>
