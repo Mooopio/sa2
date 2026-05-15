@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS-352 · Exam Prep System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d14;
+  --surface: #12151f;
+  --surface2: #1a1e2e;
+  --surface3: #212540;
+  --border: #2a2f4a;
+  --accent: #4f8ef7;
+  --accent2: #f74f8e;
+  --accent3: #4ff7b0;
+  --accent4: #f7c94f;
+  --text: #e8ecf8;
+  --text-muted: #7a829e;
+  --text-dim: #4a5070;
+  --danger: #f74f4f;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Sora', sans-serif;
+  --radius: 10px;
+}
+.light {
+  --bg: #f0f2fa;
+  --surface: #ffffff;
+  --surface2: #e8ecf8;
+  --surface3: #dde2f0;
+  --border: #c8d0e8;
+  --text: #1a1e2e;
+  --text-muted: #4a5070;
+  --text-dim: #8a92b0;
+  --surface-card: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
+
+/* ── TOP NAV ── */
+#topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+#topbar .brand {
+  font-family: var(--mono);
+  font-size: 13px; font-weight: 700;
+  color: var(--accent);
+  margin-right: 12px;
+  white-space: nowrap;
+}
+#searchBox {
+  flex: 1; min-width: 160px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-family: var(--sans); font-size: 13px;
+  outline: none;
+}
+#searchBox:focus { border-color: var(--accent); }
+.btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surface3); }
+.btn.active, .btn.exam { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.revision { background: var(--accent3); color: #000; border-color: var(--accent3); }
+.btn.light-toggle { background: var(--surface3); }
+
+/* ── LAYOUT ── */
+#app { max-width: 960px; margin: 0 auto; padding: 20px 16px 60px; }
+
+/* ── SECTION CARD ── */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: opacity .3s;
+}
+.section-card.hidden { display: none; }
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.section-header:hover { background: var(--surface3); }
+.section-num {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--accent2); opacity: .8;
+}
+.section-title {
+  font-size: 14px; font-weight: 700; flex: 1;
+  letter-spacing: .02em;
+}
+.section-tag {
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 8px; border-radius: 20px;
+  background: var(--surface3); color: var(--text-muted);
+}
+.chevron { transition: transform .25s; font-size: 12px; color: var(--text-muted); }
+.collapsed .chevron { transform: rotate(-90deg); }
+.section-body { padding: 18px; display: block; }
+.collapsed .section-body { display: none; }
+
+/* ── CONTENT ELEMENTS ── */
+h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .06em; }
+h4 { font-size: 13px; font-weight: 600; color: var(--accent4); margin: 14px 0 6px; }
+p { font-size: 13px; line-height: 1.7; color: var(--text); margin-bottom: 8px; }
+
+ul, ol { padding-left: 20px; margin-bottom: 10px; }
+li { font-size: 13px; line-height: 1.75; color: var(--text); margin-bottom: 3px; }
+li strong { color: var(--accent4); }
+
+.tag-hot { display: inline-block; background: var(--accent2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+.tag-tricky { display: inline-block; background: var(--accent4); color: #000; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+.tag-key { display: inline-block; background: var(--accent3); color: #000; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+
+/* ── TABLES ── */
+.tbl-wrap { overflow-x: auto; margin: 12px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: var(--surface3); color: var(--accent); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.5; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+td.green { color: var(--accent3); font-weight: 600; }
+td.red { color: var(--danger); font-weight: 600; }
+td.yellow { color: var(--accent4); font-weight: 600; }
+
+/* ── HIGHLIGHT BOXES ── */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--surface2);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.callout.warn { border-color: var(--accent4); }
+.callout.danger { border-color: var(--accent2); }
+.callout.success { border-color: var(--accent3); }
+.callout strong { color: var(--accent); }
+.callout.warn strong { color: var(--accent4); }
+.callout.danger strong { color: var(--accent2); }
+.callout.success strong { color: var(--accent3); }
+
+/* ── MCQ ── */
+.mcq-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 10px 0;
+}
+.mcq-q { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.6; }
+.mcq-q span { font-family: var(--mono); color: var(--accent); font-size: 11px; margin-right: 6px; }
+.mcq-options { display: flex; flex-direction: column; gap: 6px; }
+.mcq-opt {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all .15s;
+  text-align: left;
+}
+.mcq-opt:hover { border-color: var(--accent); background: var(--surface3); }
+.mcq-opt.correct { background: rgba(79,247,176,.12); border-color: var(--accent3); color: var(--accent3); }
+.mcq-opt.wrong { background: rgba(247,79,79,.1); border-color: var(--danger); color: var(--danger); }
+.mcq-explanation {
+  margin-top: 10px; padding: 8px 12px;
+  background: var(--surface3);
+  border-radius: 6px;
+  font-size: 12px; line-height: 1.6;
+  display: none;
+  color: var(--text-muted);
+}
+.mcq-explanation.show { display: block; }
+.mcq-explanation strong { color: var(--accent3); }
+
+/* ── MNEMONIC CARDS ── */
+.mnemonic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin: 10px 0; }
+.mnemonic-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.mnemonic-card .label { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 6px; font-weight: 700; }
+.mnemonic-card .value { font-size: 12px; line-height: 1.6; color: var(--text); }
+
+/* ── PRIORITY MAP ── */
+.priority-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.priority-row:last-child { border: none; }
+.priority-badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.prio-1 { background: var(--accent2); color: #fff; }
+.prio-2 { background: var(--accent4); color: #000; }
+.prio-3 { background: var(--accent); color: #fff; }
+.priority-text { font-size: 12px; line-height: 1.5; }
+
+/* ── WRITTEN ANSWER ── */
+.answer-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 10px 0;
+}
+.answer-block .q { font-size: 13px; font-weight: 700; color: var(--accent2); margin-bottom: 10px; }
+.answer-block .a { font-size: 12px; line-height: 1.75; }
+.keyword { background: rgba(79,142,247,.15); color: var(--accent); padding: 1px 5px; border-radius: 3px; font-weight: 600; font-size: 11px; }
+
+/* ── RAPID REVISION ── */
+.crash-box {
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: rgba(79,142,247,.05);
+  padding: 14px;
+  margin: 8px 0;
+}
+.crash-box h4 { color: var(--accent); margin-top: 0; }
+.crash-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+.crash-item .arrow { color: var(--accent2); font-size: 13px; flex-shrink: 0; }
+.crash-item .text { font-size: 12px; line-height: 1.6; }
+
+/* ── EXAM / REVISION MODE ── */
+body.exam-mode .section-card:not([data-priority="exam"]) { display: none; }
+body.revision-mode .section-card:not([data-priority="revision"]) { display: none; }
+
+/* ── SEARCH HIGHLIGHT ── */
+.highlight-search { background: rgba(247,201,79,.3); border-radius: 2px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── HERO ── */
+#hero {
+  text-align: center;
+  padding: 28px 16px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+#hero .course { font-family: var(--mono); font-size: 11px; color: var(--text-muted); letter-spacing: .12em; margin-bottom: 8px; }
+#hero h1 { font-size: 24px; font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+#hero .sub { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand">IS-352 ⚡</div>
+  <input id="searchBox" type="text" placeholder="Search topics, keywords…" oninput="doSearch(this.value)">
+  <button class="btn exam" onclick="toggleMode('exam')">🎯 Exam Mode</button>
+  <button class="btn revision" onclick="toggleMode('revision')">⚡ 15-Min Crash</button>
+  <button class="btn" onclick="expandAll()">↕ All</button>
+  <button class="btn light-toggle" onclick="toggleLight()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="hero">
+  <div class="course">IS-352 · SYSTEM ANALYSIS & DESIGN · DR. WAEL ABBAS</div>
+  <h1>Exam Preparation System</h1>
+  <div class="sub">Software Process · Agile/Scrum · DevOps · CI/CD · Microservices · SOA · Design Patterns · Data Management (CQRS · Saga · 2PC · 3PC)</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — MASTER SUMMARY
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam revision" id="s1">
+  <div class="section-header" onclick="toggle('s1')">
+    <span class="section-num">01</span>
+    <span class="section-title">ULTRA-COMPRESSED MASTER SUMMARY</span>
+    <span class="section-tag">FULL CONTENT</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+
+    <h3>A · Software Process Models</h3>
+    <p>A <strong>software process model</strong> = abstract description of a software development process. All processes share 4 core activities:</p>
+    <ul>
+      <li><strong>Specification</strong> – what the system should do</li>
+      <li><strong>Design & Implementation</strong> – how to build it</li>
+      <li><strong>Validation</strong> – does it match customer needs?</li>
+      <li><strong>Evolution</strong> – changing in response to needs</li>
+    </ul>
+    <div class="tbl-wrap"><table>
+      <tr><th>Category</th><th>Description</th><th>Examples</th></tr>
+      <tr><td>Plan-Driven</td><td>All activities planned upfront; measure vs plan</td><td>Waterfall, Incremental, Spiral, Reuse-oriented</td></tr>
+      <tr><td>Agile</td><td>Planning is incremental; easy to adapt</td><td>XP, Scrum, Lean, Crystal, Kanban</td></tr>
+    </table></div>
+
+    <h4>Waterfall</h4>
+    <ul>
+      <li>Linear phases: Requirements → Design → Implementation → Testing → Deployment</li>
+      <li><strong>Benefits:</strong> Discipline, simple, easy to manage, good for stable requirements (mass production)</li>
+      <li><strong>Drawbacks:</strong> No going back, each phase owned by different team, little collaboration, rigid scope</li>
+      <li><strong>Code &amp; Fix</strong>: worst model — no design, just code then fix bugs late</li>
+    </ul>
+    <div class="callout danger"><strong>Waterfall Stats:</strong> 86% of projects fail/challenged; &lt;30% complete as planned; 30% cancelled before they begin. (Standish Group)</div>
+
+    <h4>Triple Constraints</h4>
+    <p>Scope is <strong>Fixed</strong>; Time and Cost are <strong>Flexible</strong> (in traditional Waterfall thinking)</p>
+
+    <h3>B · Agile &amp; Scrum</h3>
+    <p><strong>Agile Manifesto (2001)</strong> — 4 Values:</p>
+    <ul>
+      <li>Individuals &amp; interactions <em>over</em> process and tools</li>
+      <li>Working software <em>over</em> comprehensive documentation</li>
+      <li>Customer collaboration <em>over</em> contract negotiation</li>
+      <li>Responding to change <em>over</em> following a plan</li>
+    </ul>
+    <p><strong>12 Principles</strong> include: early &amp; continuous delivery, welcome changing requirements, deliver frequently (weeks to months), business &amp; devs work together daily, face-to-face conversation is most efficient, working software = primary measure, sustainable pace, technical excellence, simplicity (maximize work not done), self-organizing teams, regular retrospectives.</p>
+
+    <h4>Scrum Framework</h4>
+    <div class="tbl-wrap"><table>
+      <tr><th>Roles</th><th>Ceremonies</th><th>Artifacts</th></tr>
+      <tr><td>Product Owner<br>Scrum Master<br>Team (5–9)</td><td>Sprint Planning<br>Daily Scrum (15 min)<br>Sprint Review<br>Sprint Retrospective</td><td>Product Backlog<br>Sprint Backlog<br>Burndown Chart</td></tr>
+    </table></div>
+    <ul>
+      <li><strong>Product Owner:</strong> Defines features, prioritizes backlog, decides release, accepts/rejects work</li>
+      <li><strong>Scrum Master:</strong> Removes impediments, shields team, enforces process, not a manager</li>
+      <li><strong>Team:</strong> Self-organizing, cross-functional, 5–9 people, no changes during sprint</li>
+      <li><strong>Sprint:</strong> 30-day cycle; delivers working software; change kept OUT during sprint</li>
+      <li><strong>Daily Scrum:</strong> 3 questions — What did I do yesterday? What will I do today? Any blockers?</li>
+      <li><strong>Burndown Chart:</strong> Shows hours remaining per day; should reach 0 by sprint end (but not always straight)</li>
+    </ul>
+
+    <h3>C · DevOps</h3>
+    <p>DevOps bridges the gap between <strong>Developers</strong> and <strong>Operations</strong>. It evolved from Waterfall → Agile → DevOps to resolve the last-mile deployment gap.</p>
+    <p><strong>Why DevOps?</strong> Waterfall was rigid; Agile fixed dev-customer gap but Operations still slowed releases; DevOps unifies Dev + Ops into one team.</p>
+    <h4>DevOps Overview</h4>
+    <ul>
+      <li>One integrated team → better communication &amp; collaboration</li>
+      <li>Automate testing, infrastructure, workflows</li>
+      <li>Continuous performance measurement</li>
+      <li>Code written in small chunks; deployments in days/hours not weeks</li>
+      <li>Dev environment = Production environment</li>
+      <li>Infrastructure as Code (Configuration Management)</li>
+    </ul>
+    <h4>DevOps Lifecycle (8 Stages)</h4>
+    <div class="tbl-wrap"><table>
+      <tr><th>Stage</th><th>Description</th><th>Tools</th></tr>
+      <tr><td>Code</td><td>Build code on any platform</td><td>Git</td></tr>
+      <tr><td>Build</td><td>Compile/package the version</td><td>Maven</td></tr>
+      <tr><td>Test</td><td>Automated testing</td><td>Selenium</td></tr>
+      <tr><td>Release</td><td>Manage &amp; schedule builds across environments</td><td>—</td></tr>
+      <tr><td>Deploy</td><td>Deploy artifacts to server</td><td>Jenkins, Ansible</td></tr>
+      <tr><td>Operate</td><td>Clients use the system</td><td>—</td></tr>
+      <tr><td>Monitor</td><td>Track performance &amp; uptime</td><td>Nagios, Splunk, ELK, Sensu</td></tr>
+      <tr><td>Plan</td><td>Feedback from monitoring → next iteration</td><td>—</td></tr>
+    </table></div>
+    <h4>DevOps Lifecycle Continuous Stages</h4>
+    <ul>
+      <li><strong>Continuous Development:</strong> Code + build continuously (Git + Maven)</li>
+      <li><strong>Continuous Integration (CI):</strong> Merge frequently; Jenkins pulls from Git → builds → deploys to test/prod</li>
+      <li><strong>Continuous Testing:</strong> Automated (Selenium); parallel testing</li>
+      <li><strong>Continuous Monitoring:</strong> Nagios, Splunk, ELK, Sensu; issues forwarded to dev team</li>
+      <li><strong>Continuous Deployment (CD):</strong> Automates deploying changes to staging/prod upon merge</li>
+    </ul>
+    <h4>DevOps Benefits</h4>
+    <ul>
+      <li>Breaking Silos — cross-team collaboration</li>
+      <li>Continuous Improvement — reduced feedback cycle → higher customer satisfaction</li>
+      <li>Minimized Failures — fault detection with Agile base</li>
+      <li>Creativity &amp; Innovation — trust culture</li>
+      <li>Performance-oriented Culture — reduced turnover</li>
+    </ul>
+
+    <h4>CI/CD</h4>
+    <ul>
+      <li><strong>CI (Continuous Integration):</strong> Code changes merged regularly and frequently into shared repo; small changes at high frequency → catch problems early → stable, up-to-date codebase</li>
+      <li><strong>CD (Continuous Deployment):</strong> Automatically deploy merged changes to staging/production</li>
+      <li><strong>CI/CD Pipeline:</strong> Build → Test → Deploy changes automatically; alerts on problems</li>
+      <li><strong>Tools:</strong> Git (version control), Jenkins (automation), Ansible (deployment)</li>
+    </ul>
+
+    <h3>D · Monolithic vs Microservices vs SOA</h3>
+    <h4>Monolithic Architecture</h4>
+    <ul>
+      <li>Single deployable unit; all modules in one process; hexagonal architecture (business logic + adapters)</li>
+      <li><strong>Early Advantages:</strong> Simple to develop, easy radical changes, straightforward test &amp; deploy, easy to scale (basic load balancer)</li>
+      <li><strong>Monolithic Hell Disadvantages:</strong> Slow development, no individual scaling, long commit-to-deploy cycle, locked-in tech stack, unreliable (no fault isolation), difficult testing</li>
+    </ul>
+    <h4>Microservices</h4>
+    <ul>
+      <li>Independently deployable modules; each solves one specific problem (single responsibility)</li>
+      <li>Evolution of SOA; loosely coupled; each owns its own database; no shared tech stack required</li>
+      <li><strong>Principles:</strong> Modelled around business domain, Culture of Automation (CI/CD), Hide implementation details, Decentralization, Deploy Independently, Failure Isolation, Highly Observable</li>
+    </ul>
+    <div class="tbl-wrap"><table>
+      <tr><th>Aspect</th><th>Monolithic</th><th>SOA</th><th>Microservices</th></tr>
+      <tr><td>Unit Size</td><td>Single large unit</td><td>Multiple N-layer units</td><td>Smaller independent units</td></tr>
+      <tr><td>Scope</td><td>Application</td><td>Enterprise-wide</td><td>Application/service</td></tr>
+      <tr><td>DB</td><td>Shared</td><td>Shared via ESB</td><td>Per service (own DB)</td></tr>
+      <tr><td>Communication</td><td>Internal calls</td><td>ESB (SOAP, AMQP)</td><td>HTTP/REST, JMS (lightweight)</td></tr>
+      <tr><td>Coupling</td><td>Tight</td><td>Moderate (ESB dependency)</td><td>Loose</td></tr>
+    </table></div>
+    <h4>SOA — Service Oriented Architecture</h4>
+    <ul>
+      <li>Enterprise-wide approach; reusable services across platforms/languages</li>
+      <li><strong>Roles:</strong> Service Provider (publishes in registry) + Service Consumer (finds &amp; binds service)</li>
+      <li><strong>ESB (Enterprise Service Bus):</strong> Common communication protocol; routes messages, transforms data, handles protocols; can be <em>single point of failure</em></li>
+      <li><strong>Registry:</strong> Controlled access to service metadata; governs SOA</li>
+      <li><strong>4 Service Types:</strong> Functional (business), Enterprise, Application, Infrastructure</li>
+      <li><strong>Service = Interface + Contract + Implementation</strong></li>
+      <li><strong>Advantages:</strong> Reusability, easy maintenance, platform-independent, availability, reliability, scalability, faster time to market</li>
+      <li><strong>Disadvantage:</strong> ESB = bottleneck &amp; single point of failure</li>
+    </ul>
+
+    <h3>E · Microservices Design Patterns</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Category</th><th>Patterns</th></tr>
+      <tr><td>Decomposition</td><td>By Business Capability, By Subdomain, Strangler Pattern</td></tr>
+      <tr><td>Communication</td><td>Request/Response, Messaging, Event Driven</td></tr>
+      <tr><td>Integration</td><td>API Gateway, Aggregator, Client-Side UI Composition</td></tr>
+      <tr><td>Database</td><td>Database per Service, Shared Database, CQRS, Saga</td></tr>
+      <tr><td>Deployment</td><td>Multiple Instances per Host, Instance per Host, Serverless, Deployment Platform</td></tr>
+      <tr><td>Observability</td><td>Log Aggregation, Performance Metrics, Distributed Tracing, Health Check</td></tr>
+      <tr><td>Cross-Cutting</td><td>Externalized Configuration, Service Discovery, Circuit Breaker</td></tr>
+    </table></div>
+
+    <h3>F · Data Management Patterns</h3>
+    <h4>1 — Two-Phase Commit (2PC)</h4>
+    <ul>
+      <li>Distributed algorithm ensuring all nodes agree to commit or abort</li>
+      <li><strong>Roles:</strong> Coordinator (initiates, collects votes, sends decision) + Participants (execute, vote, ACK)</li>
+      <li><strong>Phase 1 — Prepare:</strong> Coordinator sends PREPARE → Participants execute up to commit point, write to recovery log, vote COMMIT or ABORT</li>
+      <li><strong>Phase 2 — Commit/Abort:</strong> All COMMIT votes → send COMMIT; any ABORT vote → send ABORT; Participants finalize &amp; release locks</li>
+      <li><strong>Guarantees:</strong> Atomicity + Strong consistency</li>
+    </ul>
+    <div class="callout danger"><strong>Why 2PC fails in Microservices:</strong> Blocking protocol (locks resources), Poor fault tolerance, Single point of failure (coordinator crash), Performance bottleneck, Tight coupling, No native broker support (Kafka/RabbitMQ don't support 2PC)</div>
+
+    <h4>2 — Three-Phase Commit (3PC)</h4>
+    <ul>
+      <li>Extension of 2PC by Dale Skeen (1982); adds intermediate <em>PreCommit</em> phase to prevent indefinite blocking</li>
+      <li><strong>Phase 1 — CanCommit:</strong> Coordinator asks "ready to commit?" → YES/NO</li>
+      <li><strong>Phase 2 — PreCommit:</strong> If all YES → coordinator sends PreCommit → participants write to log, enter "prepared" state, send ACK. KEY: all now KNOW a commit is coming</li>
+      <li><strong>Phase 3 — DoCommit:</strong> Coordinator sends DoCommit → participants make permanent, release locks, send ACK. If coordinator fails here, participants can commit independently</li>
+      <li><strong>Solves:</strong> Indefinite blocking when coordinator + participant both fail during commit</li>
+      <li><strong>Limitations:</strong> Higher latency (3 RTTs), complex, NOT partition-safe (split-brain), assumes bounded delays, rarely used in production</li>
+    </ul>
+    <div class="tbl-wrap"><table>
+      <tr><th>Criterion</th><th>2PC</th><th>3PC</th></tr>
+      <tr><td>Phases</td><td>2</td><td>3</td></tr>
+      <tr><td>Blocking on Failure</td><td class="red">YES — indefinitely</td><td class="green">NO — recover independently</td></tr>
+      <tr><td>Message Rounds</td><td>2 RTTs</td><td>3 RTTs (higher latency)</td></tr>
+      <tr><td>Fault Tolerance</td><td class="red">Low</td><td class="yellow">Higher</td></tr>
+      <tr><td>Partition Safety</td><td class="red">Blocks</td><td class="red">Split-brain risk</td></tr>
+      <tr><td>Complexity</td><td>Moderate</td><td class="red">High</td></tr>
+      <tr><td>Production Use</td><td>Some RDBMS/XA</td><td class="red">Rarely — mostly academic</td></tr>
+      <tr><td>Microservices Fit</td><td class="red">Poor</td><td class="red">Still impractical</td></tr>
+    </table></div>
+
+    <h4>3 — Saga Pattern</h4>
+    <p>A <strong>saga</strong> = sequence of local transactions. Each local transaction updates its own database and publishes an event/message to trigger the next step. If a step fails → <strong>compensating transactions</strong> undo all prior completed steps.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>Choreography</th><th>Orchestration</th></tr>
+      <tr><td>Control</td><td>Distributed — no central coordinator</td><td>Centralized — saga orchestrator</td></tr>
+      <tr><td>Communication</td><td>Events via broker (Kafka/RabbitMQ)</td><td>Direct commands to services</td></tr>
+      <tr><td>Coupling</td><td class="green">Loosely coupled</td><td class="yellow">Services depend on orchestrator</td></tr>
+      <tr><td>Failure Handling</td><td>Each service handles own compensation</td><td>Orchestrator sends compensating commands</td></tr>
+      <tr><td>Debugging</td><td class="red">Hard — flow spread across services</td><td class="green">Easy — single place to track</td></tr>
+      <tr><td>SPOF</td><td class="green">None</td><td class="red">Orchestrator crash halts saga</td></tr>
+      <tr><td>Visibility</td><td class="red">Low</td><td class="green">High</td></tr>
+    </table></div>
+    <p><strong>Choreography Example:</strong> Order Service emits OrderCreatedEvent → Payment Service listens, charges, emits PaymentCompletedEvent → Inventory Service listens, reserves stock. If Payment fails → emits PaymentFailedEvent → Order Service cancels order.</p>
+    <p><strong>Orchestration Example:</strong> CreateOrderSaga Orchestrator → tells Order Service (createOrder) → tells Payment Service (reserveCredit) → tells Inventory Service (reserveInventory). If credit fails → orchestrator sends rejectOrder to Order Service.</p>
+    <div class="callout warn"><strong>Rolling Back Sagas:</strong> No simple ROLLBACK. Developer writes <em>compensating transactions</em> that semantically reverse previous steps. APIs should prefer <strong>asynchronous</strong> response (better availability) — send response immediately after creating saga, client polls/gets notified on completion.</div>
+
+    <h4>4 — CQRS Pattern</h4>
+    <p><strong>Command Query Responsibility Segregation</strong> — separates read operations (queries) from write operations (commands) into distinct models and often separate databases.</p>
+    <ul>
+      <li><strong>Command Model:</strong> Handles state changes (CreateOrder, UpdateCustomer); command handlers validate inputs, enforce business rules, emit domain events</li>
+      <li><strong>Query Model:</strong> Read-only, optimized for performance; uses Elasticsearch or denormalized SQL; does NOT modify state</li>
+      <li><strong>Eventual Consistency:</strong> Write and read models are decoupled; changes propagate asynchronously via domain events or CDC</li>
+      <li><strong>Typical Setup:</strong> Relational DB for writes (CRUD) + NoSQL for reads (queries)</li>
+    </ul>
+    <h4>CQRS with Kafka &amp; CDC</h4>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>CQRS + Kafka (Manual)</th><th>CQRS + Kafka + CDC (Debezium)</th></tr>
+      <tr><td>How</td><td>Service explicitly emits events after command</td><td>Service writes to DB only; Debezium captures changes</td></tr>
+      <tr><td>Pros</td><td>Full control, rich domain events, no extra tooling</td><td>No manual event publishing, strong DB-event consistency</td></tr>
+      <tr><td>Cons</td><td>Dual-write risk, needs Outbox Pattern</td><td>Low-level events (row changes), complex infra</td></tr>
+      <tr><td>Best For</td><td>Business-event-centric systems</td><td>Legacy systems, minimal write-side logic</td></tr>
+    </table></div>
+    <h4>Other Data Patterns (Summary)</h4>
+    <ul>
+      <li><strong>Database per Service:</strong> Each microservice owns its private DB — no sharing</li>
+      <li><strong>Shared Database:</strong> Multiple services share one DB (anti-pattern for pure microservices)</li>
+      <li><strong>Event Sourcing:</strong> Persist aggregates as sequence of events (full audit trail)</li>
+      <li><strong>Domain Event:</strong> Publish event whenever data changes</li>
+    </ul>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — EXAM PRIORITY MAP
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam revision" id="s2">
+  <div class="section-header" onclick="toggle('s2')">
+    <span class="section-num">02</span>
+    <span class="section-title">EXAM PRIORITY MAP</span>
+    <span class="section-tag">HIGH VALUE</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+    <h3>🔴 Priority 1 — Most Likely Tested</h3>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">Saga Pattern: Choreography vs Orchestration — definitions, examples, pros/cons, when to use each</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">2PC vs 3PC — phases, roles, why 2PC fails in microservices, 3PC solution and limitations</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">CQRS — command vs query model, why use it, eventual consistency, Kafka/CDC integration</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">Agile Manifesto — 4 values and 12 principles (especially numbers 1, 3, 7, 10)</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">Scrum — all 3 roles, 4 ceremonies, 3 artifacts, sprint rules, daily scrum 3 questions</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">Monolithic Hell — disadvantages, what causes it, how microservices solve it</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">SOA vs Microservices — scope, ESB, communication protocol, granularity, speed differences</span></div>
+    <div class="priority-row"><span class="priority-badge prio-1">HOT</span><span class="priority-text">DevOps Lifecycle — all 8 stages + tools; CI vs CD distinction</span></div>
+
+    <h3>🟡 Priority 2 — Frequently Tested</h3>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">Waterfall benefits & drawbacks; Standish Group stats (86%, 30%)</span></div>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">Microservices principles (7 principles — Modelled around domain, Automation, Hide details, etc.)</span></div>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">All 7 categories of microservices design patterns + examples of each</span></div>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">CQRS with Kafka manual vs CDC (Debezium) — pros, cons, best for</span></div>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">DevOps benefits — breaking silos, continuous improvement, minimized failures, etc.</span></div>
+    <div class="priority-row"><span class="priority-badge prio-2">MED</span><span class="priority-text">ESB — what it does, primary duties, why it's a SPOF</span></div>
+
+    <h3>🔵 Priority 3 — Supplementary</h3>
+    <div class="priority-row"><span class="priority-badge prio-3">LOW</span><span class="priority-text">Code &amp; Fix model — what it is and why it's bad</span></div>
+    <div class="priority-row"><span class="priority-badge prio-3">LOW</span><span class="priority-text">SOA service types (functional, enterprise, application, infrastructure)</span></div>
+    <div class="priority-row"><span class="priority-badge prio-3">LOW</span><span class="priority-text">Burndown chart — what it shows, direction, can it go up?</span></div>
+    <div class="priority-row"><span class="priority-badge prio-3">LOW</span><span class="priority-text">Event Sourcing &amp; Domain Event patterns</span></div>
+
+    <h3>⚠️ Tricky Points &amp; Common Mistakes</h3>
+    <div class="callout warn"><strong>TRAP 1:</strong> Scrum Master ≠ Project Manager. Scrum Master removes impediments and shields the team — does NOT assign work or manage the team.</div>
+    <div class="callout warn"><strong>TRAP 2:</strong> 3PC does NOT fully solve distributed transaction problems — it's still NOT partition-safe. Network partitions can cause split-brain.</div>
+    <div class="callout warn"><strong>TRAP 3:</strong> SOA scope = <em>enterprise-wide</em>; Microservices scope = <em>application</em>. Don't confuse them.</div>
+    <div class="callout warn"><strong>TRAP 4:</strong> In Choreography Saga, if Inventory fails AFTER Payment → Payment Service must issue refund (compensating transaction). Order not just cancelled.</div>
+    <div class="callout warn"><strong>TRAP 5:</strong> CQRS query model NEVER modifies state. ONLY reads.</div>
+    <div class="callout warn"><strong>TRAP 6:</strong> Agile values say "X over Y" — both sides have value, but the LEFT side is prioritized MORE.</div>
+    <div class="callout warn"><strong>TRAP 7:</strong> Burndown chart CAN bump UP (not always a straight line). That's normal.</div>
+    <div class="callout warn"><strong>TRAP 8:</strong> DevOps CI/CD — CI = Integration (merge frequently). CD = Deployment (auto-deploy to staging/prod).</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — MEMORY BOOST
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam" id="s3">
+  <div class="section-header" onclick="toggle('s3')">
+    <span class="section-num">03</span>
+    <span class="section-title">MEMORY BOOST — Mnemonics & Analogies</span>
+    <span class="section-tag">BRAIN TRICKS</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Mnemonics</h3>
+    <div class="mnemonic-grid">
+      <div class="mnemonic-card">
+        <div class="label">4 Agile Values</div>
+        <div class="value"><strong>"I Work with Customers who Respond"</strong><br>I = Individuals, W = Working software, C = Customer collaboration, R = Respond to change</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">Scrum 3 Roles</div>
+        <div class="value"><strong>P-S-T</strong><br>Product Owner → ScrumMaster → Team<br>(Think: "Please Serve the Team")</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">Scrum 4 Ceremonies</div>
+        <div class="value"><strong>P-D-R-R</strong><br>Planning, Daily Scrum, Review, Retrospective<br>("People Daily Review Results")</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">DevOps 8 Lifecycle Stages</div>
+        <div class="value"><strong>C-B-T-R-D-O-M-P</strong><br>Code, Build, Test, Release, Deploy, Operate, Monitor, Plan<br>("Can Builders Test Really Difficult Operations More Precisely?")</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">2PC Phases</div>
+        <div class="value"><strong>Prepare → Commit/Abort</strong><br>Think: "Vote first, then act together"<br>Coordinator = decision-maker; Participants = voters</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">3PC Phases</div>
+        <div class="value"><strong>Can? → Pre → Do</strong><br>CanCommit? → PreCommit → DoCommit<br>"Ask → Promise → Deliver"</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">Microservices 7 Principles</div>
+        <div class="value"><strong>M-A-H-D-D-F-H</strong><br>Modelled, Automation, Hide details, Decentralized, Deploy independently, Failure isolation, Highly observable</div>
+      </div>
+      <div class="mnemonic-card">
+        <div class="label">CQRS</div>
+        <div class="value"><strong>"Commands Change, Queries Consult"</strong><br>Command = writes/changes state<br>Query = reads only, never changes</div>
+      </div>
+    </div>
+
+    <h3>Analogies</h3>
+    <div class="callout success"><strong>Saga Pattern = Relay Race:</strong> Each runner (service) runs their leg (local transaction). If a runner drops the baton (fails), previous runners reverse (compensating transactions) — the team doesn't finish wrong, they restart correctly.</div>
+    <div class="callout success"><strong>2PC = Group Vote to Sign a Contract:</strong> Everyone votes YES/NO (Phase 1). If all YES → everyone signs (Phase 2). If coordinator disappears after Phase 1 — everyone is stuck waiting forever.</div>
+    <div class="callout success"><strong>3PC = Building Permits:</strong> First ask "Can you build?" (CanCommit) → get approval "Prepare to build" (PreCommit) → then "Build now" (DoCommit). Even if the inspector vanishes after PreCommit, you know it was approved — you can safely build.</div>
+    <div class="callout success"><strong>ESB = Office Receptionist:</strong> All calls (messages) go through one receptionist (ESB). Great for routing — but if receptionist is sick (SPOF), the whole office stops.</div>
+    <div class="callout success"><strong>CQRS = Restaurant Kitchen vs Menu:</strong> Kitchen (Command model) changes food. Menu display (Query model) shows what's available. They're separate — you read the menu (query) and give orders (command) through different channels.</div>
+    <div class="callout success"><strong>Choreography vs Orchestration = Jazz vs Orchestra:</strong> Jazz (choreography) — musicians react to each other freely; no conductor. Orchestra (orchestration) — conductor tells everyone when and what to play.</div>
+    <div class="callout success"><strong>DevOps = Factory Assembly Line:</strong> Dev = designs the car; Ops = runs the factory. DevOps = same team designs AND runs the factory, so improvements are instant and continuous.</div>
+
+    <h3>Key Number Patterns</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Number</th><th>What It Refers To</th></tr>
+      <tr><td>4</td><td>Agile Manifesto Values; SOA Service Types; Scrum Ceremonies</td></tr>
+      <tr><td>12</td><td>Agile Manifesto Principles</td></tr>
+      <tr><td>3</td><td>Scrum Roles; Scrum Artifacts; Daily Scrum questions; SOA Service Components; 3PC Phases</td></tr>
+      <tr><td>2</td><td>2PC Phases; Saga coordination approaches; SOA Roles</td></tr>
+      <tr><td>5–9</td><td>Scrum Team size (typically)</td></tr>
+      <tr><td>7</td><td>Microservices Principles; Microservices Design Pattern categories</td></tr>
+      <tr><td>8</td><td>DevOps Lifecycle stages; DevOps Continuous stages</td></tr>
+      <tr><td>30</td><td>Sprint length (days); Sprint burndown target = 0; 30% of projects cancelled</td></tr>
+      <tr><td>86%</td><td>Projects challenged or fail (Standish Group)</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — MCQ TRAINING ZONE
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam" id="s4">
+  <div class="section-header" onclick="toggle('s4')">
+    <span class="section-num">04</span>
+    <span class="section-title">MCQ TRAINING ZONE</span>
+    <span class="section-tag">INTERACTIVE</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Click an option to reveal the answer and explanation.</p>
+
+    <!-- Q1 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q1</span> In 2PC, what happens if the coordinator crashes AFTER sending PREPARE but BEFORE receiving all votes?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','1')">A. Participants automatically commit</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','1')">B. Participants automatically abort</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','1')">C. Participants block indefinitely, holding locks</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','1')">D. A new coordinator takes over immediately</button>
+      </div>
+      <div class="mcq-explanation" id="exp-1"><strong>✓ C is correct.</strong> 2PC is a blocking protocol. Participants have written to their recovery log and are waiting for the coordinator's decision. If the coordinator crashes, they cannot proceed — they hold resource locks indefinitely. This is 2PC's fundamental flaw.</div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q2</span> Which Agile Manifesto value is: "Working software over comprehensive documentation"?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','2')">A. Value 1</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','2')">B. Value 2</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','2')">C. Value 3</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','2')">D. Value 4</button>
+      </div>
+      <div class="mcq-explanation" id="exp-2"><strong>✓ B is correct.</strong> Value 2 = Working software over comprehensive documentation. Remember: I-W-C-R (Individuals, Working, Customer, Respond). Documentation is NOT unimportant — working software is simply valued MORE.</div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q3</span> The PRIMARY difference between SOA and Microservices in terms of scope is:</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','3')">A. SOA uses REST; Microservices uses SOAP</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','3')">B. SOA is enterprise-wide; Microservices is application-scoped</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','3')">C. SOA has its own database per service</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','3')">D. SOA promotes loosely coupled services</button>
+      </div>
+      <div class="mcq-explanation" id="exp-3"><strong>✓ B is correct.</strong> IBM's definition: "SOA has an enterprise scope; Microservices has an application scope." Also note: SOA uses SOAP/AMQP (heterogeneous); Microservices prefers HTTP/REST and JMS (lightweight). SOA shares a database via ESB.</div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q4</span> In a Choreography Saga, the Order Service creates an order. Payment then fails. What happens NEXT?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','4')">A. The orchestrator sends a rollback command</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','4')">B. The Inventory Service cancels the order</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','4')">C. Payment Service emits PaymentFailedEvent; Order Service listens and cancels the order</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','4')">D. A 2PC coordinator aborts the transaction</button>
+      </div>
+      <div class="mcq-explanation" id="exp-4"><strong>✓ C is correct.</strong> In Choreography, there is NO central orchestrator. Services react to events. Payment Service emits PaymentFailedEvent → Order Service listens → cancels order (compensating transaction). Inventory was never reached so no inventory compensation needed.</div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q5</span> What does the Query model in CQRS guarantee?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','5')">A. Strong consistency with the write model</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','5')">B. The query model can also execute commands if needed</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','5')">C. It NEVER modifies state — only reads data</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','5')">D. It directly writes to the command database</button>
+      </div>
+      <div class="mcq-explanation" id="exp-5"><strong>✓ C is correct.</strong> The Query model is read-only by definition. It may use Elasticsearch or denormalized SQL optimized for reads. It never modifies state. CQRS achieves eventual consistency — changes propagate asynchronously from write to read model.</div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q6</span> Which DevOps tool is primarily used for Continuous Integration (automated builds from Git)?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','6')">A. Selenium</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','6')">B. Jenkins</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','6')">C. Nagios</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','6')">D. Splunk</td></tr></div>
+      </div>
+      <div class="mcq-explanation" id="exp-6"><strong>✓ B is correct.</strong> Jenkins is the CI tool. It pulls the latest code from Git → produces the build → deploys to test or production server. Selenium = testing. Nagios/Splunk = monitoring.</div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q7</span> The key advantage 3PC has over 2PC is:</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','7')">A. 3PC is partition-safe (no split-brain)</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','7')">B. 3PC requires fewer message round-trips</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','7')">C. Participants can recover independently if coordinator fails after PreCommit</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','7')">D. 3PC is widely used in production microservices</button>
+      </div>
+      <div class="mcq-explanation" id="exp-7"><strong>✓ C is correct.</strong> The PreCommit phase means all participants KNOW a commit is coming. If coordinator fails at DoCommit phase, participants can safely commit independently. 3PC is NOT partition-safe (still has split-brain risk) and needs MORE round-trips (3 vs 2). It is rarely used in production.</div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q8</span> The Scrum Master's primary responsibility is:</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','8')">A. Defining and prioritizing the product backlog</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','8')">B. Assigning tasks to team members during the sprint</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','8')">C. Removing impediments and shielding the team from external interference</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','8')">D. Accepting or rejecting work results from the team</button>
+      </div>
+      <div class="mcq-explanation" id="exp-8"><strong>✓ C is correct.</strong> The Product Owner prioritizes backlog and accepts/rejects work. The Scrum Master removes impediments and shields team — NOT a project manager, does NOT assign tasks. The team self-organizes. Work is never assigned — individuals sign up.</div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q9</span> Which of the following is NOT a disadvantage of the monolithic architecture?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','9')">A. Cannot scale individual components</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','9')">B. Long commit-to-deploy cycle</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','9')">C. Difficult to develop initially when the system is small</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','9')">D. Locked into obsolete technology stack</button>
+      </div>
+      <div class="mcq-explanation" id="exp-9"><strong>✓ C is correct (it's NOT a disadvantage).</strong> The lecture explicitly states that when the application is "relatively small," monolithic has LOTS of benefits — simple to develop, easy radical changes, straightforward to test and deploy. The problems emerge as it grows into "monolithic hell."</div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="mcq-block">
+      <div class="mcq-q"><span>Q10</span> In CQRS with CDC (Debezium), what is the main disadvantage compared to manual Kafka event publishing?</div>
+      <div class="mcq-options">
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','10')">A. Events are emitted before the DB transaction commits</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'correct','10')">B. Events are low-level row changes — hard to express domain intent (why a change happened)</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','10')">C. Requires writing extra code to publish events</button>
+        <button class="mcq-opt" onclick="answerMCQ(this,'wrong','10')">D. Strong consistency between DB and events is not guaranteed</button>
+      </div>
+      <div class="mcq-explanation" id="exp-10"><strong>✓ B is correct.</strong> CDC captures raw database row changes — you lose the business context of WHY a change happened (domain intent). Manual Kafka publishing is WORSE for dual-write risk (option C is a disadvantage of manual, not CDC). CDC actually CANNOT emit events before committing DB transaction (opposite of option A).</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — WRITTEN ANSWER TEMPLATES
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam" id="s5">
+  <div class="section-header" onclick="toggle('s5')">
+    <span class="section-num">05</span>
+    <span class="section-title">WRITTEN ANSWER TEMPLATES</span>
+    <span class="section-tag">FULL MARKS</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+
+    <div class="answer-block">
+      <div class="q">Q: Compare Choreography and Orchestration in the Saga Pattern. [8 marks]</div>
+      <div class="a">
+        <p>The <span class="keyword">Saga Pattern</span> implements cross-service transactions as a sequence of <span class="keyword">local transactions</span> with <span class="keyword">compensating transactions</span> for rollback. There are two coordination approaches:</p>
+        <p><strong>Choreography (Event-Driven):</strong> In this approach, each service reacts autonomously to <span class="keyword">domain events</span> published to a <span class="keyword">message broker</span> (e.g., Kafka/RabbitMQ). There is no central coordinator. Services are <span class="keyword">loosely coupled</span> — they only know about events they publish or consume. Example: Order Service emits <span class="keyword">OrderCreatedEvent</span> → Payment Service listens and charges customer → emits <span class="keyword">PaymentCompletedEvent</span>. If payment fails, it emits <span class="keyword">PaymentFailedEvent</span> and Order Service cancels the order. Advantages: no <span class="keyword">single point of failure</span>, promotes service autonomy. Disadvantages: flow is hard to trace, complex failure handling.</p>
+        <p><strong>Orchestration (Centralized):</strong> A central <span class="keyword">saga orchestrator</span> explicitly tells each service what to execute via commands. The orchestrator persists its state and manages the entire flow. Example: <span class="keyword">CreateOrderSaga</span> orchestrator commands Order Service (createOrder) → Payment Service (reserveCredit) → Inventory Service (reserveInventory). On failure, the orchestrator sends <span class="keyword">compensating commands</span> (e.g., rejectOrder). Advantages: centralized control, easier debugging and monitoring. Disadvantages: the orchestrator is a <span class="keyword">single point of failure</span> and can become a bottleneck.</p>
+      </div>
+    </div>
+
+    <div class="answer-block">
+      <div class="q">Q: Explain why 2PC is unsuitable for microservices architecture. [6 marks]</div>
+      <div class="a">
+        <p>The <span class="keyword">Two-Phase Commit (2PC)</span> protocol, despite guaranteeing <span class="keyword">atomicity</span> across distributed nodes, is fundamentally unsuitable for microservices for six reasons:</p>
+        <p>1. <strong>Blocking Protocol:</strong> Participants <span class="keyword">lock resources</span> until all parties respond, blocking threads and reducing scalability — incompatible with high-throughput microservices.</p>
+        <p>2. <strong>Single Point of Failure:</strong> If the <span class="keyword">coordinator crashes</span> during the Commit phase, participants are stuck — unable to commit or rollback — causing system-wide deadlock.</p>
+        <p>3. <strong>Poor Fault Tolerance:</strong> Network failures and node crashes are common in distributed systems. 2PC cannot handle these gracefully.</p>
+        <p>4. <strong>Performance Bottleneck:</strong> The protocol adds significant <span class="keyword">latency</span> and slows the entire system.</p>
+        <p>5. <strong>Tight Coupling:</strong> Microservices must be <span class="keyword">independent</span>. 2PC creates hard cross-service dependencies violating this principle.</p>
+        <p>6. <strong>No Native Broker Support:</strong> Standard microservices tools — <span class="keyword">Kafka</span>, <span class="keyword">RabbitMQ</span>, and REST — do not support distributed 2PC natively.</p>
+        <p>The <span class="keyword">Saga Pattern</span> is the recommended alternative, using local transactions with compensating transactions to achieve eventual consistency without distributed locks.</p>
+      </div>
+    </div>
+
+    <div class="answer-block">
+      <div class="q">Q: What is DevOps and why was it introduced? Describe the DevOps Lifecycle. [10 marks]</div>
+      <div class="a">
+        <p><strong>Definition:</strong> <span class="keyword">DevOps</span> is a software development strategy that bridges the gap between <span class="keyword">Developers</span> and the <span class="keyword">Operations</span> team into one integrated unit. It combines people, process, and automation to enable <span class="keyword">continuous delivery</span> of high-quality software.</p>
+        <p><strong>Why DevOps?</strong> Waterfall methodology was rigid with no going back between phases. Agile addressed the customer-developer gap but Operations teams still slowed release frequency. DevOps resolves this last-mile gap by making Dev and Ops one team — improving <span class="keyword">communication</span>, automating workflows, and enabling small, frequent deployments.</p>
+        <p><strong>DevOps Lifecycle (8 stages):</strong></p>
+        <p>1. <span class="keyword">Code</span> — developers write code in small chunks (tools: Git). 2. <span class="keyword">Build</span> — compile/package into executable (Maven). 3. <span class="keyword">Test</span> — automated testing (Selenium). 4. <span class="keyword">Release</span> — manage and schedule builds. 5. <span class="keyword">Deploy</span> — deploy artifacts to server (Jenkins, Ansible). 6. <span class="keyword">Operate</span> — clients use system in real-world. 7. <span class="keyword">Monitor</span> — track performance and uptime (Nagios, Splunk, ELK, Sensu). 8. <span class="keyword">Plan</span> — gather feedback from monitoring for next iteration.</p>
+        <p><strong>Key Benefits:</strong> Breaking silos, continuous improvement, minimized failures, creativity &amp; innovation, and a performance-oriented culture.</p>
+      </div>
+    </div>
+
+    <div class="answer-block">
+      <div class="q">Q: What is CQRS? When should it be used and what are its core concepts? [8 marks]</div>
+      <div class="a">
+        <p><span class="keyword">CQRS (Command Query Responsibility Segregation)</span> is a design pattern that separates <span class="keyword">command operations</span> (that change data) from <span class="keyword">query operations</span> (that read data) into distinct models — often with separate databases.</p>
+        <p><strong>Core Concepts:</strong> (1) <span class="keyword">Command Model</span> — handles state-changing instructions (CreateOrder, UpdateCustomer). Command handlers validate inputs, enforce business rules, and emit domain events. (2) <span class="keyword">Query Model</span> — handles read-only data retrieval, optimized for performance using Elasticsearch or denormalized SQL. It NEVER modifies state. (3) <span class="keyword">Eventual Consistency</span> — since models are decoupled, changes propagate asynchronously via domain events or CDC. The system "eventually" becomes consistent.</p>
+        <p><strong>When to Use:</strong> High-performance systems needing independent read/write scaling; applications with complex business logic; systems needing audit trails; domains where read and write security policies differ; microservices architectures to avoid complex JOIN queries across service boundaries.</p>
+        <p><strong>Benefits:</strong> Scalability (scale reads and writes independently), Separation of Concerns, Performance, Security, Auditability (with event sourcing). <strong>Challenges:</strong> Increased complexity, eventual consistency lag, not needed for simple CRUD apps.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 6 — RAPID REVISION (15-MIN CRASH)
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="revision" id="s6">
+  <div class="section-header" onclick="toggle('s6')">
+    <span class="section-num">06</span>
+    <span class="section-title">⚡ RAPID REVISION — 15-Minute Crash Mode</span>
+    <span class="section-tag">LAST MINUTE</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+
+    <div class="crash-box">
+      <h4>📌 Process Models — 60s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Plan-driven = all planned upfront (Waterfall, Spiral). Agile = incremental planning (Scrum, XP)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Waterfall = linear, no going back, 86% projects fail. Good only for stable, well-known requirements</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">All processes: Specification → Design+Implementation → Validation → Evolution</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 Agile &amp; Scrum — 90s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>4 Values:</strong> Individuals, Working Software, Customer Collaboration, Respond to Change (each "over" something)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>3 Roles:</strong> Product Owner (prioritizes, accepts), Scrum Master (removes blockers, NO managing), Team (5–9, self-organizing)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>4 Ceremonies:</strong> Sprint Planning, Daily Scrum (15 min, 3 questions), Sprint Review (demo), Sprint Retrospective (feedback)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>3 Artifacts:</strong> Product Backlog, Sprint Backlog, Burndown Chart</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Sprint = 30 days; NO changes during sprint; burndown = hours remaining, goes to 0 (can bump up)</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 DevOps &amp; CI/CD — 60s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">DevOps = Dev + Ops unified. Waterfall → Agile → DevOps (each solved the previous gap)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>8 Lifecycle:</strong> Code(Git) → Build(Maven) → Test(Selenium) → Release → Deploy(Jenkins) → Operate → Monitor(Nagios/Splunk/ELK) → Plan</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">CI = merge code frequently → catch bugs early. CD = auto-deploy to staging/prod on merge</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>Benefits:</strong> Break silos, continuous improvement, minimize failures, innovation, performance culture</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 Monolithic → Microservices → SOA — 60s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Monolithic = single unit; fine when small; becomes "hell" as it grows (slow, can't scale parts, locked tech)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Microservices = independently deployable, one responsibility, own DB, no shared tech stack</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">SOA = enterprise scope, uses ESB (SOAP), shared DB. Microservices = app scope, uses REST/JMS, own DB</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">ESB = routes messages, transforms data, BUT = single point of failure (bottleneck)</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 2PC &amp; 3PC — 90s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>2PC:</strong> Phase 1 (Prepare→Vote) + Phase 2 (Commit/Abort). Guarantees atomicity. Coordinator + Participants</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">2PC fails in microservices: BLOCKS resources, SPOF if coordinator crashes, no Kafka support, tight coupling</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>3PC:</strong> CanCommit? → PreCommit (all know commit coming) → DoCommit. Non-blocking recovery</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">3PC still NOT partition-safe; 3 RTTs (slower); rarely used in production; mostly academic</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 Saga Pattern — 90s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Saga = sequence of LOCAL transactions + COMPENSATING transactions for rollback</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>Choreography:</strong> Event-driven, no central brain, services react to events (Kafka). Loosely coupled. Hard to debug</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text"><strong>Orchestration:</strong> Central orchestrator sends commands. Easy to debug. But SPOF and can be bottleneck</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Chore example: OrderCreatedEvent→PaymentCompletedEvent→InventoryReservedEvent</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Orch example: CreateOrderSaga → createOrder → reserveCredit → reserveInventory</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Rollback = compensating transactions (NOT SQL ROLLBACK). Prefer async API design</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 CQRS — 60s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Separate READ (Query) and WRITE (Command) into different models + often different databases</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Command model: changes state, validates, emits events. Query model: NEVER modifies state, optimized for reads</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Eventual consistency: write model → Kafka → CDC → read model (async propagation)</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Manual Kafka = full control, dual-write risk. CDC (Debezium) = auto-capture, low-level events</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Typical: Relational DB for writes, NoSQL (Elasticsearch) for reads</span></div>
+    </div>
+
+    <div class="crash-box">
+      <h4>📌 Design Pattern Categories — 30s</h4>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">7 categories: Decomposition, Communication, Integration, Database, Deployment, Observability, Cross-Cutting</span></div>
+      <div class="crash-item"><span class="arrow">→</span><span class="text">Key patterns: API Gateway (Integration), Circuit Breaker (Cross-Cutting), Saga + CQRS (Database), Service Discovery (Cross-Cutting), Log Aggregation (Observability)</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 7 — VISUAL STRUCTURES
+══════════════════════════════════════════════ -->
+<div class="section-card" data-priority="exam" id="s7">
+  <div class="section-header" onclick="toggle('s7')">
+    <span class="section-num">07</span>
+    <span class="section-title">VISUAL STRUCTURES — Tables &amp; Comparisons</span>
+    <span class="section-tag">QUICK SCAN</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="section-body">
+
+    <h3>Microservices Advantages vs Challenges</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Advantages</th><th>Challenges</th></tr>
+      <tr><td class="green">Language &amp; framework independent</td><td class="red">Higher complexity than monolithic</td></tr>
+      <tr><td class="green">Independent deploy, version, scale</td><td class="red">Development &amp; testing harder</td></tr>
+      <tr><td class="green">Better fault isolation</td><td class="red">Lack of governance (many languages)</td></tr>
+      <tr><td class="green">Zero downtime upgrades</td><td class="red">Network congestion &amp; latency</td></tr>
+      <tr><td class="green">Supports CI/CD</td><td class="red">Data integrity (each service owns DB)</td></tr>
+      <tr><td class="green">Reliable &amp; self-healing</td><td class="red">Management requires mature DevOps</td></tr>
+      <tr><td class="green">Easy third-party integration</td><td class="red">Versioning — backward/forward compatibility</td></tr>
+    </table></div>
+
+    <h3>Choreography vs Orchestration Quick Reference</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Feature</th><th>Choreography</th><th>Orchestration</th></tr>
+      <tr><td>Brain</td><td class="green">No central brain</td><td class="yellow">Central orchestrator</td></tr>
+      <tr><td>Communication</td><td>Events (Kafka/RabbitMQ)</td><td>Direct commands</td></tr>
+      <tr><td>Coupling</td><td class="green">Loose</td><td class="red">Tighter (depends on orchestrator)</td></tr>
+      <tr><td>Debug</td><td class="red">Hard</td><td class="green">Easy</td></tr>
+      <tr><td>SPOF</td><td class="green">None</td><td class="red">Orchestrator</td></tr>
+      <tr><td>Scalability</td><td class="green">High</td><td class="yellow">Orchestrator can bottleneck</td></tr>
+      <tr><td>Visibility</td><td class="red">Low</td><td class="green">High</td></tr>
+      <tr><td>Good for</td><td>Simple, linear workflows; event-driven arch</td><td>Complex flows needing clear control</td></tr>
+    </table></div>
+
+    <h3>Waterfall vs Agile</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Aspect</th><th>Waterfall</th><th>Agile</th></tr>
+      <tr><td>Planning</td><td>All upfront</td><td>Incremental</td></tr>
+      <tr><td>Requirements</td><td>Fixed/sealed before design</td><td>Welcomed to change even late</td></tr>
+      <tr><td>Communication</td><td>Less; between teams sequentially</td><td>Daily, cross-functional</td></tr>
+      <tr><td>Delivery</td><td>Once at end (big bang)</td><td>Frequently (weeks to months)</td></tr>
+      <tr><td>Customer</td><td>Excluded mid-process</td><td>Daily collaboration</td></tr>
+      <tr><td>Change</td><td class="red">Hard — classically linear</td><td class="green">Embraced — competitive advantage</td></tr>
+      <tr><td>Success Rate</td><td class="red">&lt;30% complete as planned</td><td class="green">Higher (self-organizing, adaptive)</td></tr>
+    </table></div>
+
+    <h3>SOA Service Components</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Interface</td><td>Defines HOW a service provider executes requests</td></tr>
+      <tr><td>Contract</td><td>Defines HOW provider and consumer should INTERACT</td></tr>
+      <tr><td>Implementation</td><td>The actual service CODE</td></tr>
+    </table></div>
+
+    <h3>CQRS Benefits vs Challenges</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Benefits</th><th>Challenges</th></tr>
+      <tr><td class="green">Scalability — reads &amp; writes scale independently</td><td class="red">Increased complexity</td></tr>
+      <tr><td class="green">Separation of Concerns</td><td class="red">Maintenance overhead (data duplication)</td></tr>
+      <tr><td class="green">Performance — each model optimized</td><td class="red">Latency — async query model update lag</td></tr>
+      <tr><td class="green">Security — different policies for read/write</td><td class="red">Not necessary for simple apps</td></tr>
+      <tr><td class="green">Auditability — with event sourcing</td><td></td></tr>
+    </table></div>
+
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<script>
+// ── TOGGLE SECTION ──
+function toggle(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('collapsed');
+  const ch = card.querySelector('.chevron');
+  if (ch) ch.textContent = card.classList.contains('collapsed') ? '▾' : '▾';
+}
+
+function expandAll() {
+  document.querySelectorAll('.section-card').forEach(c => c.classList.remove('collapsed'));
+  clearMode();
+}
+
+// ── EXAM / REVISION MODE ──
+let currentMode = null;
+function toggleMode(mode) {
+  const body = document.body;
+  const examBtn = document.querySelector('.btn.exam');
+  const revBtn = document.querySelector('.btn.revision');
+
+  if (currentMode === mode) {
+    body.classList.remove('exam-mode','revision-mode');
+    examBtn.classList.remove('active');
+    revBtn.classList.remove('active');
+    document.querySelectorAll('.section-card').forEach(c => {
+      c.style.display = '';
+      c.classList.remove('collapsed');
+    });
+    currentMode = null;
+    return;
+  }
+  body.classList.remove('exam-mode','revision-mode');
+  currentMode = mode;
+
+  if (mode === 'exam') {
+    body.classList.add('exam-mode');
+    examBtn.classList.add('active');
+    revBtn.classList.remove('active');
+  } else {
+    body.classList.add('revision-mode');
+    revBtn.classList.add('active');
+    examBtn.classList.remove('active');
+  }
+
+  document.querySelectorAll('.section-card').forEach(c => {
+    const prio = c.dataset.priority || '';
+    if (prio.includes(mode)) {
+      c.style.display = '';
+      c.classList.remove('collapsed');
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+
+function clearMode() {
+  document.body.classList.remove('exam-mode','revision-mode');
+  document.querySelector('.btn.exam').classList.remove('active');
+  document.querySelector('.btn.revision').classList.remove('active');
+  currentMode = null;
+}
+
+// ── LIGHT MODE ──
+function toggleLight() {
+  document.body.classList.toggle('light');
+  const btn = document.querySelector('.btn.light-toggle');
+  btn.textContent = document.body.classList.contains('light') ? '🌙 Dark' : '☀ Light';
+}
+
+// ── MCQ INTERACTION ──
+function answerMCQ(btn, result, qid) {
+  const block = btn.closest('.mcq-block');
+  // If already answered, ignore
+  if (block.dataset.answered) return;
+  block.dataset.answered = '1';
+  const opts = block.querySelectorAll('.mcq-opt');
+  opts.forEach(o => {
+    o.style.cursor = 'default';
+    o.style.pointerEvents = 'none';
+  });
+  btn.classList.add(result);
+  // If wrong, highlight correct
+  if (result === 'wrong') {
+    opts.forEach(o => {
+      if (o.getAttribute('onclick') && o.getAttribute('onclick').includes("'correct'")) {
+        o.classList.add('correct');
+      }
+    });
+  }
+  const exp = document.getElementById('exp-' + qid);
+  if (exp) exp.classList.add('show');
+}
+
+// ── SEARCH ──
+function doSearch(query) {
+  // Clear old highlights
+  document.querySelectorAll('.highlight-search').forEach(el => {
+    el.outerHTML = el.innerHTML;
+  });
+
+  if (!query.trim()) {
+    document.querySelectorAll('.section-card').forEach(c => c.classList.remove('hidden'));
+    return;
+  }
+  const q = query.toLowerCase();
+  document.querySelectorAll('.section-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    if (text.includes(q)) {
+      card.classList.remove('hidden');
+      card.classList.remove('collapsed');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+// ── INIT: collapse sections 3-7 by default ──
+document.addEventListener('DOMContentLoaded', () => {
+  ['s3','s4','s5','s7'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('collapsed');
+  });
+});
+</script>
+</body>
+</html>
