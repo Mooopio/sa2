@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IS-352 Exam Prep — Microservices & SOA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #151820;
+  --surface2: #1c2030;
+  --border: #252a38;
+  --accent: #4f8ef7;
+  --accent2: #f7c94f;
+  --accent3: #4ff7a0;
+  --danger: #f7604f;
+  --text: #e8eaf0;
+  --text-muted: #7b82a0;
+  --text-dim: #4a5068;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:16px;
+  line-height:1.7;
+  min-height:100vh;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,15,20,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;gap:16px;flex-wrap:wrap;
+}
+.nav-brand{
+  font-family:'Syne',sans-serif;
+  font-weight:800;font-size:1.1rem;
+  color:var(--accent);letter-spacing:-0.5px;
+  white-space:nowrap;
+}
+.nav-tabs{display:flex;gap:4px;flex-wrap:wrap;}
+.nav-tab{
+  padding:6px 14px;border-radius:8px;
+  border:none;background:transparent;
+  color:var(--text-muted);font-family:'DM Sans',sans-serif;
+  font-size:0.8rem;cursor:pointer;transition:all .2s;
+  white-space:nowrap;
+}
+.nav-tab:hover{color:var(--text);background:var(--surface2);}
+.nav-tab.active{color:var(--accent);background:rgba(79,142,247,0.12);}
+
+/* ── HERO ── */
+.hero{
+  padding:60px 24px 40px;
+  max-width:900px;margin:0 auto;text-align:center;
+}
+.hero-badge{
+  display:inline-block;padding:4px 14px;
+  border:1px solid var(--border);border-radius:999px;
+  font-family:'DM Mono',monospace;font-size:0.72rem;
+  color:var(--text-muted);letter-spacing:1px;margin-bottom:20px;
+}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;
+  letter-spacing:-1.5px;margin-bottom:16px;
+}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--text-muted);max-width:580px;margin:0 auto 28px;}
+.stats-row{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+}
+.stat{
+  padding:12px 20px;border:1px solid var(--border);
+  border-radius:var(--radius);background:var(--surface);
+  text-align:center;
+}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent);}
+.stat-label{font-size:0.75rem;color:var(--text-muted);}
+
+/* ── MAIN ── */
+.main{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+
+/* ── SECTION TITLE ── */
+.section-title{
+  display:flex;align-items:center;gap:12px;
+  font-family:'Syne',sans-serif;font-weight:700;
+  font-size:1.4rem;margin:48px 0 24px;
+  padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.section-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+
+/* ── CASE STUDY ── */
+.case-box{
+  background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(79,247,160,0.04));
+  border:1px solid rgba(79,142,247,0.25);
+  border-radius:var(--radius-lg);padding:28px;margin-bottom:32px;
+}
+.case-box h3{
+  font-family:'Syne',sans-serif;font-weight:700;
+  font-size:1.1rem;color:var(--accent2);margin-bottom:10px;
+}
+.case-box p{color:var(--text-muted);font-size:0.95rem;}
+.services-grid{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;
+}
+.svc-chip{
+  padding:5px 14px;border-radius:999px;
+  font-family:'DM Mono',monospace;font-size:0.75rem;
+  font-weight:500;
+}
+.svc-chip.o{background:rgba(247,201,79,0.12);color:var(--accent2);border:1px solid rgba(247,201,79,0.25);}
+.svc-chip.p{background:rgba(79,142,247,0.12);color:var(--accent);border:1px solid rgba(79,142,247,0.25);}
+.svc-chip.i{background:rgba(79,247,160,0.12);color:var(--accent3);border:1px solid rgba(79,247,160,0.25);}
+.svc-chip.s{background:rgba(247,96,79,0.12);color:var(--danger);border:1px solid rgba(247,96,79,0.25);}
+
+/* ── QUESTION CARD ── */
+.q-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);margin-bottom:16px;
+  overflow:hidden;transition:border-color .2s;
+}
+.q-card:hover{border-color:var(--text-dim);}
+.q-header{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:20px 24px;cursor:pointer;
+  user-select:none;
+}
+.q-num{
+  flex-shrink:0;width:32px;height:32px;
+  border-radius:8px;background:var(--surface2);
+  font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:500;
+  color:var(--text-muted);display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.q-content{flex:1;}
+.q-meta{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;align-items:center;
+}
+.q-marks{
+  font-family:'DM Mono',monospace;font-size:0.7rem;
+  padding:2px 8px;border-radius:999px;
+  background:rgba(79,142,247,0.1);color:var(--accent);
+  border:1px solid rgba(79,142,247,0.2);
+}
+.q-tag{
+  font-size:0.7rem;padding:2px 8px;border-radius:999px;
+  background:var(--surface2);color:var(--text-muted);
+  border:1px solid var(--border);
+}
+.q-tag.hot{background:rgba(247,96,79,0.1);color:var(--danger);border-color:rgba(247,96,79,0.2);}
+.q-tag.prev{background:rgba(247,201,79,0.1);color:var(--accent2);border-color:rgba(247,201,79,0.2);}
+.q-text{color:var(--text);font-size:0.95rem;line-height:1.6;}
+.q-toggle{
+  flex-shrink:0;width:28px;height:28px;border-radius:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;color:var(--text-muted);
+  transition:all .2s;margin-top:2px;
+}
+.q-card.open .q-toggle{
+  background:rgba(79,142,247,0.15);
+  border-color:rgba(79,142,247,0.3);
+  color:var(--accent);transform:rotate(180deg);
+}
+
+/* ── ANSWER ── */
+.q-answer{
+  display:none;border-top:1px solid var(--border);
+  padding:24px;animation:fadeIn .25s ease;
+}
+.q-card.open .q-answer{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.ans-section{margin-bottom:20px;}
+.ans-label{
+  font-family:'DM Mono',monospace;font-size:0.7rem;
+  color:var(--accent3);letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.ans-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.ans-text{color:var(--text-muted);font-size:0.9rem;line-height:1.75;}
+.bullet-list{
+  list-style:none;padding:0;
+  display:flex;flex-direction:column;gap:6px;margin-top:8px;
+}
+.bullet-list li{
+  display:flex;gap:10px;color:var(--text-muted);font-size:0.9rem;
+}
+.bullet-list li::before{
+  content:'→';color:var(--accent);flex-shrink:0;font-family:'DM Mono',monospace;
+}
+
+.trade-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;
+}
+@media(max-width:540px){.trade-grid{grid-template-columns:1fr;}}
+.trade-card{
+  padding:14px;border-radius:var(--radius);
+  font-size:0.85rem;
+}
+.trade-card.pro{
+  background:rgba(79,247,160,0.05);
+  border:1px solid rgba(79,247,160,0.15);
+}
+.trade-card.con{
+  background:rgba(247,96,79,0.05);
+  border:1px solid rgba(247,96,79,0.15);
+}
+.trade-card h4{
+  font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;
+  margin-bottom:8px;
+}
+.trade-card.pro h4{color:var(--accent3);}
+.trade-card.con h4{color:var(--danger);}
+.trade-card ul{
+  list-style:none;padding:0;
+  display:flex;flex-direction:column;gap:4px;
+}
+.trade-card ul li{
+  color:var(--text-muted);font-size:0.82rem;
+  display:flex;gap:6px;
+}
+.trade-card.pro ul li::before{content:'✓';color:var(--accent3);}
+.trade-card.con ul li::before{content:'✗';color:var(--danger);}
+
+.highlight-box{
+  padding:14px 18px;border-radius:var(--radius);
+  background:rgba(79,142,247,0.06);
+  border-left:3px solid var(--accent);
+  margin-top:10px;font-size:0.88rem;color:var(--text-muted);
+}
+.highlight-box strong{color:var(--text);}
+
+.diagram-box{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  font-family:'DM Mono',monospace;font-size:0.78rem;
+  color:var(--accent3);line-height:1.9;margin-top:8px;
+  overflow-x:auto;white-space:pre;
+}
+
+/* ── CONCEPT MAP ── */
+.concept-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:14px;
+}
+.concept-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+}
+.concept-card h4{
+  font-family:'Syne',sans-serif;font-weight:700;
+  font-size:0.95rem;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.prob-badge{
+  font-family:'DM Mono',monospace;font-size:0.65rem;
+  padding:2px 7px;border-radius:999px;margin-left:auto;
+  flex-shrink:0;
+}
+.prob-badge.high{background:rgba(247,96,79,0.15);color:var(--danger);}
+.prob-badge.med{background:rgba(247,201,79,0.12);color:var(--accent2);}
+.prob-badge.low{background:rgba(79,142,247,0.1);color:var(--accent);}
+.concept-card ul{
+  list-style:none;padding:0;
+  display:flex;flex-direction:column;gap:4px;
+}
+.concept-card ul li{
+  font-size:0.83rem;color:var(--text-muted);
+  display:flex;gap:6px;align-items:flex-start;
+}
+.concept-card ul li::before{content:'·';color:var(--accent);flex-shrink:0;}
+
+/* ── GLOBAL CONTROLS ── */
+.controls-row{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;
+}
+.btn{
+  padding:9px 18px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.85rem;
+  cursor:pointer;transition:all .2s;
+}
+.btn:hover{background:var(--surface2);color:var(--text);}
+.btn.primary{
+  background:rgba(79,142,247,0.15);
+  border-color:rgba(79,142,247,0.3);
+  color:var(--accent);
+}
+.btn.primary:hover{background:rgba(79,142,247,0.25);}
+
+/* ── PAGE SECTIONS ── */
+.page-section{display:none;}
+.page-section.active{display:block;}
+
+/* ── VARIANTS LABEL ── */
+.variant-label{
+  font-family:'DM Mono',monospace;font-size:0.7rem;
+  color:var(--accent2);letter-spacing:1px;
+  margin-bottom:6px;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">IS-352 // Exam Prep</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('generated')">Generated Exam</button>
+    <button class="nav-tab" onclick="showPage('prev')">Previous Q&amp;Variants</button>
+    <button class="nav-tab" onclick="showPage('map')">Concept Map</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">IS-352 · System Analysis &amp; Design-2 · Dr. Wael Abbas</div>
+  <h1>Your Complete<br/><span>Exam Preparation</span> Guide</h1>
+  <p>High-quality essay questions with model answers covering all lecture material — Microservices, SOA, CQRS, Saga, DevOps, Scrum, and more.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">Questions</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Topics Covered</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Model Answers</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Variants per Q</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════════ SECTION 1: GENERATED EXAM ══════════════ -->
+<div id="page-generated" class="page-section active">
+
+  <div class="section-title">
+    <div class="section-icon" style="background:rgba(79,142,247,0.12);color:var(--accent)">📋</div>
+    Section 1 — Generated Exam (High Similarity)
+  </div>
+
+  <!-- Case Study -->
+  <div class="case-box">
+    <h3>📌 Case Study (Applies to All Questions)</h3>
+    <p>You are the lead architect of a large-scale e-commerce platform called <strong>ShopFlow</strong>. The system has been redesigned from a monolithic application into a microservices-based architecture. The platform includes four core services:</p>
+    <div class="services-grid">
+      <span class="svc-chip o">Orders Service</span>
+      <span class="svc-chip p">Payments Service</span>
+      <span class="svc-chip i">Inventory Service</span>
+      <span class="svc-chip s">Shipping Service</span>
+    </div>
+    <p style="margin-top:14px;">Each service owns its own private database. The system must handle high throughput, ensure data consistency, and remain available 24/7. Business transactions frequently span multiple services.</p>
+  </div>
+
+  <div class="controls-row">
+    <button class="btn primary" onclick="toggleAll(true,'page-generated')">▼ Show All Answers</button>
+    <button class="btn" onclick="toggleAll(false,'page-generated')">▲ Hide All Answers</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1">
+    <div class="q-header" onclick="toggle('q1')">
+      <div class="q-num">01</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+          <span class="q-tag">Microservices vs Monolithic</span>
+        </div>
+        <div class="q-text">ShopFlow started as a monolithic application. Explain the problems (monolithic hell) that led the team to migrate to microservices. What specific advantages did the microservices architecture bring to ShopFlow?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Problems with Monolithic (Monolithic Hell)</div>
+        <ul class="bullet-list">
+          <li><strong>Slow Development:</strong> As the ShopFlow codebase grew, adding features became complex and time-consuming. Multiple Scrum teams were forced to work on the same codebase, causing conflicts and delays.</li>
+          <li><strong>No Independent Scaling:</strong> ShopFlow could not scale only the Payments service during peak hours — the entire monolith had to be scaled, wasting resources.</li>
+          <li><strong>Long Deployment Cycle:</strong> Every change required the entire application to be rebuilt, tested, and deployed as one unit — making releases slow and risky.</li>
+          <li><strong>Technology Lock-in:</strong> The team was forced to use a single technology stack, even if a specific service (e.g., Inventory search) would benefit from a different database like ElasticSearch.</li>
+          <li><strong>Poor Fault Isolation:</strong> A bug in the Shipping module could crash the entire ShopFlow application, affecting Orders and Payments too.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Advantages Gained from Microservices</div>
+        <ul class="bullet-list">
+          <li><strong>Independent Deployment:</strong> Payments, Orders, and Inventory can each be deployed separately without affecting each other — zero downtime upgrades.</li>
+          <li><strong>Selective Scaling:</strong> During Black Friday, only the Orders and Payments services need to scale horizontally.</li>
+          <li><strong>Technology Diversity:</strong> Inventory can use ElasticSearch for text search, while Orders uses PostgreSQL — each service picks the best tool.</li>
+          <li><strong>Better Fault Isolation:</strong> If Shipping service fails, Orders and Payments continue running normally.</li>
+          <li><strong>Continuous Delivery:</strong> Small teams can release their services independently, supporting CI/CD pipelines.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2">
+    <div class="q-header" onclick="toggle('q2')">
+      <div class="q-num">02</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+          <span class="q-tag">CQRS Pattern</span>
+        </div>
+        <div class="q-text">How would implementing CQRS improve performance and scalability in the Orders service of ShopFlow? What trade-offs might this introduce?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">How CQRS Improves Performance</div>
+        <div class="ans-text">CQRS (Command Query Responsibility Segregation) separates the Orders service database into two models: a <strong>Write Model (Command)</strong> for creating/updating orders and a <strong>Read Model (Query)</strong> for fetching order data.</div>
+        <ul class="bullet-list" style="margin-top:10px;">
+          <li><strong>Independent Scaling:</strong> If ShopFlow has 100x more read requests (customers checking order status) than writes (placing orders), the read database can scale out independently using NoSQL (e.g., MongoDB) optimized for fast lookups.</li>
+          <li><strong>Eliminates Complex Joins:</strong> The read model stores pre-computed, denormalized data (e.g., order + customer name + product details in one document), removing slow 10-table JOIN queries that could lock the database.</li>
+          <li><strong>Optimized Databases:</strong> Use a relational DB (PostgreSQL) for commands (complex business rules, validations) and a NoSQL DB for queries (fast reads).</li>
+          <li><strong>Better Security:</strong> Read and write endpoints can have different access control policies.</li>
+        </ul>
+        <div class="diagram-box">
+Client → POST /orders → [Command Handler] → Write DB (PostgreSQL)
+                                         ↓ Domain Event
+                              [Event Broker (Kafka)]
+                                         ↓
+                              [Query Model Updater] → Read DB (MongoDB)
+Client → GET /orders/123 → [Query Handler] → Read DB (MongoDB)
+        </div>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Trade-offs Introduced</div>
+        <div class="trade-grid">
+          <div class="trade-card con">
+            <h4>Cons / Challenges</h4>
+            <ul>
+              <li>Eventual consistency — read model may lag behind the write model by milliseconds/seconds</li>
+              <li>Increased complexity — two separate models, event propagation, and sync logic to maintain</li>
+              <li>Data duplication between read and write stores</li>
+              <li>Not suitable for simple CRUD applications where overhead exceeds benefit</li>
+            </ul>
+          </div>
+          <div class="trade-card pro">
+            <h4>Pros Recap</h4>
+            <ul>
+              <li>Read and write sides scale independently</li>
+              <li>Optimized performance per workload type</li>
+              <li>Enables full audit trails when combined with Event Sourcing</li>
+              <li>Cleaner separation of concerns for development teams</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3">
+    <div class="q-header" onclick="toggle('q3')">
+      <div class="q-num">03</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+          <span class="q-tag">Database per Service</span>
+        </div>
+        <div class="q-text">Explain how using a separate database for each service in ShopFlow promotes microservice autonomy (independence). What are the challenges in querying data across services?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">How It Promotes Autonomy</div>
+        <ul class="bullet-list">
+          <li><strong>Loose Coupling:</strong> Changes to the Inventory database schema (e.g., adding a new column) do not require changes in Orders or Payments — each service evolves independently.</li>
+          <li><strong>Technology Freedom:</strong> Orders uses PostgreSQL, Inventory uses ElasticSearch for text search, Shipping uses a graph DB (Neo4j) for route optimization — each picks the best fit.</li>
+          <li><strong>Independent Deployment:</strong> The Payments team can update and redeploy their service without coordinating with other teams.</li>
+          <li><strong>Failure Isolation:</strong> If the Shipping database goes down, Orders and Payments databases continue to operate normally.</li>
+          <li><strong>Independent Scaling:</strong> The Orders database can be scaled separately during checkout spikes without touching other databases.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Challenges in Cross-Service Data Queries</div>
+        <ul class="bullet-list">
+          <li><strong>No Native JOINs:</strong> You cannot JOIN an Orders table with a Customers table because they live in separate databases — potentially on separate servers.</li>
+          <li><strong>Distributed Transactions:</strong> Maintaining data consistency across Orders + Payments + Inventory requires complex patterns (Saga) because 2PC is impractical.</li>
+          <li><strong>Data Duplication:</strong> To avoid cross-service calls, services may store copies of other services' data (e.g., Orders stores customer name), leading to sync challenges.</li>
+          <li><strong>Increased Query Complexity:</strong> To display an order summary (order + product + customer + shipping status), the API Gateway must query 4 services and aggregate the results (Aggregator Pattern).</li>
+          <li><strong>CAP Theorem Constraints:</strong> With distributed databases, the system must choose between Consistency and Availability when a Partition occurs.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" id="q4">
+    <div class="q-header" onclick="toggle('q4')">
+      <div class="q-num">04</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+          <span class="q-tag">Saga Pattern</span>
+        </div>
+        <div class="q-text">Design data synchronization between the Inventory and Orders services in ShopFlow. Compare using Choreography vs. Orchestration Saga patterns for this scenario.</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Why Saga is Needed</div>
+        <div class="ans-text">When a customer places an order on ShopFlow, the transaction spans: (1) Orders service creates the order, (2) Payments service charges the customer, (3) Inventory service reserves stock. These are 3 separate databases — 2PC is not viable. The Saga pattern uses a sequence of local transactions with compensating transactions on failure.</div>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Choreography Approach (Event-Driven)</div>
+        <div class="diagram-box">
+Orders → OrderCreatedEvent → [Kafka]
+                                  ↓
+                           Payments listens
+                           → charges customer
+                           → PaymentCompletedEvent → [Kafka]
+                                                         ↓
+                                                  Inventory listens
+                                                  → reserves stock
+                                                  → InventoryReservedEvent ✓
+
+FAILURE: Payment fails → PaymentFailedEvent
+         → Orders listens → cancels order (compensation)
+        </div>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Orchestration Approach (Centralized)</div>
+        <div class="diagram-box">
+CreateOrderSaga (Orchestrator)
+  → Orders: createOrder()   → PENDING ✓
+  → Payments: reserveCredit() → PAID ✓
+  → Inventory: reserveStock() → RESERVED ✓
+
+FAILURE: creditLimitExceeded
+  → Orchestrator → Orders: rejectOrder() [compensation]
+        </div>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Comparison</div>
+        <div class="trade-grid">
+          <div class="trade-card pro">
+            <h4>Choreography</h4>
+            <ul>
+              <li>No single point of failure</li>
+              <li>Fully decoupled services</li>
+              <li>Natural for event-driven systems</li>
+              <li>Hard to trace the full flow</li>
+              <li>Complex failure handling per service</li>
+            </ul>
+          </div>
+          <div class="trade-card con">
+            <h4>Orchestration</h4>
+            <ul>
+              <li>Clear, centralized business logic</li>
+              <li>Easy to debug and monitor</li>
+              <li>Orchestrator = single point of failure</li>
+              <li>Services are tightly coupled to orchestrator</li>
+              <li>Risk of "god service" anti-pattern</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box"><strong>Recommendation for ShopFlow:</strong> Use Orchestration for the critical order-payment-inventory flow (clear, auditable) and Choreography for less critical notifications (e.g., shipping updates, email alerts).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" id="q5">
+    <div class="q-header" onclick="toggle('q5')">
+      <div class="q-num">05</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag">Shared Database</span>
+        </div>
+        <div class="q-text">If all ShopFlow services shared a single database, what benefits and risks would this introduce, especially regarding team independence and system failures?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Benefits of Shared Database</div>
+        <ul class="bullet-list">
+          <li><strong>Simple ACID Transactions:</strong> A developer can use a single SQL transaction to update Orders and deduct Inventory atomically — no Saga needed.</li>
+          <li><strong>Easy Cross-Service Queries:</strong> A single JOIN query can retrieve order + customer + inventory + shipping data without calling multiple services.</li>
+          <li><strong>Simpler Operations:</strong> Only one database to back up, monitor, and maintain.</li>
+          <li><strong>No Data Duplication:</strong> Single source of truth for all data.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Risks Introduced</div>
+        <ul class="bullet-list">
+          <li><strong>Development Coupling:</strong> If the Orders team changes the schema of the Orders table, they must coordinate with the Inventory and Payments teams — slowing everyone down.</li>
+          <li><strong>Runtime Coupling:</strong> A long-running query from the Payments service (e.g., monthly report) can lock tables and block the Orders service — causing downtime across the entire ShopFlow platform.</li>
+          <li><strong>Single Point of Failure:</strong> If the shared database goes down, ALL services (Orders, Payments, Inventory, Shipping) fail simultaneously.</li>
+          <li><strong>No Technology Flexibility:</strong> All services are forced to use the same database engine — Inventory cannot switch to ElasticSearch for full-text search.</li>
+          <li><strong>Scalability Bottleneck:</strong> A single database cannot efficiently handle the very different scaling needs of all four services simultaneously.</li>
+        </ul>
+      </div>
+      <div class="highlight-box"><strong>Conclusion:</strong> Shared database is only recommended as a transitional pattern (Strangler Pattern migration) or for very small teams. For ShopFlow's scale, Database per Service is the correct approach.</div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" id="q6">
+    <div class="q-header" onclick="toggle('q6')">
+      <div class="q-num">06</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+          <span class="q-tag">SOA vs Microservices</span>
+        </div>
+        <div class="q-text">ShopFlow's CTO is comparing SOA and Microservices before the redesign. Compare the two architectures across: communication, interoperability, granularity, and speed. Which would you recommend for ShopFlow and why?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">SOA vs Microservices Comparison</div>
+        <div class="highlight-box">
+          <strong>Scope:</strong> SOA has an <em>enterprise</em> scope (integrates multiple enterprise applications via ESB), while Microservices has an <em>application</em> scope (decomposes a single application into small services).
+        </div>
+        <ul class="bullet-list" style="margin-top:12px;">
+          <li><strong>Communication:</strong> SOA uses a central ESB (Enterprise Service Bus) as the communication backbone — the ESB becomes a single point of failure. Microservices communicate directly or through lightweight brokers (Kafka, RabbitMQ) with no central bottleneck.</li>
+          <li><strong>Interoperability:</strong> SOA uses heavyweight protocols like SOAP, AMQP, MSMQ. Microservices prefer lightweight HTTP/REST and gRPC — simpler and faster.</li>
+          <li><strong>Granularity:</strong> SOA services can be large (enterprise-wide services). Microservices are small and highly specialized — each does one thing well (e.g., only handles order creation).</li>
+          <li><strong>Speed:</strong> SOA is slower due to the ESB layer and shared architecture overhead. Microservices minimize sharing, favoring duplication for speed.</li>
+          <li><strong>Database:</strong> SOA shares a single database across all services. Microservices give each service its own database.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Recommendation</div>
+        <div class="ans-text">Microservices is recommended for ShopFlow because: (1) ShopFlow is a single application that needs high scalability, not enterprise-wide integration. (2) The team is small and organized around the four domains. (3) They need independent deployment, fault isolation, and technology diversity — all better served by Microservices than SOA.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" id="q7">
+    <div class="q-header" onclick="toggle('q7')">
+      <div class="q-num">07</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag">2PC vs Saga</span>
+          <span class="q-tag hot">🔥 High Probability</span>
+        </div>
+        <div class="q-text">Why is the Two-Phase Commit (2PC) protocol not suitable for ShopFlow's microservices architecture? How does the Saga pattern address these problems?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Why 2PC Fails for Microservices</div>
+        <ul class="bullet-list">
+          <li><strong>Blocking Protocol:</strong> During Phase 1 (Prepare), all services (Orders, Payments, Inventory) lock their resources and wait. If the Inventory service is slow, the Orders service is blocked — reducing throughput dramatically.</li>
+          <li><strong>Single Point of Failure:</strong> If the 2PC Coordinator (the central manager) crashes after sending COMMIT to Orders but before sending to Payments, Payments is stuck indefinitely — unsure whether to commit or rollback.</li>
+          <li><strong>Tight Coupling:</strong> All services must be available simultaneously and synchronously respond — violating the independence principle of microservices.</li>
+          <li><strong>No Broker Support:</strong> Kafka and RabbitMQ (the standard messaging tools in microservices) do not natively support distributed 2PC transactions.</li>
+          <li><strong>Performance Bottleneck:</strong> Two synchronous round trips across the network for every transaction add significant latency in high-throughput e-commerce scenarios.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">How Saga Solves These Problems</div>
+        <ul class="bullet-list">
+          <li><strong>No Locking:</strong> Each service executes its own local ACID transaction and releases locks immediately — no waiting for other services.</li>
+          <li><strong>Compensating Transactions:</strong> Instead of a global rollback, if Payments fails, a PaymentFailed event triggers a compensating transaction in Orders (cancel the order) — achieving eventual consistency.</li>
+          <li><strong>Loose Coupling:</strong> Services communicate via events (Choreography) or commands (Orchestration) — they do not need to be available simultaneously.</li>
+          <li><strong>Broker Compatible:</strong> Sagas are designed to work with Kafka and RabbitMQ natively.</li>
+        </ul>
+        <div class="highlight-box"><strong>Key difference:</strong> 2PC guarantees strong consistency but blocks the system. Saga guarantees eventual consistency but keeps the system available and loosely coupled — which is the right trade-off for ShopFlow.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" id="q8">
+    <div class="q-header" onclick="toggle('q8')">
+      <div class="q-num">08</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag">Communication Patterns</span>
+        </div>
+        <div class="q-text">ShopFlow services communicate internally. Compare synchronous (REST/Request-Response) and asynchronous (Messaging) communication patterns. When should each be used in ShopFlow?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Synchronous Communication (REST / Request-Response)</div>
+        <ul class="bullet-list">
+          <li><strong>How it works:</strong> The Orders service makes an HTTP call to the Payments service and waits for a response before proceeding.</li>
+          <li><strong>Tight Runtime Coupling:</strong> Both services must be available at the same time — if Payments is down, Orders cannot complete.</li>
+          <li><strong>Simple and Familiar:</strong> Easy to implement, test with tools like Postman or curl, no broker needed.</li>
+          <li><strong>Best for:</strong> Real-time queries where the result is needed immediately — e.g., GET /orders/123 to display order status, or authenticating a user before allowing checkout.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Asynchronous Communication (Messaging / Event-Driven)</div>
+        <ul class="bullet-list">
+          <li><strong>How it works:</strong> Orders service publishes an OrderCreatedEvent to Kafka. Payments service subscribes to the event and processes it independently — Orders does not wait.</li>
+          <li><strong>Loose Coupling:</strong> Services don't need to be available simultaneously — Kafka buffers messages until the consumer is ready.</li>
+          <li><strong>Higher Availability:</strong> ShopFlow continues accepting orders even if the Payments service is temporarily down.</li>
+          <li><strong>Best for:</strong> Long-running workflows (order processing, payment, inventory reservation), notifications, and scenarios where eventual consistency is acceptable.</li>
+        </ul>
+      </div>
+      <div class="highlight-box">
+        <strong>ShopFlow Design:</strong> Use <strong>REST</strong> for the customer-facing API layer (get order status, browse products). Use <strong>Messaging (Kafka)</strong> for internal inter-service workflows (order → payment → inventory → shipping pipeline).
+      </div>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" id="q9">
+    <div class="q-header" onclick="toggle('q9')">
+      <div class="q-num">09</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag">DevOps &amp; CI/CD</span>
+        </div>
+        <div class="q-text">ShopFlow adopts DevOps practices. Explain the DevOps lifecycle stages and how CI/CD pipelines enable faster and more reliable deployment of microservices.</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">DevOps Lifecycle Stages</div>
+        <ul class="bullet-list">
+          <li><strong>Plan:</strong> Teams gather requirements and plan features using feedback from monitoring (e.g., slow checkout identified in monitoring → plan performance improvement sprint).</li>
+          <li><strong>Code:</strong> Developers write small chunks of code in Git branches. ShopFlow teams use Git for version control.</li>
+          <li><strong>Build:</strong> Jenkins pulls the latest code and builds it (Maven for Java services). Every commit triggers an automatic build.</li>
+          <li><strong>Test:</strong> Automated testing via Selenium and unit tests run automatically — bugs are caught early before they reach production.</li>
+          <li><strong>Release:</strong> The built artifact is approved for deployment — scheduling, change management.</li>
+          <li><strong>Deploy:</strong> The Payments service is containerized with Docker and deployed automatically to staging then production without manual steps.</li>
+          <li><strong>Operate:</strong> The service runs in production, serving real ShopFlow customers.</li>
+          <li><strong>Monitor:</strong> Tools like Nagios, ELK Stack, or Splunk monitor service health, error rates, and performance — feeding back into Plan.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">How CI/CD Enables Microservices Delivery</div>
+        <ul class="bullet-list">
+          <li><strong>CI (Continuous Integration):</strong> Every code push is automatically built and tested — the Inventory team's changes are integrated into the main branch multiple times per day without breaking other services.</li>
+          <li><strong>CD (Continuous Deployment):</strong> After tests pass, the new version of the Payments service is automatically deployed to production — no manual deployment meetings needed.</li>
+          <li><strong>Independent Pipelines:</strong> Each of the 4 services (Orders, Payments, Inventory, Shipping) has its own CI/CD pipeline — enabling true independent deployment.</li>
+        </ul>
+        <div class="highlight-box">DevOps breaks the traditional "wall" between Developers and Operations teams — ShopFlow goes from monthly releases to multiple releases per day per service.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" id="q10">
+    <div class="q-header" onclick="toggle('q10')">
+      <div class="q-num">10</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag">Scrum Framework</span>
+        </div>
+        <div class="q-text">ShopFlow uses Scrum to manage development across its 4 service teams. Describe the key Scrum roles, ceremonies, and artifacts. How does Scrum support agile microservices development?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Scrum Roles</div>
+        <ul class="bullet-list">
+          <li><strong>Product Owner:</strong> Defines ShopFlow's feature priorities (e.g., "add one-click checkout" has highest business value), manages the Product Backlog, and accepts/rejects sprint results.</li>
+          <li><strong>Scrum Master:</strong> Removes blockers for the Payments team (e.g., waiting for API documentation from the Orders team), shields the team from external interruptions, and ensures Scrum practices are followed.</li>
+          <li><strong>Development Team:</strong> Cross-functional team of 5-9 members (developers, testers, DevOps engineers) who self-organize and build the increment each sprint.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Ceremonies &amp; Artifacts</div>
+        <ul class="bullet-list">
+          <li><strong>Sprint Planning:</strong> The Inventory team selects backlog items for the 2-week sprint, estimates tasks (1-16 hours each), and sets the Sprint Goal.</li>
+          <li><strong>Daily Scrum (15 min stand-up):</strong> Each team member answers: What did I do yesterday? What will I do today? Is anything blocking me?</li>
+          <li><strong>Sprint Review:</strong> Demo of completed features to stakeholders (e.g., demo of new stock reservation API).</li>
+          <li><strong>Sprint Retrospective:</strong> Team reflects on Start/Stop/Continue — what worked, what didn't, what to improve next sprint.</li>
+          <li><strong>Product Backlog:</strong> Prioritized list of all ShopFlow features — managed by the Product Owner.</li>
+          <li><strong>Sprint Backlog:</strong> Items selected for the current sprint, with task-level estimates updated daily.</li>
+          <li><strong>Burndown Chart:</strong> Visual showing remaining work vs. time — helps the team see if they're on track to finish the sprint.</li>
+        </ul>
+      </div>
+      <div class="highlight-box">Scrum enables microservices development because each service team operates as an autonomous Scrum team with its own backlog, sprint, and deployment pipeline — matching the independence principle of microservices architecture.</div>
+    </div>
+  </div>
+
+</div><!-- /page-generated -->
+
+<!-- ══════════════ SECTION 2: PREV Q + VARIANTS ══════════════ -->
+<div id="page-prev" class="page-section">
+
+  <div class="section-title">
+    <div class="section-icon" style="background:rgba(247,201,79,0.12);color:var(--accent2)">📂</div>
+    Section 2 — Previous Questions + 2–3 Variants Each
+  </div>
+
+  <div class="controls-row">
+    <button class="btn primary" onclick="toggleAll(true,'page-prev')">▼ Show All Answers</button>
+    <button class="btn" onclick="toggleAll(false,'page-prev')">▲ Hide All Answers</button>
+  </div>
+
+  <!-- PREV Q2 original -->
+  <div class="q-card" id="pq2-0">
+    <div class="q-header" onclick="toggle('pq2-0')">
+      <div class="q-num" style="background:rgba(247,201,79,0.1);color:var(--accent2);">★</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag prev">⭐ Original Q2</span>
+        </div>
+        <div class="q-text">How would implementing CQRS improve performance and scalability in the Order service? What trade-offs might this introduce?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Improvement (CQRS for Orders)</div>
+        <ul class="bullet-list">
+          <li>Separates read and write databases — write DB handles complex validations, read DB handles fast order lookups.</li>
+          <li>Read model is optimized (denormalized, NoSQL) — no 10-table JOIN queries, no database locking during heavy read periods.</li>
+          <li>Read and write sides scale independently — scale read replicas during browse-heavy periods without touching the write DB.</li>
+          <li>Security: different access policies can be enforced for reads vs. writes (e.g., only internal services can create orders).</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Trade-offs</div>
+        <ul class="bullet-list">
+          <li>Eventual consistency — a customer might see a slightly stale order status for a few milliseconds after placing an order.</li>
+          <li>Increased complexity — two models, event propagation (Kafka/CDC), and synchronization logic must be maintained.</li>
+          <li>Not suitable for simple CRUD — adds unnecessary overhead for simple order management without heavy read/write imbalance.</li>
+          <li>Maintenance overhead — data duplication between read and write stores requires careful handling.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant 2A -->
+  <div class="q-card" id="pq2-1">
+    <div class="q-header" onclick="toggle('pq2-1')">
+      <div class="q-num" style="background:rgba(79,247,160,0.08);color:var(--accent3);">2A</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag" style="background:rgba(79,247,160,0.08);color:var(--accent3);border-color:rgba(79,247,160,0.2);">Variant</span>
+        </div>
+        <div class="q-text">The Payments service in ShopFlow receives 10x more read requests (checking payment status) than write requests (processing payments). How would CQRS solve this imbalance? What consistency challenges arise?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">How CQRS Solves the Imbalance</div>
+        <ul class="bullet-list">
+          <li>Write side: PostgreSQL with full ACID guarantees handles payment commands (charge, refund) — complex validations, fraud checks, business rules enforced here.</li>
+          <li>Read side: MongoDB or Redis stores pre-computed payment summaries — 10 read replicas can be deployed to handle the 10x read load without touching the write DB at all.</li>
+          <li>Commands (write) and Queries (read) are deployed as separate microservice components that scale independently.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Consistency Challenges</div>
+        <ul class="bullet-list">
+          <li>After a payment is processed (write), the read model is updated asynchronously via Kafka — for a brief period (milliseconds to seconds), a customer checking their payment status may see the old (unpaid) status.</li>
+          <li>This is called <strong>eventual consistency</strong> — acceptable for payment status display, but not for fraud detection (must be strongly consistent).</li>
+          <li>If Kafka goes down, the read model falls out of sync with the write model — requires replay mechanism (CDC with Debezium).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant 2B -->
+  <div class="q-card" id="pq2-2">
+    <div class="q-header" onclick="toggle('pq2-2')">
+      <div class="q-num" style="background:rgba(79,247,160,0.08);color:var(--accent3);">2B</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag" style="background:rgba(79,247,160,0.08);color:var(--accent3);border-color:rgba(79,247,160,0.2);">Variant</span>
+        </div>
+        <div class="q-text">Compare CQRS with Kafka (manual event publishing) vs. CQRS with Kafka + CDC (Debezium). When would you choose each approach for keeping ShopFlow's Inventory read model in sync?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">CQRS + Kafka Only (Manual Event Publishing)</div>
+        <ul class="bullet-list">
+          <li>How: After the Inventory service updates stock, it explicitly publishes a StockUpdatedEvent to Kafka. A consumer updates the read DB.</li>
+          <li>Pro: Full control over event payload — can include rich business data (product name, category, supplier info).</li>
+          <li>Con: Risk of dual-write failure — if the DB write succeeds but Kafka publish fails, the read model is out of sync. Requires Outbox Pattern for reliability.</li>
+          <li>Best for: Teams that need rich, domain-specific events and are comfortable managing Kafka transactional integrity.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">CQRS + Kafka + CDC (Debezium)</div>
+        <ul class="bullet-list">
+          <li>How: Inventory service only writes to PostgreSQL. Debezium watches the transaction log and automatically publishes change events to Kafka. A consumer updates the read DB.</li>
+          <li>Pro: Strong consistency — events are generated only after DB commit. No manual event publishing code needed. Great for legacy systems.</li>
+          <li>Con: Events are low-level DB row changes — lose business context (why was stock reduced? — sale or damage?). Debezium + Kafka Connect adds infrastructure complexity.</li>
+          <li>Best for: Synchronizing read models from an existing DB without modifying the write service's code.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREV Q3 -->
+  <div class="q-card" id="pq3-0">
+    <div class="q-header" onclick="toggle('pq3-0')">
+      <div class="q-num" style="background:rgba(247,201,79,0.1);color:var(--accent2);">★</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag prev">⭐ Original Q3</span>
+        </div>
+        <div class="q-text">Explain how using a separate database for each service promotes microservice autonomy. What are the challenges in querying data across services?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Autonomy (Model Answer)</div>
+        <ul class="bullet-list">
+          <li>Each service's data is encapsulated — only accessible via the service's API, not directly by other services. This enforces modularity.</li>
+          <li>Schema changes in the Orders DB do not break the Payments service — teams work independently without coordination overhead.</li>
+          <li>Each service can choose its optimal database type: Orders → PostgreSQL (relational, ACID), Inventory → ElasticSearch (text search), Shipping → Neo4j (graph, route optimization).</li>
+          <li>Independent scaling: the Orders DB can be on high-performance SSDs while Shipping DB is on standard storage — cost optimization.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Cross-Service Query Challenges</div>
+        <ul class="bullet-list">
+          <li>No native JOINs across service databases — must use Aggregator Pattern or CQRS materialized views.</li>
+          <li>Distributed transactions are complex — must use Saga pattern instead of simple ACID transactions.</li>
+          <li>Data consistency is eventual — a stock update in Inventory may not immediately be visible in Orders' read model.</li>
+          <li>Increased network latency — assembling a full order view requires multiple API calls (N+1 problem at scale).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant 3A -->
+  <div class="q-card" id="pq3-1">
+    <div class="q-header" onclick="toggle('pq3-1')">
+      <div class="q-num" style="background:rgba(79,247,160,0.08);color:var(--accent3);">3A</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag" style="background:rgba(79,247,160,0.08);color:var(--accent3);border-color:rgba(79,247,160,0.2);">Variant</span>
+        </div>
+        <div class="q-text">A junior developer suggests using "Private-tables-per-service" instead of "Database-server-per-service" to implement the Database per Service pattern in ShopFlow. Compare these two approaches. What are the pros and cons of each?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Private-Tables-per-Service</div>
+        <ul class="bullet-list">
+          <li>Each service owns specific tables within the same shared database server (e.g., orders_table is only accessible to Orders service via database user permissions).</li>
+          <li>Pro: Lower overhead — no need to provision and manage separate DB servers for each of ShopFlow's 4 services. Cost-effective for small teams.</li>
+          <li>Pro: Easier to start — good transitional step when migrating from monolith.</li>
+          <li>Con: Still shares the same DB server — a heavy query from Inventory can slow down Orders if they share the same server resources.</li>
+          <li>Con: Cannot use different database technologies (can't give Inventory a NoSQL engine).</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Database-Server-per-Service</div>
+        <ul class="bullet-list">
+          <li>Each service has its completely own database server (or cluster). Total isolation at the infrastructure level.</li>
+          <li>Pro: Complete technology freedom — Orders on PostgreSQL, Inventory on MongoDB, Shipping on Neo4j.</li>
+          <li>Pro: True fault isolation — Inventory DB failure does not affect Orders DB server at all.</li>
+          <li>Con: Higher operational complexity — 4 separate DB servers to provision, back up, monitor, and maintain.</li>
+          <li>Recommendation: Start with schema-per-service (middle ground) and evolve to database-server-per-service for high-throughput services like Orders and Payments.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREV Q4 variant -->
+  <div class="q-card" id="pq4-0">
+    <div class="q-header" onclick="toggle('pq4-0')">
+      <div class="q-num" style="background:rgba(247,201,79,0.1);color:var(--accent2);">★</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag prev">⭐ Original Q4</span>
+        </div>
+        <div class="q-text">How would you design data synchronization between Inventory and Order services, given they each own their own database?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Design Approach: Event-Driven Synchronization</div>
+        <ul class="bullet-list">
+          <li><strong>Step 1 — Order Placed:</strong> Orders service creates an order (state=PENDING) and publishes an OrderCreatedEvent to Kafka.</li>
+          <li><strong>Step 2 — Inventory Listens:</strong> Inventory service subscribes to OrderCreatedEvent, checks stock availability, reserves the required quantity, and publishes InventoryReservedEvent (or InventoryInsufficientEvent).</li>
+          <li><strong>Step 3 — Orders Reacts:</strong> Orders service listens to InventoryReservedEvent → updates order state to CONFIRMED. On InventoryInsufficientEvent → cancels the order (compensating transaction).</li>
+          <li><strong>Consistency Model:</strong> Eventual consistency — Orders and Inventory eventually agree on the stock status, but there may be a brief window of inconsistency.</li>
+          <li><strong>Idempotency:</strong> Inventory service must handle duplicate messages (if Kafka retries) without double-reserving stock — use idempotency keys.</li>
+        </ul>
+        <div class="diagram-box">
+Orders DB → OrderCreatedEvent → [Kafka Topic: orders]
+                                          ↓
+                               Inventory Service subscribes
+                               → checks stock in Inventory DB
+                               → reserves stock
+                               → InventoryReservedEvent → [Kafka]
+                                                               ↓
+                                              Orders Service subscribes
+                                              → updates order state = CONFIRMED
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant 4A -->
+  <div class="q-card" id="pq4-1">
+    <div class="q-header" onclick="toggle('pq4-1')">
+      <div class="q-num" style="background:rgba(79,247,160,0.08);color:var(--accent3);">4A</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag" style="background:rgba(79,247,160,0.08);color:var(--accent3);border-color:rgba(79,247,160,0.2);">Variant</span>
+        </div>
+        <div class="q-text">A customer places an order on ShopFlow but the Payments service is temporarily down. Using a Choreographed Saga, explain step-by-step how the system handles this failure and maintains data consistency.</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Failure Handling with Choreographed Saga</div>
+        <ul class="bullet-list">
+          <li><strong>Step 1:</strong> Orders service creates the order (state=PENDING) and publishes OrderCreatedEvent to Kafka.</li>
+          <li><strong>Step 2:</strong> Payments service is DOWN — it cannot consume the event. Kafka buffers the message durably until Payments comes back online.</li>
+          <li><strong>Step 3:</strong> When Payments recovers, it consumes the OrderCreatedEvent, attempts to charge the customer, and — if successful — publishes PaymentCompletedEvent.</li>
+          <li><strong>Alternative — Payment Ultimately Fails:</strong> If Payments comes back but the credit card is declined, it publishes PaymentFailedEvent.</li>
+          <li><strong>Compensation:</strong> Orders service listens to PaymentFailedEvent and executes compensating transaction: update order state to CANCELLED, release reserved inventory (publishes ReleaseInventoryEvent).</li>
+          <li><strong>Key Insight:</strong> Unlike 2PC (which would have blocked the Orders service while waiting for Payments to respond), the Saga allowed Orders to continue accepting new orders — Kafka absorbed the unavailability.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREV Q5 -->
+  <div class="q-card" id="pq5-0">
+    <div class="q-header" onclick="toggle('pq5-0')">
+      <div class="q-num" style="background:rgba(247,201,79,0.1);color:var(--accent2);">★</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag prev">⭐ Original Q5</span>
+        </div>
+        <div class="q-text">If all services shared a single database, what benefits and risks would this introduce, especially regarding team independence and system failures?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">Benefits</div>
+        <ul class="bullet-list">
+          <li>Simple ACID transactions — one SQL transaction can create an order AND deduct inventory atomically.</li>
+          <li>Cross-service JOINs are trivial — no Aggregator Pattern needed.</li>
+          <li>Lower operational overhead — one database to manage, back up, and monitor.</li>
+          <li>Simpler development — developers don't need to understand distributed consistency patterns.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">Risks</div>
+        <ul class="bullet-list">
+          <li><strong>Development Coupling:</strong> Schema change in Orders table requires coordination with all other teams — slows everyone down.</li>
+          <li><strong>Runtime Coupling:</strong> A long-running analytics query from Shipping can lock tables and block Payments processing — cascading slowdowns.</li>
+          <li><strong>Single Point of Failure:</strong> Database crash = all 4 services fail simultaneously — catastrophic for ShopFlow.</li>
+          <li><strong>Technology Lock-in:</strong> Cannot use specialized databases per service (ElasticSearch, Neo4j).</li>
+          <li><strong>Scalability Bottleneck:</strong> Cannot scale Orders DB independently from Shipping DB — must over-provision the shared server.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant 5A -->
+  <div class="q-card" id="pq5-1">
+    <div class="q-header" onclick="toggle('pq5-1')">
+      <div class="q-num" style="background:rgba(79,247,160,0.08);color:var(--accent3);">5A</div>
+      <div class="q-content">
+        <div class="q-meta">
+          <span class="q-marks">5 marks</span>
+          <span class="q-tag" style="background:rgba(79,247,160,0.08);color:var(--accent3);border-color:rgba(79,247,160,0.2);">Variant</span>
+        </div>
+        <div class="q-text">The ShopFlow team is considering using a NoSQL database (MongoDB) for the Orders service instead of a relational DB. Explain the CAP theorem and how it influences this decision. What consistency trade-offs does MongoDB introduce compared to PostgreSQL?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-section">
+        <div class="ans-label">CAP Theorem</div>
+        <div class="ans-text">The CAP theorem states that a distributed system can guarantee at most TWO of the following three properties simultaneously:</div>
+        <ul class="bullet-list" style="margin-top:8px;">
+          <li><strong>Consistency (C):</strong> All nodes see the same data at the same time. Every read returns the most recent write.</li>
+          <li><strong>Availability (A):</strong> Every request receives a response (success or failure) — the system is always up.</li>
+          <li><strong>Partition Tolerance (P):</strong> The system continues operating even when network partitions (message loss between nodes) occur.</li>
+        </ul>
+      </div>
+      <div class="ans-section">
+        <div class="ans-label">PostgreSQL vs MongoDB in Context</div>
+        <ul class="bullet-list">
+          <li><strong>PostgreSQL (RDBMS):</strong> Achieves C + A (in non-distributed setup, no P). Guarantees ACID — every order write is immediately consistent. Best for financial transactions where incorrect data is unacceptable.</li>
+          <li><strong>MongoDB (NoSQL):</strong> Designed for distributed systems — chooses A + P. Uses BASE (Basically Available, Soft state, Eventual consistency). A stock count update may take milliseconds to propagate to all replicas — a customer might briefly see outdated inventory.</li>
+          <li><strong>For Orders service:</strong> Use PostgreSQL — order creation, payment deduction, and credit checks require strong ACID consistency. A customer must never be double-charged due to eventual consistency lag.</li>
+          <li><strong>For analytics/reporting:</strong> MongoDB is acceptable — slight staleness in "total orders today" reporting is acceptable.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-prev -->
+
+<!-- ══════════════ SECTION 3: CONCEPT MAP ══════════════ -->
+<div id="page-map" class="page-section">
+
+  <div class="section-title">
+    <div class="section-icon" style="background:rgba(79,247,160,0.1);color:var(--accent3)">🗺</div>
+    Section 3 — Key Concept Map &amp; Exam Probability
+  </div>
+
+  <div class="concept-grid">
+
+    <div class="concept-card">
+      <h4>Saga Pattern <span class="prob-badge high">HIGH</span></h4>
+      <ul>
+        <li>Choreography vs Orchestration</li>
+        <li>Compensating transactions</li>
+        <li>OrderCreated → Payment → Inventory flow</li>
+        <li>Why 2PC fails for microservices</li>
+        <li>Eventual consistency guarantee</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>CQRS Pattern <span class="prob-badge high">HIGH</span></h4>
+      <ul>
+        <li>Separation of Command vs Query models</li>
+        <li>Independent read/write scaling</li>
+        <li>Eventual consistency trade-off</li>
+        <li>CQRS + Kafka (manual) vs CQRS + CDC (Debezium)</li>
+        <li>When NOT to use CQRS</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>Database per Service <span class="prob-badge high">HIGH</span></h4>
+      <ul>
+        <li>Private tables vs schema vs server-per-service</li>
+        <li>Autonomy and loose coupling benefits</li>
+        <li>Cross-service query challenges</li>
+        <li>CAP theorem implications</li>
+        <li>ACID vs BASE</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>Microservices vs Monolithic <span class="prob-badge high">HIGH</span></h4>
+      <ul>
+        <li>Monolithic hell causes</li>
+        <li>Microservices principles (6 key principles)</li>
+        <li>When to use microservices</li>
+        <li>Advantages and challenges of each</li>
+        <li>Decomposition patterns</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>SOA vs Microservices <span class="prob-badge med">MED</span></h4>
+      <ul>
+        <li>ESB vs lightweight brokers</li>
+        <li>Enterprise vs application scope</li>
+        <li>SOAP vs REST/gRPC</li>
+        <li>Service granularity differences</li>
+        <li>Shared DB (SOA) vs DB per service (MSA)</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>2PC &amp; 3PC Protocols <span class="prob-badge med">MED</span></h4>
+      <ul>
+        <li>2PC Prepare → Commit/Abort flow</li>
+        <li>Why 2PC blocks on coordinator failure</li>
+        <li>3PC adds PreCommit phase — non-blocking recovery</li>
+        <li>Why 3PC is still not ideal (partition unsafe)</li>
+        <li>Neither suitable for microservices</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>Communication Patterns <span class="prob-badge med">MED</span></h4>
+      <ul>
+        <li>REST vs gRPC vs SOAP</li>
+        <li>Sync (REST) vs Async (Messaging)</li>
+        <li>Message types: Command, Document, Event</li>
+        <li>Broker-based vs Brokerless messaging</li>
+        <li>Point-to-point vs Publish-Subscribe channels</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>DevOps &amp; CI/CD <span class="prob-badge med">MED</span></h4>
+      <ul>
+        <li>8 DevOps lifecycle stages</li>
+        <li>CI vs CD distinction</li>
+        <li>Tools: Git, Jenkins, Maven, Selenium, Docker</li>
+        <li>DevOps breaks dev/ops silos</li>
+        <li>Why Agile alone wasn't enough (ops gap)</li>
+      </ul>
+    </div>
+
+    <div class="concept-card">
+      <h4>Scrum Framework <span class="prob-badge low">LOW</span></h4>
+      <ul>
+        <li>3 Roles: Product Owner, Scrum Master, Team</li>
+        <li>4 Ceremonies: Planning, Review, Retro, Daily</li>
+        <li>3 Artifacts: Product Backlog, Sprint Backlog, Burndown</li>
+        <li>Sprint = 30-day time-box</li>
+        <li>Definition of Done, self-organizing teams</li>
+      </ul>
+    </div>
+
+    <div class="concept-card" style="border-color:rgba(247,96,79,0.25);background:linear-gradient(135deg,rgba(247,96,79,0.04),var(--surface));">
+      <h4 style="color:var(--danger);">⚡ Examiner's Favorites</h4>
+      <ul>
+        <li>Compare Choreography vs Orchestration Saga</li>
+        <li>Why 2PC fails → how Saga solves it</li>
+        <li>CQRS improvements + trade-offs</li>
+        <li>Database per service: autonomy + challenges</li>
+        <li>Shared DB: benefits + risks</li>
+        <li>SOA vs Microservices (4 dimensions)</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section-title" style="margin-top:40px;">
+    <div class="section-icon" style="background:rgba(247,96,79,0.1);color:var(--danger)">⚡</div>
+    Quick-Fire Key Definitions (Memorize These)
+  </div>
+
+  <div class="controls-row">
+    <button class="btn primary" onclick="toggleAll(true,'page-map')">▼ Show All</button>
+    <button class="btn" onclick="toggleAll(false,'page-map')">▲ Hide All</button>
+  </div>
+
+  <div class="q-card" id="def1">
+    <div class="q-header" onclick="toggle('def1')">
+      <div class="q-num" style="font-size:0.65rem;">DEF</div>
+      <div class="q-content">
+        <div class="q-text">What is CQRS? Define Command Model and Query Model.</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-text"><strong>CQRS</strong> (Command Query Responsibility Segregation) separates an application into two models: the <strong>Command Model</strong> handles all write operations (create, update, delete) — enforces business rules and emits domain events. The <strong>Query Model</strong> handles all read operations — uses optimized, denormalized data representations (e.g., Elasticsearch, MongoDB) for fast retrieval. The two models are kept in sync asynchronously via events or CDC.</div>
+    </div>
+  </div>
+
+  <div class="q-card" id="def2">
+    <div class="q-header" onclick="toggle('def2')">
+      <div class="q-num" style="font-size:0.65rem;">DEF</div>
+      <div class="q-content">
+        <div class="q-text">What is a Saga? Define compensating transaction.</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-text">A <strong>Saga</strong> is a sequence of local transactions, each of which updates its own database and publishes a message/event to trigger the next step. If any step fails, the saga executes <strong>compensating transactions</strong> — which are operations that semantically undo previously committed local transactions. Unlike a database ROLLBACK, compensating transactions are application-level operations (e.g., refunding a payment, cancelling an order) because local transactions have already committed and released their locks.</div>
+    </div>
+  </div>
+
+  <div class="q-card" id="def3">
+    <div class="q-header" onclick="toggle('def3')">
+      <div class="q-num" style="font-size:0.65rem;">DEF</div>
+      <div class="q-content">
+        <div class="q-text">What is the CAP theorem? What does it mean for microservices?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-text">The <strong>CAP theorem</strong> states a distributed system can guarantee at most two of: <strong>Consistency</strong> (all nodes see same data simultaneously), <strong>Availability</strong> (every request gets a response), and <strong>Partition tolerance</strong> (system works despite network failures). For microservices: since network partitions are unavoidable (services run on different servers), systems must choose between C or A. NoSQL databases (MongoDB, Cassandra) choose <strong>A+P</strong> (eventual consistency), while traditional RDBMS choose <strong>C+A</strong> (no partition tolerance assumed).</div>
+    </div>
+  </div>
+
+  <div class="q-card" id="def4">
+    <div class="q-header" onclick="toggle('def4')">
+      <div class="q-num" style="font-size:0.65rem;">DEF</div>
+      <div class="q-content">
+        <div class="q-text">What is the ESB in SOA and why is it a problem?</div>
+      </div>
+      <div class="q-toggle">▼</div>
+    </div>
+    <div class="q-answer">
+      <div class="ans-text">The <strong>ESB (Enterprise Service Bus)</strong> is the central communication backbone in SOA — all service interactions go through it. It handles routing, transformation, protocol conversion, and orchestration. The problem: the ESB becomes a <strong>single point of failure</strong> — if it goes down, all services lose the ability to communicate. It also becomes a <strong>performance bottleneck</strong> — every inter-service call must pass through it. In microservices, the ESB is replaced by lightweight direct communication (REST/gRPC) or decentralized messaging (Kafka), following the principle "smart endpoints, dumb pipes."</div>
+    </div>
+  </div>
+
+</div><!-- /page-map -->
+
+</div><!-- /main -->
+
+<script>
+function toggle(id){
+  const card=document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+function toggleAll(open, pageId){
+  const page=document.getElementById('page-'+pageId) || document.getElementById(pageId);
+  const cards = page ? page.querySelectorAll('.q-card') : document.querySelectorAll('.q-card');
+  cards.forEach(c=>{
+    if(open) c.classList.add('open');
+    else c.classList.remove('open');
+  });
+}
+
+function showPage(name){
+  document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
