@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS352 · Microservices Exam Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #f5a623;
+    --accent2: #e84393;
+    --accent3: #39d353;
+    --accent4: #58a6ff;
+    --text: #e8eaf0;
+    --muted: #6b7394;
+    --danger: #ff4d4d;
+    --success: #39d353;
+    --warning: #f5a623;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'Lora', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  .light-mode {
+    --bg: #f5f4ef;
+    --surface: #ffffff;
+    --surface2: #edecea;
+    --border: #d8d5cc;
+    --text: #1a1c24;
+    --muted: #7a7a8c;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+  }
+  .light-mode #topbar { background: rgba(245,244,239,0.92); }
+  .logo { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .bar-actions { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    font-family: var(--font-head); font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); transition: all 0.18s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn.exam-btn { border-color: var(--accent2); color: var(--accent2); }
+  .btn.exam-btn:hover, .btn.exam-btn.active { background: var(--accent2); color: #fff; }
+  .btn.rev-btn { border-color: var(--accent3); color: var(--accent3); }
+  .btn.rev-btn:hover, .btn.rev-btn.active { background: var(--accent3); color: #000; }
+
+  /* ── SEARCH ── */
+  #search-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 14px; color: var(--text);
+    font-family: var(--font-mono); font-size: 0.8rem; width: 200px;
+    outline: none; transition: border-color 0.2s;
+  }
+  #search-box:focus { border-color: var(--accent4); }
+  #search-box::placeholder { color: var(--muted); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 80px 24px 80px; }
+
+  /* ── HERO ── */
+  .hero { padding: 40px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .hero-tag {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; }
+  .hero h1 em { color: var(--accent4); font-style: normal; }
+  .hero-meta { color: var(--muted); font-size: 0.9rem; margin-top: 12px; font-family: var(--font-mono); }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-family: var(--font-mono); font-weight: 500; margin-right: 6px; }
+  .pill-lec { background: #1a2535; color: var(--accent4); }
+  .pill-topic { background: #1f1a2a; color: #c084fc; }
+
+  /* ── SECTION CARDS ── */
+  .section-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; margin-bottom: 20px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .section-card:hover { border-color: #353b52; }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; cursor: pointer; user-select: none;
+  }
+  .section-header:hover { background: var(--surface2); }
+  .sec-title-row { display: flex; align-items: center; gap: 12px; }
+  .sec-icon { font-size: 1.2rem; }
+  .sec-title { font-family: var(--font-head); font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+  .sec-badge {
+    font-family: var(--font-mono); font-size: 0.65rem; padding: 2px 8px;
+    border-radius: 4px; font-weight: 500;
+  }
+  .badge-1 { background: #1a2535; color: var(--accent4); }
+  .badge-2 { background: #2a1a1f; color: var(--accent2); }
+  .badge-3 { background: #1a2a1f; color: var(--accent3); }
+  .badge-4 { background: #2a221a; color: var(--accent); }
+  .badge-5 { background: #22192a; color: #c084fc; }
+  .badge-6 { background: #1a2a2a; color: #22d3ee; }
+  .badge-7 { background: #2a1a2a; color: #f472b6; }
+  .chevron { color: var(--muted); font-size: 1.1rem; transition: transform 0.25s; }
+  .chevron.open { transform: rotate(180deg); }
+  .section-body { display: none; padding: 0 24px 24px; }
+  .section-body.open { display: block; }
+
+  /* ── TYPOGRAPHY IN BODY ── */
+  h2 { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; color: var(--accent4); margin: 22px 0 8px; letter-spacing: -0.01em; }
+  h3 { font-family: var(--font-head); font-size: 0.9rem; font-weight: 700; color: var(--accent); margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  p { margin-bottom: 10px; color: var(--text); }
+  ul { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { background: var(--surface2); font-family: var(--font-head); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── HIGHLIGHT BOXES ── */
+  .hbox { border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 0.92rem; }
+  .hbox-warn { background: #2a1f0a; border-left: 3px solid var(--warning); }
+  .hbox-info { background: #0a1a2a; border-left: 3px solid var(--accent4); }
+  .hbox-success { background: #0a1f0f; border-left: 3px solid var(--success); }
+  .hbox-danger { background: #2a0a0a; border-left: 3px solid var(--danger); }
+  .hbox-purple { background: #1a0a2a; border-left: 3px solid #c084fc; }
+  .hbox strong { font-family: var(--font-head); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
+  .hbox-warn strong { color: var(--warning); }
+  .hbox-info strong { color: var(--accent4); }
+  .hbox-success strong { color: var(--success); }
+  .hbox-danger strong { color: var(--danger); }
+  .hbox-purple strong { color: #c084fc; }
+
+  /* ── MNEMONIC ── */
+  .mnemonic { background: var(--surface2); border: 1px dashed var(--accent); border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
+  .mnemonic .label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .mnemonic .word { font-family: var(--font-head); font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: 0.05em; margin: 4px 0; }
+  .mnemonic .breakdown { font-size: 0.88rem; color: var(--muted); }
+  .mnemonic .breakdown span { color: var(--text); }
+
+  /* ── MCQ ── */
+  .mcq { background: var(--surface2); border-radius: 10px; padding: 18px; margin: 14px 0; border: 1px solid var(--border); }
+  .mcq-q { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; margin-bottom: 14px; line-height: 1.4; }
+  .mcq-q .qnum { color: var(--accent); margin-right: 6px; }
+  .mcq-options { display: flex; flex-direction: column; gap: 8px; }
+  .mcq-opt {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 7px;
+    padding: 10px 14px; cursor: pointer; font-size: 0.88rem;
+    transition: all 0.15s; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .mcq-opt:hover { border-color: var(--accent4); background: var(--surface2); }
+  .mcq-opt.correct { border-color: var(--success); background: #0a1f0f; }
+  .mcq-opt.wrong { border-color: var(--danger); background: #2a0a0a; }
+  .opt-letter { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; color: var(--muted); min-width: 18px; margin-top: 1px; }
+  .mcq-opt.correct .opt-letter { color: var(--success); }
+  .mcq-opt.wrong .opt-letter { color: var(--danger); }
+  .mcq-explain { display: none; margin-top: 12px; padding: 12px; background: #0a1a2a; border-radius: 7px; font-size: 0.86rem; border-left: 3px solid var(--accent4); }
+  .mcq-explain.show { display: block; }
+  .mcq-difficulty { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; float: right; padding: 2px 8px; border-radius: 4px; }
+  .diff-hard { background: #2a0a0a; color: var(--danger); }
+  .diff-med { background: #2a1f0a; color: var(--warning); }
+  .diff-easy { background: #0a1f0f; color: var(--success); }
+
+  /* ── WRITTEN TEMPLATE ── */
+  .answer-template { background: var(--surface2); border-radius: 10px; padding: 20px; margin: 14px 0; border: 1px solid var(--border); }
+  .template-q { font-family: var(--font-head); font-weight: 700; margin-bottom: 14px; color: var(--accent4); }
+  .template-point { display: flex; gap: 10px; margin: 8px 0; }
+  .tp-num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); min-width: 24px; font-weight: 700; }
+  .keyword { display: inline; background: rgba(245,166,35,0.15); color: var(--accent); border-radius: 4px; padding: 0 5px; font-family: var(--font-mono); font-size: 0.85em; }
+
+  /* ── PRIORITY MAP ── */
+  .priority-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  @media (max-width: 600px) { .priority-grid { grid-template-columns: 1fr; } }
+  .priority-card { border-radius: 8px; padding: 14px; }
+  .pc-high { background: #2a0a0a; border: 1px solid var(--danger); }
+  .pc-med { background: #2a1f0a; border: 1px solid var(--warning); }
+  .pc-low { background: #0a1a2a; border: 1px solid var(--accent4); }
+  .pc-trap { background: #1a0a2a; border: 1px solid #c084fc; }
+  .pc-label { font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .pc-high .pc-label { color: var(--danger); }
+  .pc-med .pc-label { color: var(--warning); }
+  .pc-low .pc-label { color: var(--accent4); }
+  .pc-trap .pc-label { color: #c084fc; }
+  .pc-item { font-size: 0.85rem; margin-bottom: 4px; }
+  .pc-item::before { content: "→ "; color: var(--muted); }
+
+  /* ── RAPID REVISION ── */
+  .rapid-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .rapid-item:last-child { border-bottom: none; }
+  .rapid-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; flex-shrink: 0; }
+  .dot-red { background: var(--danger); }
+  .dot-yellow { background: var(--warning); }
+  .dot-green { background: var(--success); }
+  .dot-blue { background: var(--accent4); }
+  .rapid-text { font-size: 0.88rem; }
+  .rapid-text strong { font-family: var(--font-head); color: var(--text); }
+
+  /* ── COMPARISON ── */
+  .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  @media (max-width: 600px) { .compare-wrap { grid-template-columns: 1fr; } }
+  .compare-col { background: var(--surface2); border-radius: 8px; padding: 14px; }
+  .compare-col h4 { font-family: var(--font-head); font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+
+  /* ── SEARCH HIGHLIGHT ── */
+  .search-highlight { background: rgba(245,166,35,0.3); border-radius: 3px; }
+  .hidden-search { display: none !important; }
+
+  /* ── MODES ── */
+  body.exam-mode .section-card:not(.exam-priority) { opacity: 0.3; pointer-events: none; }
+  body.exam-mode .section-card.exam-priority { opacity: 1; pointer-events: all; }
+  body.revision-mode .section-card:not(.revision-priority) { opacity: 0.3; pointer-events: none; }
+  body.revision-mode .section-card.revision-priority { opacity: 1; pointer-events: all; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar { position: fixed; top: 56px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 99; }
+  #progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent4), var(--accent)); width: 0%; transition: width 0.1s; }
+
+  /* ── FOOTER ── */
+  footer { text-align: center; padding: 40px 0 20px; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .section-card { animation: fadeIn 0.3s ease both; }
+  .section-card:nth-child(1) { animation-delay: 0.05s; }
+  .section-card:nth-child(2) { animation-delay: 0.10s; }
+  .section-card:nth-child(3) { animation-delay: 0.15s; }
+  .section-card:nth-child(4) { animation-delay: 0.20s; }
+  .section-card:nth-child(5) { animation-delay: 0.25s; }
+  .section-card:nth-child(6) { animation-delay: 0.30s; }
+  .section-card:nth-child(7) { animation-delay: 0.35s; }
+
+  .score-display { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+  .score-display span { color: var(--accent3); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">IS<span>352</span> · Microservices</div>
+  <div class="bar-actions">
+    <input type="text" id="search-box" placeholder="Search topics..." oninput="doSearch(this.value)">
+    <button class="btn exam-btn" id="examBtn" onclick="toggleMode('exam')">⚡ Exam Mode</button>
+    <button class="btn rev-btn" id="revBtn" onclick="toggleMode('revision')">⏱ 15-Min Crash</button>
+    <button class="btn" onclick="toggleAll(true)">Expand All</button>
+    <button class="btn" onclick="toggleAll(false)">Collapse</button>
+    <button class="btn" id="themeBtn" onclick="toggleTheme()">☀️</button>
+  </div>
+</div>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">System Analysis & Design · IS352</div>
+    <h1>Microservices <em>Exam Engine</em></h1>
+    <div class="hero-meta">
+      <span class="pill pill-lec">Lecture 8</span>
+      <span class="pill pill-lec">Lecture 9</span>
+      <span class="pill pill-lec">Lecture 10</span>
+      <span class="pill pill-topic">Communication Patterns</span>
+      <span class="pill pill-topic">Data Management</span>
+      &nbsp;·&nbsp; Dr. Wael Abbas · 2023–2024
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 1: MASTER SUMMARY -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">📘</span>
+        <span class="sec-title">1 · Ultra-Compressed Master Summary</span>
+        <span class="sec-badge badge-1">Core Content</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body open">
+
+      <h2>Interaction Styles (The Big Picture)</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Dimension</th><th>Type</th><th>Sync / Async</th><th>Example</th></tr>
+          <tr><td>One-to-One</td><td>Request/Response</td><td>Synchronous</td><td>REST, gRPC</td></tr>
+          <tr><td>One-to-One</td><td>Async Req/Response</td><td>Asynchronous</td><td>Messaging</td></tr>
+          <tr><td>One-to-One</td><td>One-way Notification</td><td>Asynchronous</td><td>Fire & forget</td></tr>
+          <tr><td>One-to-Many</td><td>Publish/Subscribe</td><td>Asynchronous</td><td>Events bus</td></tr>
+          <tr><td>One-to-Many</td><td>Publish/Async Responses</td><td>Asynchronous</td><td>Fanout + collect</td></tr>
+        </table>
+      </div>
+
+      <h2>Communication Patterns Overview</h2>
+      <div class="compare-wrap">
+        <div class="compare-col" style="border-top: 3px solid var(--accent4)">
+          <h4 style="color:var(--accent4)">Synchronous (Request/Response)</h4>
+          <ul>
+            <li>Client <strong>blocks</strong> waiting for response</li>
+            <li>Both client & service must be available</li>
+            <li>Tight runtime coupling</li>
+            <li>Protocols: <strong>REST, gRPC, Apache Thrift</strong></li>
+          </ul>
+        </div>
+        <div class="compare-col" style="border-top: 3px solid var(--accent3)">
+          <h4 style="color:var(--accent3)">Asynchronous (Messaging)</h4>
+          <ul>
+            <li>Client does <strong>NOT block</strong></li>
+            <li>Messages buffered by broker</li>
+            <li>Loose runtime coupling</li>
+            <li>Brokers: <strong>RabbitMQ, Kafka, ActiveMQ</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>REST (Representational State Transfer)</h2>
+      <ul>
+        <li>Built entirely on top of <strong>HTTP</strong></li>
+        <li>Key abstraction = <strong>Resource</strong> (anything exposed to the world)</li>
+        <li>REST = constraints; RESTful = API adhering to those constraints</li>
+      </ul>
+      <div class="compare-wrap">
+        <div class="compare-col" style="border-top: 3px solid var(--success)">
+          <h4 style="color:var(--success)">✅ Advantages</h4>
+          <ul>
+            <li>Simple & familiar</li>
+            <li>Testable via Postman / curl</li>
+            <li>Firewall friendly (HTTP)</li>
+            <li>No intermediate broker</li>
+            <li>Direct request/response support</li>
+          </ul>
+        </div>
+        <div class="compare-col" style="border-top: 3px solid var(--danger)">
+          <h4 style="color:var(--danger)">❌ Disadvantages</h4>
+          <ul>
+            <li>Only supports request/response style</li>
+            <li>Both ends must be running (reduced availability)</li>
+            <li>Clients must know service URLs (service discovery needed)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>HATEOAS</h2>
+      <p><strong>Hypermedia As The Engine Of Application State</strong> — a REST component where server returns URLs dynamically in responses so clients don't need to hard-code them.</p>
+      <div class="hbox hbox-info">
+        <strong>Key Benefit</strong>
+        Enables <strong>loose coupling</strong>. URLs are generated server-side and sent in JSON/XML responses. No hard-coded endpoints = no breakage when URLs change.
+      </div>
+      <div class="hbox hbox-danger">
+        <strong>Without HATEOAS</strong>
+        API endpoints must be hard-coded on client. Any endpoint change breaks all client apps → <strong>tight coupling</strong>.
+      </div>
+
+      <h2>SOAP vs REST</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Feature</th><th>SOAP</th><th>REST</th></tr>
+          <tr><td>Transport</td><td>HTTP, JMS, SMTP/POP</td><td>HTTP only</td></tr>
+          <tr><td>Message method</td><td>POST only (RPC)</td><td>GET, POST, PUT, DELETE…</td></tr>
+          <tr><td>HATEOAS</td><td>❌ No</td><td>✅ Yes</td></tr>
+          <tr><td>Flexibility</td><td>Rigid (server-defined)</td><td>Flexible</td></tr>
+          <tr><td>Security forwarding</td><td>WS-Security (encrypt/forward)</td><td>Standard HTTPS</td></tr>
+        </table>
+      </div>
+
+      <h2>Messaging Pattern (Asynchronous)</h2>
+      <h3>Message Structure</h3>
+      <ul>
+        <li><strong>Header</strong>: name-value metadata pairs</li>
+        <li><strong>Body</strong>: actual data (text or binary)</li>
+      </ul>
+      <h3>Message Types</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+          <tr><td>Document</td><td>Generic data; receiver decides how to use it</td><td>Reply to a command</td></tr>
+          <tr><td>Command</td><td>Specifies operation + parameters (like RPC)</td><td>"PlaceOrder" message</td></tr>
+          <tr><td>Event</td><td>Something notable happened (domain event)</td><td>OrderPlaced, CustomerUpdated</td></tr>
+        </table>
+      </div>
+      <h3>Message Formats</h3>
+      <div class="compare-wrap">
+        <div class="compare-col">
+          <h4>Text (JSON / XML)</h4>
+          <ul>
+            <li>Human-readable, self-describing</li>
+            <li>❌ Contains attribute names = overhead</li>
+            <li>❌ Parsing overhead on large messages</li>
+          </ul>
+        </div>
+        <div class="compare-col">
+          <h4>Binary (Protocol Buffers / Avro)</h4>
+          <ul>
+            <li>More compact, saves bandwidth</li>
+            <li>Better for performance-critical systems</li>
+            <li>Not human-readable</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Channel Types</h3>
+      <ul>
+        <li><strong>Point-to-Point</strong>: Delivers to exactly ONE consumer → used for one-to-one interactions</li>
+        <li><strong>Publish-Subscribe</strong>: Delivers to ALL attached consumers → used for one-to-many interactions</li>
+      </ul>
+      <h3>Implementing Interaction Styles with Messaging</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Style</th><th>How it works</th></tr>
+          <tr><td>Async Req/Response</td><td>Client sends command msg with <em>reply-channel header</em>. Service replies with <em>correlation ID</em>. Client matches IDs.</td></tr>
+          <tr><td>One-way Notification</td><td>Client sends to point-to-point channel. Service processes. <strong>No reply.</strong></td></tr>
+          <tr><td>Publish/Subscribe</td><td>Publisher sends to pub-sub channel. All subscribed services receive it.</td></tr>
+          <tr><td>Publish/Async Responses</td><td>Client publishes with reply-channel header. Consumers reply with correlation ID. Client collects.</td></tr>
+        </table>
+      </div>
+
+      <h3>Broker-less vs Broker-based Messaging</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th></th><th>Broker-less (e.g. ZeroMQ)</th><th>Broker-based (e.g. Kafka)</th></tr>
+          <tr><td>Routing</td><td>Direct sender → receiver</td><td>Via message broker</td></tr>
+          <tr><td>Latency</td><td>Lower</td><td>Higher</td></tr>
+          <tr><td>Availability</td><td>Both ends must be up</td><td>Broker buffers → better</td></tr>
+          <tr><td>Single point of failure</td><td>No broker SPOF</td><td>Broker can be SPOF</td></tr>
+          <tr><td>Service discovery</td><td>Required</td><td>Not needed</td></tr>
+          <tr><td>Guaranteed delivery</td><td>Harder</td><td>Easier</td></tr>
+        </table>
+      </div>
+
+      <h2>Data Management Patterns</h2>
+      <h3>Database per Service</h3>
+      <ul>
+        <li>Each service has its own private database (3 options: private tables, schema-per-service, database-server-per-service)</li>
+        <li>✅ Loose coupling, best-fit DB type per service</li>
+        <li>❌ Cross-service transactions hard (no distributed ACID), joins challenging</li>
+      </ul>
+      <h3>Shared Database</h3>
+      <ul>
+        <li>Multiple services share one DB</li>
+        <li>✅ Simple ACID transactions, easier to operate</li>
+        <li>❌ Development-time coupling, runtime coupling, locking issues, one-size-fits-all DB</li>
+      </ul>
+
+      <h2>CAP Theorem</h2>
+      <div class="hbox hbox-warn">
+        <strong>⚠️ Critical Concept</strong>
+        A distributed system can provide at most <strong>2 of 3</strong>: Consistency, Availability, Partition Tolerance. In RDBMS → C+A (no P). In NoSQL → want P, so choose C or A.
+      </div>
+
+      <h2>ACID vs BASE</h2>
+      <div class="compare-wrap">
+        <div class="compare-col" style="border-top: 3px solid var(--accent4)">
+          <h4 style="color:var(--accent4)">ACID (SQL)</h4>
+          <ul>
+            <li><strong>A</strong>tomicity – all or nothing</li>
+            <li><strong>C</strong>onsistency – always valid state</li>
+            <li><strong>I</strong>solation – transactions don't interfere</li>
+            <li><strong>D</strong>urability – committed = permanent</li>
+          </ul>
+        </div>
+        <div class="compare-col" style="border-top: 3px solid var(--accent)">
+          <h4 style="color:var(--accent)">BASE (NoSQL)</h4>
+          <ul>
+            <li><strong>B</strong>asically Available – partial failures ok</li>
+            <li><strong>S</strong>oft state – may change without input</li>
+            <li><strong>E</strong>ventual Consistency – consistent eventually</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>NoSQL Database Types</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Type</th><th>Structure</th><th>Best For</th><th>Avoid When</th><th>Example</th></tr>
+          <tr><td><strong>Document</strong></td><td>Collections → Documents → Key-value</td><td>CMS, blogs, e-commerce, web apps, real-time analytics</td><td>Queries against varying aggregates</td><td>MongoDB</td></tr>
+          <tr><td><strong>Column</strong></td><td>Keyspace → Column Families → Rows → Columns (key-value)</td><td>Large volumes, heavy writes, OLAP, high performance</td><td>Frequently changing query patterns, early dev</td><td>Cassandra</td></tr>
+          <tr><td><strong>Key-Value</strong></td><td>Simple key → value pairs</td><td>Sessions, profiles, preferences, comments, recommendations</td><td>Multiple unique keys, joins, specific data queries, frequent partial updates</td><td>Redis</td></tr>
+          <tr><td><strong>Graph</strong></td><td>Nodes + Edges + Labels + Properties</td><td>Social networks, recommendations, fraud detection, bioinformatics</td><td>Transactional data, non-relational focus</td><td>Neo4j</td></tr>
+        </table>
+      </div>
+
+      <h3>Graph DB Key Concepts</h3>
+      <ul>
+        <li><strong>Nodes</strong> = Entities (like rows in RDBMS)</li>
+        <li><strong>Edges (Relationships)</strong> = Connections (like foreign keys)</li>
+        <li><strong>Labels</strong> = Group similar nodes</li>
+        <li><strong>Properties</strong> = Key/value pairs on nodes or relationships</li>
+        <li>Relationships are <strong>first-class citizens</strong> — stored explicitly, not calculated at query time</li>
+      </ul>
+
+      <h2>Other Data Patterns (Brief)</h2>
+      <ul>
+        <li><strong>SAGA</strong>: Sequence of local transactions for cross-service data consistency</li>
+        <li><strong>CQRS</strong>: Materialized views for efficient queries</li>
+        <li><strong>Event Sourcing</strong>: Persist aggregates as sequence of events</li>
+        <li><strong>Domain Event</strong>: Publish an event whenever data changes</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 2: EXAM PRIORITY MAP -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card exam-priority" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">🎯</span>
+        <span class="sec-title">2 · Exam Priority Map</span>
+        <span class="sec-badge badge-2">Must Know</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body open">
+      <div class="priority-grid">
+        <div class="priority-card pc-high">
+          <div class="pc-label">🔴 Highest Priority</div>
+          <div class="pc-item">CAP Theorem (3 guarantees, pick 2)</div>
+          <div class="pc-item">ACID vs BASE full comparison</div>
+          <div class="pc-item">Sync vs Async communication</div>
+          <div class="pc-item">REST advantages & disadvantages</div>
+          <div class="pc-item">Broker-less vs Broker-based</div>
+          <div class="pc-item">NoSQL types + examples + use cases</div>
+          <div class="pc-item">Database per Service vs Shared DB</div>
+        </div>
+        <div class="priority-card pc-med">
+          <div class="pc-label">🟡 Medium Priority</div>
+          <div class="pc-item">HATEOAS concept & benefit</div>
+          <div class="pc-item">Message types (Document, Command, Event)</div>
+          <div class="pc-item">Channel types (Point-to-Point vs Pub-Sub)</div>
+          <div class="pc-item">Message formats (Text vs Binary)</div>
+          <div class="pc-item">Interaction styles table (5 types)</div>
+          <div class="pc-item">Message broker selection factors</div>
+        </div>
+        <div class="priority-card pc-low">
+          <div class="pc-label">🔵 Lower Priority</div>
+          <div class="pc-item">SOAP details & disadvantages</div>
+          <div class="pc-item">ZeroMQ specifics</div>
+          <div class="pc-item">Specific broker names (Kafka, RabbitMQ)</div>
+          <div class="pc-item">WS-Security forwarding in SOAP</div>
+          <div class="pc-item">Protocol Buffers vs Avro names</div>
+        </div>
+        <div class="priority-card pc-trap">
+          <div class="pc-label">🟣 Exam Traps</div>
+          <div class="pc-item">REST ≠ RESTful (REST = constraints, RESTful = API)</div>
+          <div class="pc-item">SOAP uses POST only, not all HTTP methods</div>
+          <div class="pc-item">Broker-less STILL needs service discovery</div>
+          <div class="pc-item">NoSQL → want P → choose C OR A (not both!)</div>
+          <div class="pc-item">Graph DB: relationships stored explicitly ≠ calculated</div>
+          <div class="pc-item">Correlation ID is used for matching, not routing</div>
+          <div class="pc-item">Shared DB: runtime coupling = LOCKING issue</div>
+        </div>
+      </div>
+
+      <div class="hbox hbox-danger" style="margin-top:16px">
+        <strong>⚡ Common Mistakes Students Make</strong>
+        <ul>
+          <li>Saying REST supports all interaction styles → <strong>WRONG</strong>. REST only supports request/response.</li>
+          <li>Thinking NoSQL databases are always eventually consistent → <strong>WRONG</strong>. Some choose C over A (drop availability).</li>
+          <li>Confusing Point-to-Point with one-to-many → Point-to-Point is ONE consumer only.</li>
+          <li>Saying broker-based has no single point of failure → <strong>WRONG</strong>. Broker itself can be SPOF if not designed for high availability.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 3: MEMORY BOOST -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">🧠</span>
+        <span class="sec-title">3 · Memory Boost Section</span>
+        <span class="sec-badge badge-3">Mnemonics</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="mnemonic">
+        <div class="label">Mnemonic · ACID</div>
+        <div class="word">A.C.I.D</div>
+        <div class="breakdown">
+          <span>A</span>ll or nothing (Atomicity) &nbsp;·&nbsp;
+          <span>C</span>onsistent always (Consistency) &nbsp;·&nbsp;
+          <span>I</span>solated transactions (Isolation) &nbsp;·&nbsp;
+          <span>D</span>urable commits (Durability)
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Mnemonic · BASE</div>
+        <div class="word">B.A.S.E</div>
+        <div class="breakdown">
+          <span>B</span>asically Available &nbsp;·&nbsp;
+          <span>A</span>lways soft state &nbsp;·&nbsp;
+          <span>S</span>oft state means it changes &nbsp;·&nbsp;
+          <span>E</span>ventually consistent
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Mnemonic · CAP Theorem</div>
+        <div class="word">CAP = Pick 2 of 3</div>
+        <div class="breakdown">
+          <span>C</span>onsistency &nbsp;·&nbsp; <span>A</span>vailability &nbsp;·&nbsp; <span>P</span>artition Tolerance<br>
+          Remember: <span>"SQL has no Partition tolerance → gets C+A. NoSQL wants P → sacrifices C or A."</span>
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Analogy · Sync vs Async</div>
+        <div class="word">Phone Call vs Email</div>
+        <div class="breakdown">
+          <span>Synchronous (REST)</span> = Phone call — both must be available simultaneously, you wait for response.<br>
+          <span>Asynchronous (Messaging)</span> = Email — you send it, walk away; reply comes whenever.
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Analogy · Broker-less vs Broker-based</div>
+        <div class="word">Direct Delivery vs Post Office</div>
+        <div class="breakdown">
+          <span>Broker-less</span> = Hand-delivering a letter. Faster, but both must be home (available).<br>
+          <span>Broker-based</span> = Post office. You drop it off; post office holds it until receiver picks up.
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Analogy · HATEOAS</div>
+        <div class="word">GPS Navigation vs Paper Map</div>
+        <div class="breakdown">
+          <span>Without HATEOAS</span> = Paper map (hard-coded routes; outdated the moment roads change).<br>
+          <span>With HATEOAS</span> = Live GPS (server tells you next step dynamically; always current).
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Chunking · NoSQL Types</div>
+        <div class="word">Document · Column · Key-Value · Graph</div>
+        <div class="breakdown">
+          Remember the databases: <span>MongoDB → Cassandra → Redis → Neo4j</span><br>
+          Phrase: <span>"My Cats Really Nap"</span> (MongoDB, Cassandra, Redis, Neo4j)
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Pattern · Graph DB Components</div>
+        <div class="word">N-E-L-P</div>
+        <div class="breakdown">
+          <span>N</span>odes (entities) &nbsp;·&nbsp; <span>E</span>dges (relationships) &nbsp;·&nbsp; <span>L</span>abels (grouping) &nbsp;·&nbsp; <span>P</span>roperties (key-value data)
+        </div>
+      </div>
+
+      <div class="mnemonic">
+        <div class="label">Association · Message Types</div>
+        <div class="word">D-C-E</div>
+        <div class="breakdown">
+          <span>D</span>ocument = Data dump (I send data, you decide what to do)<br>
+          <span>C</span>ommand = Order (do this specific thing with these params)<br>
+          <span>E</span>vent = News broadcast (something happened, who cares listens)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 4: MCQ TRAINING ZONE -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card exam-priority" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">🧩</span>
+        <span class="sec-title">4 · MCQ Training Zone</span>
+        <span class="sec-badge badge-4">Interactive</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="score-display">Score: <span id="score">0</span> / <span id="total-q">0</span> correct</div>
+
+      <!-- MCQ 1 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-med">Medium</span>
+        <div class="mcq-q"><span class="qnum">Q1.</span> Which of the following is NOT a disadvantage of synchronous (REST) communication?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Both client and service must be running at the same time</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">B</span>Clients must know the URLs of service instances</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">C</span>Messages can be lost if the broker goes down</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>Only supports request/response interaction style</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>C is correct.</strong> Message loss due to broker failure is a disadvantage of <em>broker-based messaging</em>, not REST. REST has no broker — its disadvantages are: requires both ends available, only request/response style, clients need to know URLs.</div>
+      </div>
+
+      <!-- MCQ 2 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-hard">Hard</span>
+        <div class="mcq-q"><span class="qnum">Q2.</span> In asynchronous request/response messaging, how does the client match a reply message to its original request?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>By checking the message timestamp</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">B</span>By using a correlation ID that matches the original message identifier</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>By using the service URL in the reply header</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>By the ordering of messages in the queue</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>B is correct.</strong> The client sends a command message with a <em>reply channel header</em>. The service replies to that channel with a <em>correlation ID</em> equal to the original message ID. The client uses the correlation ID to match the reply to the request.</div>
+      </div>
+
+      <!-- MCQ 3 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-hard">Hard</span>
+        <div class="mcq-q"><span class="qnum">Q3.</span> According to the CAP theorem, a NoSQL database that prioritizes Partition Tolerance and Availability sacrifices what?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Availability</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">B</span>Consistency</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>Partition Tolerance</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>Durability</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>B is correct.</strong> CAP: pick any 2 of 3. If you choose P (Partition Tolerance) + A (Availability), you must drop C (Consistency). You might get inconsistent data sometimes but the system stays available. Durability is an ACID concept, not part of CAP.</div>
+      </div>
+
+      <!-- MCQ 4 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-med">Medium</span>
+        <div class="mcq-q"><span class="qnum">Q4.</span> What type of message channel should be used for a one-to-many publish/subscribe interaction?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Point-to-point channel</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">B</span>Publish-subscribe channel</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>Command channel</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>Reply channel</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>B is correct.</strong> Point-to-point delivers to exactly ONE consumer (one-to-one). Publish-subscribe delivers to ALL attached consumers (one-to-many). Command/reply channels are not channel types — they are message types.</div>
+      </div>
+
+      <!-- MCQ 5 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-easy">Easy</span>
+        <div class="mcq-q"><span class="qnum">Q5.</span> Which NoSQL database is an example of a Key-Value store?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>MongoDB</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">B</span>Neo4j</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>Cassandra</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">D</span>Redis</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>D is correct.</strong> Redis = Key-Value. MongoDB = Document. Neo4j = Graph. Cassandra = Column. Remember: "My Cats Really Nap" → MongoDB, Cassandra, Redis, Neo4j.</div>
+      </div>
+
+      <!-- MCQ 6 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-hard">Hard</span>
+        <div class="mcq-q"><span class="qnum">Q6.</span> Which of the following is an advantage of BROKER-LESS messaging over broker-based messaging?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Better availability because messages are buffered</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">B</span>Easier guaranteed delivery mechanisms</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">C</span>Lower latency since messages go directly from sender to receiver</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>No need for service discovery</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>C is correct.</strong> Broker-less advantage: lower latency (direct path, no broker hop). A is WRONG — availability is WORSE in broker-less (both must be up). B is WRONG — guaranteed delivery is HARDER. D is WRONG — broker-less STILL needs service discovery since services must know each other's locations.</div>
+      </div>
+
+      <!-- MCQ 7 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-med">Medium</span>
+        <div class="mcq-q"><span class="qnum">Q7.</span> HATEOAS primarily solves which architectural problem?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Message ordering in asynchronous systems</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">B</span>Database consistency across microservices</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">C</span>Tight coupling due to hard-coded URLs in client applications</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>Service authentication and authorization</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>C is correct.</strong> HATEOAS solves tight coupling. Without it, clients hard-code URLs → any URL change breaks clients. With HATEOAS, server returns URLs dynamically in responses → clients are loosely coupled and always use up-to-date URLs.</div>
+      </div>
+
+      <!-- MCQ 8 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-hard">Hard</span>
+        <div class="mcq-q"><span class="qnum">Q8.</span> A developer needs to store and traverse social network relationships efficiently. Which NoSQL database type is most appropriate?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>Document database (MongoDB)</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">B</span>Key-Value store (Redis)</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>Column database (Cassandra)</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">D</span>Graph database (Neo4j)</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>D is correct.</strong> Graph databases excel at traversing relationships — relationships are first-class citizens stored explicitly (not calculated at query time like in RDBMS joins). Social networks, fraud detection, recommendations = prime Graph DB use cases.</div>
+      </div>
+
+      <!-- MCQ 9 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-med">Medium</span>
+        <div class="mcq-q"><span class="qnum">Q9.</span> Which is a drawback of the "Database per Service" pattern?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>All services are tightly coupled</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">B</span>Implementing business transactions spanning multiple services is not straightforward</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>All services must use the same database type</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>One long-running transaction can lock tables used by other services</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>B is correct.</strong> Cross-service transactions are hard because each service has its own DB — distributed transactions must be avoided due to CAP theorem. Option D is actually a drawback of the SHARED database pattern (runtime coupling/locking). Option C is the benefit of DB per service (you CAN choose different DB types).</div>
+      </div>
+
+      <!-- MCQ 10 -->
+      <div class="mcq">
+        <span class="mcq-difficulty diff-easy">Easy</span>
+        <div class="mcq-q"><span class="qnum">Q10.</span> What does SOAP use exclusively to transfer data to a server?</div>
+        <div class="mcq-options">
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">A</span>GET requests</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, true)"><span class="opt-letter">B</span>POST requests</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">C</span>PUT requests</div>
+          <div class="mcq-opt" onclick="checkAnswer(this, false)"><span class="opt-letter">D</span>DELETE requests</div>
+        </div>
+        <div class="mcq-explain">✅ <strong>B is correct.</strong> SOAP only uses POST messages — this makes it an RPC mechanism (Remote Procedure Call). This is a known SOAP disadvantage — it lacks the full range of HTTP methods that REST uses.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 5: WRITTEN ANSWER TEMPLATES -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card exam-priority" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">✍️</span>
+        <span class="sec-title">5 · Written Answer Templates</span>
+        <span class="sec-badge badge-5">Full Marks</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="answer-template">
+        <div class="template-q">Q: Compare synchronous and asynchronous communication in microservices.</div>
+        <div class="template-point"><span class="tp-num">1.</span><span><strong>Definition:</strong> <span class="keyword">Synchronous</span> communication (e.g., REST) requires the client to wait for a response. The client may block during this time. <span class="keyword">Asynchronous</span> communication (messaging) allows the client to continue without waiting.</span></div>
+        <div class="template-point"><span class="tp-num">2.</span><span><strong>Coupling:</strong> Synchronous creates <span class="keyword">tight runtime coupling</span> — both must be available simultaneously. Asynchronous achieves <span class="keyword">loose coupling</span> via a message broker that buffers messages.</span></div>
+        <div class="template-point"><span class="tp-num">3.</span><span><strong>Availability:</strong> Synchronous reduces availability (both ends must be up). Asynchronous improves availability (broker holds messages until consumer is ready).</span></div>
+        <div class="template-point"><span class="tp-num">4.</span><span><strong>Interaction styles:</strong> REST only supports <span class="keyword">request/response</span>. Messaging supports all styles: async req/response, one-way, publish/subscribe, publish/async responses.</span></div>
+        <div class="template-point"><span class="tp-num">5.</span><span><strong>Examples:</strong> Synchronous: <span class="keyword">REST, gRPC, Apache Thrift</span>. Asynchronous: <span class="keyword">RabbitMQ, Apache Kafka, ActiveMQ</span>.</span></div>
+      </div>
+
+      <div class="answer-template">
+        <div class="template-q">Q: Explain the CAP theorem and its impact on database design in microservices.</div>
+        <div class="template-point"><span class="tp-num">1.</span><span><strong>Definition:</strong> The <span class="keyword">CAP Theorem</span> states that a distributed system can only simultaneously guarantee 2 of 3 properties: <span class="keyword">Consistency</span>, <span class="keyword">Availability</span>, and <span class="keyword">Partition Tolerance</span>.</span></div>
+        <div class="template-point"><span class="tp-num">2.</span><span><strong>RDBMS:</strong> Traditional relational databases have no Partition Tolerance → they achieve <span class="keyword">Consistency + Availability</span> (C+A) using <span class="keyword">ACID</span> guarantees.</span></div>
+        <div class="template-point"><span class="tp-num">3.</span><span><strong>NoSQL:</strong> NoSQL databases are designed with Partition Tolerance (P). They must then choose either Consistency (drop A) or Availability (drop C), leading to <span class="keyword">BASE</span> semantics instead of ACID.</span></div>
+        <div class="template-point"><span class="tp-num">4.</span><span><strong>Impact:</strong> The Database per Service pattern means cross-service transactions cannot use distributed ACID transactions (CAP makes this impractical), requiring patterns like <span class="keyword">SAGA</span> instead.</span></div>
+      </div>
+
+      <div class="answer-template">
+        <div class="template-q">Q: Compare Database per Service vs Shared Database pattern.</div>
+        <div class="template-point"><span class="tp-num">1.</span><span><strong>Database per Service:</strong> Each microservice has its own <span class="keyword">private database</span> accessible only via its API. Can use private tables, schema-per-service, or separate DB server.</span></div>
+        <div class="template-point"><span class="tp-num">2.</span><span><strong>DB/Service Benefits:</strong> <span class="keyword">Loose coupling</span> (changes to one service's DB don't affect others), flexibility (each service can use the <span class="keyword">best-fit database type</span> e.g., Neo4j for graph data).</span></div>
+        <div class="template-point"><span class="tp-num">3.</span><span><strong>DB/Service Drawbacks:</strong> Cross-service transactions are complex (<span class="keyword">no distributed ACID</span>), joins across databases are challenging, managing multiple DB types adds complexity.</span></div>
+        <div class="template-point"><span class="tp-num">4.</span><span><strong>Shared Database Benefits:</strong> Simple <span class="keyword">ACID transactions</span>, single DB easier to operate.</span></div>
+        <div class="template-point"><span class="tp-num">5.</span><span><strong>Shared Database Drawbacks:</strong> <span class="keyword">Development-time coupling</span> (schema changes require coordination), <span class="keyword">runtime coupling</span> (long transactions can lock tables used by other services), single DB may not fit all service needs.</span></div>
+      </div>
+
+      <div class="answer-template">
+        <div class="template-q">Q: What is HATEOAS and why is it important in RESTful microservices?</div>
+        <div class="template-point"><span class="tp-num">1.</span><span><strong>Definition:</strong> <span class="keyword">HATEOAS</span> (Hypermedia As The Engine Of Application State) is a REST component where server responses include dynamically generated URLs (hypermedia links) that guide client actions.</span></div>
+        <div class="template-point"><span class="tp-num">2.</span><span><strong>Problem solved:</strong> Without HATEOAS, clients must <span class="keyword">hard-code API endpoints</span>. Any endpoint change breaks client applications — this is <span class="keyword">tight coupling</span>.</span></div>
+        <div class="template-point"><span class="tp-num">3.</span><span><strong>Solution:</strong> With HATEOAS, URLs are <span class="keyword">generated server-side</span> and returned in JSON/XML responses. Clients always use the latest URLs from the server → <span class="keyword">loose coupling</span>.</span></div>
+        <div class="template-point"><span class="tp-num">4.</span><span><strong>Formats:</strong> HATEOAS links can be returned in <span class="keyword">JSON or XML</span> format, containing the rel (relationship) and href (URL) for available actions.</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 6: RAPID REVISION MODE -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card revision-priority exam-priority" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">⚡</span>
+        <span class="sec-title">6 · Rapid Revision Mode (15-Min Crash)</span>
+        <span class="sec-badge badge-6">Last Minute</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body open">
+      <div class="rapid-item">
+        <div class="rapid-dot dot-red"></div>
+        <div class="rapid-text"><strong>Sync = REST</strong> — both must be up, client blocks, only request/response, no broker needed</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-red"></div>
+        <div class="rapid-text"><strong>Async = Messaging</strong> — broker buffers, client doesn't block, supports all 5 interaction styles</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-yellow"></div>
+        <div class="rapid-text"><strong>REST advantages:</strong> simple, testable, firewall-friendly, no broker | <strong>Disadvantages:</strong> request/response only, reduced availability, needs service discovery</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-yellow"></div>
+        <div class="rapid-text"><strong>SOAP</strong>: POST only, multi-transport, RPC mechanism, no HATEOAS → less flexible for microservices</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-blue"></div>
+        <div class="rapid-text"><strong>HATEOAS</strong> = server returns URLs in response → loose coupling | Without it = hard-coded URLs = tight coupling</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-red"></div>
+        <div class="rapid-text"><strong>CAP Theorem:</strong> pick 2 of {Consistency, Availability, Partition Tolerance}. SQL = C+A. NoSQL = P + (C or A)</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-red"></div>
+        <div class="rapid-text"><strong>ACID</strong> (SQL): Atomic, Consistent, Isolated, Durable | <strong>BASE</strong> (NoSQL): Basically Available, Soft state, Eventually Consistent</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-yellow"></div>
+        <div class="rapid-text"><strong>Message types:</strong> Document (generic data), Command (operation + params), Event (something happened)</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-yellow"></div>
+        <div class="rapid-text"><strong>Channel types:</strong> Point-to-Point = one consumer (one-to-one) | Pub-Sub = all consumers (one-to-many)</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-blue"></div>
+        <div class="rapid-text"><strong>Async Req/Response:</strong> client sends with reply-channel header → service replies with correlation ID → client matches IDs</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-blue"></div>
+        <div class="rapid-text"><strong>Broker-less (ZeroMQ):</strong> lower latency, no broker SPOF, but needs service discovery, reduced availability, harder delivery guarantees</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-blue"></div>
+        <div class="rapid-text"><strong>Broker-based (Kafka/RabbitMQ):</strong> buffers messages, better availability, no service discovery needed, but potential SPOF and bottleneck</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-green"></div>
+        <div class="rapid-text"><strong>DB per Service:</strong> ✅ loose coupling, best-fit DB | ❌ cross-service transactions hard, joins hard</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-green"></div>
+        <div class="rapid-text"><strong>Shared DB:</strong> ✅ simple ACID, easy to operate | ❌ dev-time coupling, runtime locking, one-size-fits-all</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-red"></div>
+        <div class="rapid-text"><strong>NoSQL types + DBs:</strong> Document=MongoDB | Column=Cassandra | Key-Value=Redis | Graph=Neo4j → "My Cats Really Nap"</div>
+      </div>
+      <div class="rapid-item">
+        <div class="rapid-dot dot-yellow"></div>
+        <div class="rapid-text"><strong>Graph DB:</strong> Nodes+Edges+Labels+Properties | Relationships are first-class, stored explicitly (not calculated) | Best: social networks, fraud detection</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 7: VISUAL STRUCTURES -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-card" data-searchable>
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="sec-title-row">
+        <span class="sec-icon">📊</span>
+        <span class="sec-title">7 · Visual Structures & Comparisons</span>
+        <span class="sec-badge badge-7">Tables & Charts</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <h2>Complete Interaction Styles Reference</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Style</th><th>Cardinality</th><th>Sync?</th><th>Client blocks?</th><th>Reply?</th></tr>
+          <tr><td>Request/Response</td><td>One-to-One</td><td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+          <tr><td>Async Req/Response</td><td>One-to-One</td><td>❌ No</td><td>❌ No</td><td>✅ Yes (later)</td></tr>
+          <tr><td>One-way Notification</td><td>One-to-One</td><td>❌ No</td><td>❌ No</td><td>❌ No</td></tr>
+          <tr><td>Publish/Subscribe</td><td>One-to-Many</td><td>❌ No</td><td>❌ No</td><td>❌ No</td></tr>
+          <tr><td>Publish/Async Responses</td><td>One-to-Many</td><td>❌ No</td><td>❌ No</td><td>✅ Yes (collect)</td></tr>
+        </table>
+      </div>
+
+      <h2>Message Broker Selection Factors</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>#</th><th>Factor</th><th>What to Check</th></tr>
+          <tr><td>1</td><td>Programming Languages</td><td>Supports your language ecosystem</td></tr>
+          <tr><td>2</td><td>Messaging Standards</td><td>AMQP, STOMP, or proprietary?</td></tr>
+          <tr><td>3</td><td>Message Ordering</td><td>Preserves order?</td></tr>
+          <tr><td>4</td><td>Delivery Guarantees</td><td>At-most-once, at-least-once, exactly-once?</td></tr>
+          <tr><td>5</td><td>Persistence</td><td>Survives broker crashes?</td></tr>
+          <tr><td>6</td><td>Durability</td><td>Gets messages sent while disconnected?</td></tr>
+          <tr><td>7</td><td>Scalability</td><td>Handles growing load?</td></tr>
+          <tr><td>8</td><td>Latency</td><td>End-to-end delay?</td></tr>
+          <tr><td>9</td><td>Competing Consumers</td><td>Multiple consumers on same channel?</td></tr>
+        </table>
+      </div>
+
+      <h2>NoSQL Decision Guide</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Need</th><th>Use</th><th>DB</th></tr>
+          <tr><td>Flexible schema, web content, real-time analytics</td><td>Document</td><td>MongoDB</td></tr>
+          <tr><td>Heavy writes, high performance, OLAP, large scale</td><td>Column</td><td>Cassandra</td></tr>
+          <tr><td>Sessions, preferences, fast read/write, simple lookups</td><td>Key-Value</td><td>Redis</td></tr>
+          <tr><td>Social networks, fraud detection, recommendations</td><td>Graph</td><td>Neo4j</td></tr>
+          <tr><td>Text search</td><td>Search engine</td><td>ElasticSearch</td></tr>
+        </table>
+      </div>
+
+      <h2>Data Management Patterns Summary</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Pattern</th><th>Purpose</th><th>Key Point</th></tr>
+          <tr><td>Database per Service</td><td>Isolate data per service</td><td>Private DB, API-only access</td></tr>
+          <tr><td>Shared Database</td><td>Simplicity for small teams</td><td>ACID easy, coupling risk</td></tr>
+          <tr><td>SAGA</td><td>Cross-service transactions</td><td>Sequence of local transactions</td></tr>
+          <tr><td>CQRS</td><td>Efficient queries</td><td>Materialized views</td></tr>
+          <tr><td>Event Sourcing</td><td>Audit trail, replayability</td><td>Store events not state</td></tr>
+          <tr><td>Domain Event</td><td>Notify on data changes</td><td>Publish event when data changes</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>IS352 · Microservices Exam Engine · Dr. Wael Abbas · 2023-2024</footer>
+
+<script>
+  // ── SECTION TOGGLE ──
+  function toggleSection(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.classList.toggle('open', !isOpen);
+  }
+
+  // Init: set display based on open class
+  document.querySelectorAll('.section-body').forEach(b => {
+    b.style.display = b.classList.contains('open') ? 'block' : 'none';
+    const ch = b.previousElementSibling.querySelector('.chevron');
+    if (b.classList.contains('open')) ch.classList.add('open');
+  });
+
+  // ── TOGGLE ALL ──
+  function toggleAll(open) {
+    document.querySelectorAll('.section-body').forEach(b => {
+      b.classList.toggle('open', open);
+      b.style.display = open ? 'block' : 'none';
+      const ch = b.previousElementSibling.querySelector('.chevron');
+      ch.classList.toggle('open', open);
+    });
+  }
+
+  // ── MODES ──
+  let currentMode = null;
+  function toggleMode(mode) {
+    if (currentMode === mode) {
+      document.body.classList.remove('exam-mode', 'revision-mode');
+      document.getElementById('examBtn').classList.remove('active');
+      document.getElementById('revBtn').classList.remove('active');
+      currentMode = null;
+    } else {
+      document.body.classList.remove('exam-mode', 'revision-mode');
+      document.body.classList.add(mode + '-mode');
+      document.getElementById('examBtn').classList.toggle('active', mode === 'exam');
+      document.getElementById('revBtn').classList.toggle('active', mode === 'revision');
+      currentMode = mode;
+    }
+  }
+
+  // ── THEME ──
+  function toggleTheme() {
+    document.documentElement.classList.toggle('light-mode');
+    document.getElementById('themeBtn').textContent = document.documentElement.classList.contains('light-mode') ? '🌙' : '☀️';
+  }
+
+  // ── MCQ ──
+  let score = 0, answered = new Set();
+  document.getElementById('total-q').textContent = document.querySelectorAll('.mcq').length;
+
+  function checkAnswer(opt, isCorrect) {
+    const mcq = opt.closest('.mcq');
+    if (mcq.dataset.answered) return;
+    mcq.dataset.answered = true;
+    const idx = [...document.querySelectorAll('.mcq')].indexOf(mcq);
+    if (!answered.has(idx)) {
+      answered.add(idx);
+      if (isCorrect) { score++; document.getElementById('score').textContent = score; }
+    }
+    mcq.querySelectorAll('.mcq-opt').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o === opt && isCorrect) o.classList.add('correct');
+      else if (o === opt && !isCorrect) o.classList.add('wrong');
+    });
+    // Find correct option
+    mcq.querySelectorAll('.mcq-opt').forEach(o => {
+      if (o.onclick.toString().includes('true') && o !== opt) o.classList.add('correct');
+    });
+    mcq.querySelector('.mcq-explain').classList.add('show');
+  }
+
+  // ── SEARCH ──
+  function doSearch(query) {
+    const q = query.toLowerCase().trim();
+    // Remove old highlights
+    document.querySelectorAll('.search-highlight').forEach(el => {
+      el.outerHTML = el.innerHTML;
+    });
+    if (!q) {
+      document.querySelectorAll('.section-card').forEach(c => c.classList.remove('hidden-search'));
+      return;
+    }
+    document.querySelectorAll('.section-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.classList.toggle('hidden-search', !text.includes(q));
+    });
+  }
+
+  // ── PROGRESS BAR ──
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  });
+</script>
+</body>
+</html>
