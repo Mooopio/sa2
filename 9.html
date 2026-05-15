@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS352 — Messaging Patterns | Exam Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f97316;
+    --accent3: #22d3ee;
+    --accent4: #4ade80;
+    --text: #e8e8f0;
+    --text-muted: #8888aa;
+    --text-dim: #55556a;
+    --tag-bg: #1e1e2e;
+    --correct: #166534;
+    --correct-text: #4ade80;
+    --wrong: #7f1d1d;
+    --wrong-text: #f87171;
+    --highlight: rgba(124,106,247,0.15);
+    --shadow: 0 4px 40px rgba(0,0,0,0.5);
+  }
+  [data-theme="light"] {
+    --bg: #f4f4f8;
+    --surface: #ffffff;
+    --surface2: #eeeef6;
+    --border: #d0d0e0;
+    --accent: #5b4fcf;
+    --accent2: #ea6a0a;
+    --accent3: #0891b2;
+    --accent4: #16a34a;
+    --text: #1a1a2e;
+    --text-muted: #555570;
+    --text-dim: #9999b0;
+    --tag-bg: #e8e8f6;
+    --correct: #dcfce7;
+    --correct-text: #166534;
+    --wrong: #fee2e2;
+    --wrong-text: #991b1b;
+    --highlight: rgba(91,79,207,0.08);
+    --shadow: 0 4px 40px rgba(0,0,0,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    height: 64px;
+    box-shadow: var(--shadow);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.05rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--text-muted); font-weight: 400; }
+  nav { display: flex; gap: 0.3rem; flex-wrap: wrap; flex: 1; }
+  nav button {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  nav button:hover { color: var(--text); border-color: var(--border); }
+  nav button.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .theme-btn {
+    margin-left: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Syne', sans-serif;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .theme-btn:hover { border-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  .section { display: none; animation: fadeUp 0.35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--accent);
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--accent3);
+    margin: 1.5rem 0 0.6rem;
+  }
+  h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--accent2);
+    margin: 1.2rem 0 0.4rem;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  p { margin-bottom: 0.9rem; color: var(--text); }
+  strong { color: var(--accent); font-weight: 600; }
+  em { color: var(--accent2); font-style: italic; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--surface2);
+    color: var(--accent3);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.2rem;
+    box-shadow: var(--shadow);
+  }
+  .card-accent { border-left: 4px solid var(--accent); }
+  .card-orange { border-left: 4px solid var(--accent2); }
+  .card-cyan   { border-left: 4px solid var(--accent3); }
+  .card-green  { border-left: 4px solid var(--accent4); }
+
+  /* ── BADGES / TAGS ── */
+  .tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-right: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+  .tag-purple { background: rgba(124,106,247,0.2); color: var(--accent); }
+  .tag-orange { background: rgba(249,115,22,0.2); color: var(--accent2); }
+  .tag-cyan   { background: rgba(34,211,238,0.2); color: var(--accent3); }
+  .tag-green  { background: rgba(74,222,128,0.2); color: var(--accent4); }
+  .tag-red    { background: rgba(248,113,113,0.2); color: #f87171; }
+
+  /* ── LISTS ── */
+  ul, ol { padding-left: 1.5rem; margin-bottom: 0.9rem; }
+  li { margin-bottom: 0.4rem; }
+  ul li::marker { color: var(--accent); }
+  ol li::marker { color: var(--accent2); font-weight: 700; }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(124,106,247,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-meta {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem; font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .hero p { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin-top: 0.5rem; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead { background: var(--surface2); }
+  th {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--accent);
+    padding: 0.75rem 1rem; text-align: left;
+  }
+  td { padding: 0.65rem 1rem; border-top: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: var(--highlight); }
+
+  /* ── ACCORDION ── */
+  .accordion { margin-bottom: 0.8rem; }
+  .accordion-header {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .accordion-header:hover { border-color: var(--accent); background: var(--highlight); }
+  .accordion-header.open { border-color: var(--accent); border-bottom-radius: 0; background: var(--highlight); }
+  .accordion-icon { font-size: 1.1rem; transition: transform 0.3s; color: var(--accent); }
+  .accordion-header.open .accordion-icon { transform: rotate(180deg); }
+  .accordion-body {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 1.2rem 1.5rem;
+    animation: fadeUp 0.25s ease;
+  }
+  .accordion-body.open { display: block; }
+
+  /* ── MCQ ── */
+  .mcq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+  }
+  .mcq-item:hover { border-color: var(--border); }
+  .mcq-question {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .mcq-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .diff-badge {
+    float: right;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 0.15rem 0.5rem; border-radius: 4px;
+  }
+  .diff-easy   { background: rgba(74,222,128,0.2); color: var(--accent4); }
+  .diff-medium { background: rgba(249,115,22,0.2); color: var(--accent2); }
+  .diff-hard   { background: rgba(248,113,113,0.2); color: #f87171; }
+
+  .mcq-options { list-style: none; padding: 0; }
+  .mcq-options li {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.45rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.9rem;
+  }
+  .mcq-options li:hover { border-color: var(--accent); background: var(--highlight); }
+  .mcq-options li.correct { background: var(--correct); border-color: var(--correct-text); color: var(--correct-text); }
+  .mcq-options li.wrong   { background: var(--wrong);   border-color: var(--wrong-text);   color: var(--wrong-text); }
+  .mcq-options li.disabled { pointer-events: none; }
+
+  .mcq-explanation {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .mcq-explanation.show { display: block; animation: fadeUp 0.2s ease; }
+  .mcq-explanation strong { color: var(--accent4); }
+
+  .mcq-score-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+  }
+  .score-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--accent);
+  }
+  .score-label { color: var(--text-muted); font-size: 0.9rem; }
+  .reset-btn {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .reset-btn:hover { opacity: 0.85; }
+
+  /* ── WRITTEN Q ── */
+  .written-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .written-q {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.95rem;
+    color: var(--text); margin-bottom: 1rem;
+  }
+  .model-answer {
+    display: none;
+    background: var(--surface2);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.2rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    margin-top: 0.5rem;
+  }
+  .model-answer.show { display: block; animation: fadeUp 0.25s ease; }
+  .model-answer h5 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+  }
+  .show-answer-btn {
+    background: transparent;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .show-answer-btn:hover { background: rgba(249,115,22,0.1); }
+
+  /* ── REVISION SHEET ── */
+  .rev-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .rev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .rev-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .rev-card.rv-purple::before { background: var(--accent); }
+  .rev-card.rv-orange::before { background: var(--accent2); }
+  .rev-card.rv-cyan::before   { background: var(--accent3); }
+  .rev-card.rv-green::before  { background: var(--accent4); }
+  .rev-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 0.7rem;
+  }
+  .rv-purple .rev-title { color: var(--accent); }
+  .rv-orange .rev-title { color: var(--accent2); }
+  .rv-cyan   .rev-title { color: var(--accent3); }
+  .rv-green  .rev-title { color: var(--accent4); }
+  .rev-card ul { padding-left: 1.2rem; font-size: 0.85rem; }
+  .rev-card li { margin-bottom: 0.25rem; color: var(--text-muted); }
+  .rev-card li strong { color: var(--text); }
+
+  /* ── MNEMONIC BOX ── */
+  .mnemonic {
+    background: linear-gradient(135deg, rgba(124,106,247,0.1), rgba(34,211,238,0.05));
+    border: 1px dashed var(--accent);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+  }
+  .mnemonic-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .callout-warn {
+    background: rgba(249,115,22,0.1);
+    border-left: 4px solid var(--accent2);
+    color: var(--text);
+  }
+  .callout-info {
+    background: rgba(34,211,238,0.07);
+    border-left: 4px solid var(--accent3);
+    color: var(--text);
+  }
+  .callout-success {
+    background: rgba(74,222,128,0.08);
+    border-left: 4px solid var(--accent4);
+    color: var(--text);
+  }
+  .callout strong { display: block; margin-bottom: 0.3rem; font-family: 'Syne', sans-serif; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  .callout-warn strong { color: var(--accent2); }
+  .callout-info strong { color: var(--accent3); }
+  .callout-success strong { color: var(--accent4); }
+
+  /* ── PROGRESS ── */
+  progress-bar { display: none; }
+
+  /* ── FOOTER ── */
+  .section-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    header { padding: 0 1rem; gap: 0.8rem; height: auto; padding: 0.7rem 1rem; flex-wrap: wrap; }
+    nav { order: 3; width: 100%; }
+    .logo { font-size: 0.9rem; }
+    main { padding: 2rem 1rem 4rem; }
+    .hero { padding: 1.5rem; }
+    .card { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS352 <span>/ Lecture 9</span></div>
+  <nav>
+    <button class="active" onclick="showSection('explain')">📖 Explanation</button>
+    <button onclick="showSection('summary')">📋 Summary</button>
+    <button onclick="showSection('memory')">🧠 Memory</button>
+    <button onclick="showSection('mcq')">❓ MCQs</button>
+    <button onclick="showSection('written')">✍️ Written</button>
+    <button onclick="showSection('revision')">⚡ Revision</button>
+  </nav>
+  <button class="theme-btn" onclick="toggleTheme()">☀️ Light</button>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — EXPLANATION
+══════════════════════════════════════════════ -->
+<div class="section active" id="explain">
+  <div class="hero">
+    <div class="hero-meta">IS352 · System Analysis & Design · Lecture 9</div>
+    <h1>Microservices<br>Messaging Patterns</h1>
+    <p>A complete deep-dive into asynchronous communication, message formats, channel types, interaction styles, and broker architectures. Optimized for exam success.</p>
+  </div>
+
+  <h2>1. What is Asynchronous Messaging?</h2>
+  <div class="card card-accent">
+    <p><strong>Core Idea:</strong> Instead of one service calling another directly and waiting for a reply (synchronous), asynchronous messaging uses <strong>channels</strong> as intermediaries. A sender drops a message into a channel and moves on — it does not block and wait.</p>
+    <p><em>Real-world analogy:</em> Think of it like email. When you send an email, you don't stand still waiting for a reply. You continue with your day. The receiver reads it when they're available and responds when ready. That's asynchronous messaging.</p>
+  </div>
+
+  <h3>Message Structure</h3>
+  <p>Every message has two parts:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Part</th><th>What It Contains</th><th>Analogy</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Header</strong></td><td>Metadata — name-value pairs (e.g. correlation ID, reply channel, timestamp)</td><td>The envelope of a letter</td></tr>
+        <tr><td><strong>Body</strong></td><td>Actual data payload — text or binary format</td><td>The letter inside the envelope</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2. Types of Messages</h2>
+  <div class="card card-cyan">
+    <h4>1. Document Message</h4>
+    <p>A generic message containing only data. <strong>The receiver decides how to interpret it.</strong> A reply to a command is typically a document message.</p>
+    <p><em>Analogy:</em> A report handed to a manager — it contains information, and the manager decides what to do with it.</p>
+  </div>
+  <div class="card card-orange">
+    <h4>2. Command Message</h4>
+    <p>Equivalent to an RPC (Remote Procedure Call) request. <strong>It specifies the operation to invoke and its parameters.</strong> It tells the receiver what to do.</p>
+    <p><em>Analogy:</em> A work order — "Please process this refund for customer #1234."</p>
+  </div>
+  <div class="card card-green">
+    <h4>3. Event Message</h4>
+    <p>Indicates that <strong>something notable has occurred</strong> in the sender. Often a <em>domain event</em> representing a state change (e.g., Order placed, Customer registered).</p>
+    <p><em>Analogy:</em> A news broadcast — "Something happened, in case you care." Listeners who are interested react; others ignore it.</p>
+  </div>
+
+  <h2>3. Message Formats</h2>
+  <p>Choosing the right format affects performance, readability, and compatibility.</p>
+
+  <div class="accordion">
+    <button class="accordion-header" onclick="toggleAccordion(this)">
+      📄 Text-Based Formats (JSON, XML)
+      <span class="accordion-icon">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p><strong>Advantages:</strong></p>
+      <ul>
+        <li>Human-readable — easy to debug and inspect</li>
+        <li>Self-describing — field names are included in the message</li>
+        <li>Widely supported across all programming languages</li>
+      </ul>
+      <p><strong>Disadvantages:</strong></p>
+      <ul>
+        <li><strong>Overhead from attribute names:</strong> Every field name is repeated in every message (e.g., <code>"orderId": 123</code> — the key "orderId" takes space)</li>
+        <li><strong>Parsing overhead:</strong> Converting text to objects is CPU-intensive, especially for large messages</li>
+      </ul>
+      <div class="callout callout-warn">
+        <strong>⚠ Exam Trap</strong>
+        The "self-describing" advantage is the flip side of the "overhead" disadvantage. The same property (field names in the message) is both an advantage AND a disadvantage.
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-header" onclick="toggleAccordion(this)">
+      ⚡ Binary Formats (Protocol Buffers, Avro)
+      <span class="accordion-icon">▼</span>
+    </button>
+    <div class="accordion-body">
+      <p>Binary formats organize the bit stream around data structures, not characters. Field names are NOT included in the message — they're encoded as numbers.</p>
+      <ul>
+        <li><strong>More compact</strong> — saves bandwidth</li>
+        <li><strong>Faster to parse</strong> — no text conversion needed</li>
+        <li>NOT human-readable — harder to debug</li>
+        <li>Require a schema to interpret</li>
+      </ul>
+      <div class="callout callout-info">
+        <strong>💡 When to choose binary?</strong>
+        When efficiency and performance are critical — high-frequency trading, IoT data streams, inter-datacenter communication.
+      </div>
+    </div>
+  </div>
+
+  <h2>4. Types of Channels</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Channel Type</th><th>Delivery</th><th>Interaction Style</th><th>Example Use</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Point-to-Point</strong></td>
+          <td>Exactly one consumer</td>
+          <td>One-to-one</td>
+          <td>Send a command to a specific service</td>
+        </tr>
+        <tr>
+          <td><strong>Publish-Subscribe</strong></td>
+          <td>All attached consumers</td>
+          <td>One-to-many</td>
+          <td>Broadcasting an event (OrderPlaced)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p><em>Point-to-Point analogy:</em> A direct phone call to one person.</p>
+  <p><em>Pub/Sub analogy:</em> A radio broadcast — everyone tuned to that station hears the same message.</p>
+
+  <h2>5. Interaction Styles Using Messaging</h2>
+
+  <h3>① Asynchronous Request/Response</h3>
+  <div class="card card-accent">
+    <p>The client and service exchange a <strong>pair of messages</strong>:</p>
+    <ol>
+      <li>Client sends a <strong>command message</strong> to a <em>point-to-point channel</em> owned by the service. The command includes a <strong>reply channel header</strong> (where to send the reply).</li>
+      <li>Service processes the request and sends a <strong>reply message</strong> to the client's reply channel, including a <strong>correlation ID</strong> matching the original message ID.</li>
+      <li>Client uses the <strong>correlation ID</strong> to match the reply with the original request.</li>
+    </ol>
+    <div class="callout callout-info">
+      <strong>🔑 Key Fields to Remember</strong>
+      <strong>Reply Channel Header</strong> — tells the service where to send the reply.<br>
+      <strong>Correlation ID</strong> — links the reply to the original request (same value as the message identifier).
+    </div>
+  </div>
+
+  <h3>② One-Way Notification</h3>
+  <div class="card card-orange">
+    <p>The simplest pattern. Client sends a <strong>command message</strong> to a point-to-point channel. The service processes it and <strong>sends NO reply</strong>.</p>
+    <p><em>Example:</em> Sending a "send welcome email" notification — you don't need a reply confirming the email was sent.</p>
+  </div>
+
+  <h3>③ Publish/Subscribe</h3>
+  <div class="card card-cyan">
+    <p>A client publishes a message to a <strong>publish-subscribe channel</strong>. Multiple consumers are subscribed and each receives the message independently.</p>
+    <p><em>Example:</em> The Order Service publishes <code>OrderPlaced</code> events to an Order channel. The Delivery Service, Inventory Service, and Notification Service all subscribe and react independently.</p>
+  </div>
+
+  <h3>④ Publish/Async Responses (Hybrid)</h3>
+  <div class="card card-green">
+    <p>A higher-level pattern combining pub/sub + request/response:</p>
+    <ol>
+      <li>Client publishes to a pub/sub channel with a <strong>reply channel header</strong></li>
+      <li>Multiple consumers process and each writes a <strong>reply message with a correlation ID</strong> to the reply channel</li>
+      <li>Client collects all replies using the correlation ID</li>
+    </ol>
+    <p><em>Use case:</em> Asking multiple services for quotes, waiting for all responses (e.g., flight booking aggregators).</p>
+  </div>
+
+  <h2>6. Message Broker Architectures</h2>
+
+  <h3>Brokerless Messaging</h3>
+  <div class="card card-orange">
+    <p>Services communicate <strong>directly</strong> with each other — no intermediary.</p>
+    <p><strong>Technology:</strong> <em>ZeroMQ</em> — supports TCP, UNIX-style domain sockets, multicast.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Advantages</th><th>Disadvantages</th></tr></thead>
+        <tbody>
+          <tr><td>Lower latency (no broker hop)</td><td>Services must know each other's network locations (discovery needed)</td></tr>
+          <tr><td>No broker = no single point of failure</td><td>Reduced availability (both sender AND receiver must be up)</td></tr>
+          <tr><td>Less operational complexity</td><td>Guaranteed delivery is harder to implement</td></tr>
+          <tr><td>Lighter network traffic</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Broker-Based Messaging</h3>
+  <div class="card card-accent">
+    <p>All messages flow through an <strong>intermediary message broker</strong>. The sender writes to the broker; the broker delivers to the receiver.</p>
+    <p><strong>Key benefits:</strong></p>
+    <ul>
+      <li><strong>Location transparency:</strong> Sender doesn't need to know the consumer's network location</li>
+      <li><strong>Message buffering:</strong> Broker stores messages until the consumer is ready to process them (improves availability)</li>
+    </ul>
+    <p><strong>Popular brokers:</strong> ActiveMQ, RabbitMQ, Apache Kafka, AWS Kinesis, AWS SQS</p>
+  </div>
+
+  <h2>7. Choosing a Message Broker — 8 Factors</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Factor</th><th>What to Consider</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Programming Languages</strong></td><td>Does it support many languages?</td></tr>
+        <tr><td>2</td><td><strong>Messaging Standards</strong></td><td>AMQP, STOMP, or proprietary?</td></tr>
+        <tr><td>3</td><td><strong>Message Ordering</strong></td><td>Does it preserve the order of messages?</td></tr>
+        <tr><td>4</td><td><strong>Delivery Guarantees</strong></td><td>At-most-once, at-least-once, exactly-once?</td></tr>
+        <tr><td>5</td><td><strong>Persistence</strong></td><td>Survives broker crashes? Written to disk?</td></tr>
+        <tr><td>6</td><td><strong>Durability</strong></td><td>Gets missed messages after reconnection?</td></tr>
+        <tr><td>7</td><td><strong>Scalability</strong></td><td>Can handle high message volumes?</td></tr>
+        <tr><td>8</td><td><strong>Latency</strong></td><td>End-to-end message delay?</td></tr>
+        <tr><td>+</td><td><strong>Competing Consumers</strong></td><td>Supports multiple consumers on one channel?</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-warn">
+    <strong>⚠ Trade-off Reality</strong>
+    Low-latency brokers often sacrifice ordering guarantees and persistence. High-reliability brokers (guaranteed delivery, disk persistence) usually have higher latency. There is no "best" broker — it depends on your application's requirements.
+  </div>
+
+  <h2>8. Benefits & Drawbacks of Messaging Pattern</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Benefits ✅</th><th>Drawbacks ❌</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Loose runtime coupling</strong> — sender doesn't know the consumer</td><td><strong>Potential performance bottleneck</strong> — broker may become overwhelmed</td></tr>
+        <tr><td><strong>Improved availability</strong> — broker buffers messages while consumer is down</td><td><strong>Potential single point of failure</strong> — broker must be highly available</td></tr>
+        <tr><td><strong>Flexible communication</strong> — supports all interaction styles</td><td><strong>Additional operational complexity</strong> — broker must be installed, configured, maintained</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-footer">IS352 Lecture 9 · Messaging Patterns · Dr. Wael Abbas · 2022–2023</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — SUMMARY
+══════════════════════════════════════════════ -->
+<div class="section" id="summary">
+  <div class="hero">
+    <div class="hero-meta">Phase 2 · Smart Summary</div>
+    <h1>High-Yield Summary</h1>
+    <p>Hierarchical bullet-point summary — every exam-relevant point, organized for rapid absorption.</p>
+  </div>
+
+  <h2>🔷 Asynchronous Messaging Fundamentals</h2>
+  <div class="card card-accent">
+    <ul>
+      <li>Messages exchanged over <strong>channels</strong>; sender writes, receiver reads — no blocking</li>
+      <li>Message = <strong>Header</strong> (metadata/name-value pairs) + <strong>Body</strong> (data: text or binary)</li>
+    </ul>
+    <p><strong>3 Message Types:</strong></p>
+    <ul>
+      <li><strong>Document</strong> — generic data; receiver interprets; used for replies</li>
+      <li><strong>Command</strong> — like RPC; specifies operation + parameters</li>
+      <li><strong>Event</strong> — something notable happened; often a domain event (state change)</li>
+    </ul>
+  </div>
+
+  <h2>🔷 Message Formats</h2>
+  <div class="card card-cyan">
+    <ul>
+      <li><strong>Text (JSON/XML):</strong> Human-readable, self-describing | Disadvantages: attribute name overhead, parsing cost</li>
+      <li><strong>Binary (Protocol Buffers, Avro):</strong> Compact, fast | Disadvantages: not human-readable, requires schema</li>
+      <li>Use binary when <strong>efficiency and performance are critical</strong></li>
+    </ul>
+  </div>
+
+  <h2>🔷 Channel Types</h2>
+  <div class="card card-orange">
+    <ul>
+      <li><strong>Point-to-Point</strong> → exactly one consumer → one-to-one interaction</li>
+      <li><strong>Publish-Subscribe</strong> → all attached consumers → one-to-many interaction</li>
+    </ul>
+  </div>
+
+  <h2>🔷 4 Interaction Styles</h2>
+  <div class="card card-green">
+    <ol>
+      <li><strong>Async Request/Response</strong> — command message + reply channel header → reply with correlation ID → client matches by correlation ID</li>
+      <li><strong>One-Way Notification</strong> — command message → point-to-point channel → no reply sent</li>
+      <li><strong>Publish/Subscribe</strong> — event to pub/sub channel → all subscribers react</li>
+      <li><strong>Publish/Async Responses</strong> — pub/sub + reply channel header → multiple replies collected via correlation ID</li>
+    </ol>
+  </div>
+
+  <h2>🔷 Broker Architectures</h2>
+  <div class="card card-accent">
+    <p><strong>Brokerless (e.g., ZeroMQ):</strong></p>
+    <ul>
+      <li>✅ Lower latency, no bottleneck, less complexity</li>
+      <li>❌ Must know locations, both must be up, hard to guarantee delivery</li>
+    </ul>
+    <p><strong>Broker-Based (e.g., Kafka, RabbitMQ):</strong></p>
+    <ul>
+      <li>✅ Location transparency, message buffering, flexible</li>
+      <li>❌ Possible bottleneck, possible SPOF, operational complexity</li>
+    </ul>
+  </div>
+
+  <h2>🔷 Broker Selection Factors (9)</h2>
+  <div class="card card-cyan">
+    <ul>
+      <li>Programming language support</li>
+      <li>Messaging standards (AMQP, STOMP)</li>
+      <li>Message ordering</li>
+      <li>Delivery guarantees</li>
+      <li>Persistence (disk survival)</li>
+      <li>Durability (missed messages after reconnect)</li>
+      <li>Scalability</li>
+      <li>Latency</li>
+      <li>Competing consumers support</li>
+    </ul>
+  </div>
+
+  <h2>🔷 Messaging Pattern: Benefits vs Drawbacks</h2>
+  <div class="card card-orange">
+    <p><strong>Benefits:</strong> Loose coupling · Improved availability · Flexible communication</p>
+    <p><strong>Drawbacks:</strong> Performance bottleneck risk · Single point of failure risk · Operational complexity</p>
+  </div>
+
+  <h2>🔷 Data Management Patterns (Brief)</h2>
+  <div class="card card-green">
+    <ul>
+      <li><strong>Database per service</strong> — each service has its own DB</li>
+      <li><strong>Shared database</strong> — services share a DB</li>
+      <li><strong>SAGA</strong> — sequence of local transactions for cross-service consistency</li>
+      <li><strong>CQRS</strong> — materialized views for efficient queries</li>
+      <li><strong>Event sourcing</strong> — persist aggregates as sequence of events</li>
+      <li><strong>Domain event</strong> — publish event whenever data changes</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — MEMORY
+══════════════════════════════════════════════ -->
+<div class="section" id="memory">
+  <div class="hero">
+    <div class="hero-meta">Phase 3 · Memory Optimization</div>
+    <h1>Memory Techniques</h1>
+    <p>Mnemonics, chunking, comparison tables, common traps — designed for long-term retention.</p>
+  </div>
+
+  <h2>🔡 Mnemonics</h2>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Mnemonic — 3 Message Types</div>
+    <strong>D.C.E — "Don't Confuse Events"</strong><br><br>
+    <strong>D</strong>ocument — Data, receiver Decides<br>
+    <strong>C</strong>ommand — like a Call (RPC), tells service what to Do<br>
+    <strong>E</strong>vent — something hEmerged / happEnEd
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Mnemonic — 9 Broker Factors</div>
+    <strong>"PSLDDPCOS"</strong> → <strong>"Please Select Large Data, Don't Pick Crappy Old Systems"</strong><br><br>
+    <strong>P</strong>rogramming languages · <strong>S</strong>tandards · <strong>L</strong>atency · <strong>D</strong>elivery guarantees · <strong>D</strong>urability · <strong>P</strong>ersistence · <strong>C</strong>ompeting consumers · <strong>O</strong>rdering · <strong>S</strong>calability
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Mnemonic — 4 Interaction Styles</div>
+    <strong>"AOPA" — like airplane certification</strong><br><br>
+    <strong>A</strong>sync Request/Response<br>
+    <strong>O</strong>ne-way Notification<br>
+    <strong>P</strong>ublish/Subscribe<br>
+    <strong>A</strong>sync Publish/Responses
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Mnemonic — Messaging Benefits</div>
+    <strong>"LIF" — Like a Life Vest</strong><br><br>
+    <strong>L</strong>oose coupling · <strong>I</strong>mproved availability · <strong>F</strong>lexible communication
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Mnemonic — Messaging Drawbacks</div>
+    <strong>"PSO" — "Pretty Serious Overhead"</strong><br><br>
+    <strong>P</strong>erformance bottleneck risk · <strong>S</strong>ingle point of failure risk · <strong>O</strong>perational complexity
+  </div>
+
+  <h2>📊 Comparison Tables</h2>
+
+  <h3>Brokerless vs Broker-Based</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dimension</th><th>Brokerless</th><th>Broker-Based</th></tr></thead>
+      <tbody>
+        <tr><td>Latency</td><td>✅ Lower</td><td>❌ Higher (extra hop)</td></tr>
+        <tr><td>Availability</td><td>❌ Both must be up</td><td>✅ Broker buffers messages</td></tr>
+        <tr><td>Location Discovery</td><td>❌ Services must know each other</td><td>✅ Sender doesn't need consumer location</td></tr>
+        <tr><td>Single Point of Failure</td><td>✅ None</td><td>❌ Broker can fail</td></tr>
+        <tr><td>Operational Complexity</td><td>✅ Less</td><td>❌ More</td></tr>
+        <tr><td>Guaranteed Delivery</td><td>❌ Hard to implement</td><td>✅ Broker handles it</td></tr>
+        <tr><td>Example Technology</td><td>ZeroMQ</td><td>Kafka, RabbitMQ, ActiveMQ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Text vs Binary Formats</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dimension</th><th>Text (JSON/XML)</th><th>Binary (Protobuf/Avro)</th></tr></thead>
+      <tbody>
+        <tr><td>Human-readable</td><td>✅ Yes</td><td>❌ No</td></tr>
+        <tr><td>Self-describing</td><td>✅ Yes</td><td>❌ Requires schema</td></tr>
+        <tr><td>Message size</td><td>❌ Larger (field names included)</td><td>✅ Compact</td></tr>
+        <tr><td>Parse speed</td><td>❌ Slower</td><td>✅ Faster</td></tr>
+        <tr><td>Bandwidth usage</td><td>❌ Higher</td><td>✅ Lower</td></tr>
+        <tr><td>Best for</td><td>Debugging, general use</td><td>High-performance systems</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Point-to-Point vs Publish-Subscribe</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dimension</th><th>Point-to-Point</th><th>Publish-Subscribe</th></tr></thead>
+      <tbody>
+        <tr><td>Receivers</td><td>Exactly one</td><td>All subscribers</td></tr>
+        <tr><td>Style</td><td>One-to-one</td><td>One-to-many</td></tr>
+        <tr><td>Typical message type</td><td>Command</td><td>Event</td></tr>
+        <tr><td>Example</td><td>Send order to Payment Service</td><td>Broadcast OrderPlaced event</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚠️ Common Exam Traps</h2>
+  <div class="card card-orange">
+    <h4>Trap 1: Correlation ID vs Reply Channel</h4>
+    <p>These are two different things. The <strong>reply channel header</strong> tells the service WHERE to send the reply. The <strong>correlation ID</strong> is how the client identifies WHICH request a reply belongs to. Don't mix them up.</p>
+  </div>
+  <div class="card card-orange">
+    <h4>Trap 2: Brokerless = Better?</h4>
+    <p>NOT necessarily. Brokerless has lower latency but lower availability and no guaranteed delivery. It's a trade-off. The exam often asks you to compare — always mention both sides.</p>
+  </div>
+  <div class="card card-orange">
+    <h4>Trap 3: Self-Describing = Always Good</h4>
+    <p>Self-describing (text formats) is also the source of overhead. The same feature that makes JSON readable is what makes it larger and slower. It's simultaneously an advantage and a disadvantage.</p>
+  </div>
+  <div class="card card-orange">
+    <h4>Trap 4: "One Broker Fits All"</h4>
+    <p>The lecture explicitly states: "different parts of your application will have different messaging requirements." Never say one broker is universally best.</p>
+  </div>
+  <div class="card card-orange">
+    <h4>Trap 5: Pub/Sub vs Async Publish/Response</h4>
+    <p>Pub/Async Responses = Pub/Sub + Request/Response combined. The difference is that in Pub/Async, the publisher includes a reply channel header and collects responses via correlation ID. Pure pub/sub doesn't expect replies.</p>
+  </div>
+
+  <h2>🧩 Chunking Map</h2>
+  <div class="card card-accent">
+    <p><strong>Chunk 1 — The Message:</strong> Structure (header/body) → Types (Document, Command, Event)</p>
+    <p><strong>Chunk 2 — The Format:</strong> Text (JSON/XML) vs Binary (Protobuf/Avro)</p>
+    <p><strong>Chunk 3 — The Channel:</strong> Point-to-Point vs Publish-Subscribe</p>
+    <p><strong>Chunk 4 — The Style:</strong> 4 interaction patterns (Async Req/Res, One-Way, Pub/Sub, Pub/Async)</p>
+    <p><strong>Chunk 5 — The Infrastructure:</strong> Brokerless vs Broker-Based + 9 selection factors</p>
+    <p><strong>Chunk 6 — The Trade-offs:</strong> Benefits (LIF) vs Drawbacks (PSO)</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — MCQ
+══════════════════════════════════════════════ -->
+<div class="section" id="mcq">
+  <div class="hero">
+    <div class="hero-meta">Phase 4 · Exam Training</div>
+    <h1>MCQ Practice</h1>
+    <p>30 questions — easy, medium, and hard. Click an option to reveal the answer and explanation.</p>
+  </div>
+
+  <div class="mcq-score-bar">
+    <div>
+      <div class="score-display" id="scoreDisplay">0 / 30</div>
+      <div class="score-label">Correct answers so far</div>
+    </div>
+    <button class="reset-btn" onclick="resetMCQ()">↺ Reset All</button>
+  </div>
+
+  <div id="mcqContainer"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — WRITTEN
+══════════════════════════════════════════════ -->
+<div class="section" id="written">
+  <div class="hero">
+    <div class="hero-meta">Phase 4 · Written Questions</div>
+    <h1>Written Practice</h1>
+    <p>Short and long-form questions with model answers. Click "Show Answer" to reveal.</p>
+  </div>
+
+  <div id="writtenContainer"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 6 — REVISION
+══════════════════════════════════════════════ -->
+<div class="section" id="revision">
+  <div class="hero">
+    <div class="hero-meta">Phase 5 · Rapid Revision</div>
+    <h1>Night-Before Cheat Sheet</h1>
+    <p>Everything you need to know in one ultra-dense reference. Study this the night before the exam.</p>
+  </div>
+
+  <div class="rev-grid">
+    <div class="rev-card rv-purple">
+      <div class="rev-title">Message Structure</div>
+      <ul>
+        <li><strong>Header</strong> = metadata (name-value pairs)</li>
+        <li><strong>Body</strong> = data (text or binary)</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-cyan">
+      <div class="rev-title">3 Message Types</div>
+      <ul>
+        <li><strong>Document</strong> = generic data</li>
+        <li><strong>Command</strong> = RPC-like operation</li>
+        <li><strong>Event</strong> = state change notification</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-orange">
+      <div class="rev-title">Formats</div>
+      <ul>
+        <li><strong>Text</strong> (JSON/XML): readable, self-describing, overhead</li>
+        <li><strong>Binary</strong> (Protobuf/Avro): compact, fast, not readable</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-green">
+      <div class="rev-title">2 Channel Types</div>
+      <ul>
+        <li><strong>Point-to-Point</strong> = 1 consumer</li>
+        <li><strong>Pub-Sub</strong> = all consumers</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-purple">
+      <div class="rev-title">4 Interaction Styles</div>
+      <ul>
+        <li><strong>Async Req/Res</strong> = cmd + reply channel + corr ID</li>
+        <li><strong>One-Way</strong> = cmd, no reply</li>
+        <li><strong>Pub/Sub</strong> = event to all</li>
+        <li><strong>Pub/Async</strong> = pub/sub + collect replies</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-orange">
+      <div class="rev-title">Brokerless (ZeroMQ)</div>
+      <ul>
+        <li>✅ Low latency, no SPOF</li>
+        <li>❌ Discovery needed, both must be up</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-cyan">
+      <div class="rev-title">Broker-Based (Kafka…)</div>
+      <ul>
+        <li>✅ Location-transparent, buffers msgs</li>
+        <li>❌ Bottleneck, SPOF, complexity</li>
+        <li>Examples: ActiveMQ, RabbitMQ, Kafka</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-green">
+      <div class="rev-title">9 Broker Factors</div>
+      <ul>
+        <li>Languages · Standards · Ordering</li>
+        <li>Delivery · Persistence · Durability</li>
+        <li>Scalability · Latency · Competing consumers</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-purple">
+      <div class="rev-title">Benefits of Messaging</div>
+      <ul>
+        <li><strong>L</strong>oose coupling</li>
+        <li><strong>I</strong>mproved availability</li>
+        <li><strong>F</strong>lexible communication</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-orange">
+      <div class="rev-title">Drawbacks of Messaging</div>
+      <ul>
+        <li><strong>P</strong>erformance bottleneck</li>
+        <li><strong>S</strong>ingle point of failure</li>
+        <li><strong>O</strong>perational complexity</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-cyan">
+      <div class="rev-title">Data Mgmt Patterns</div>
+      <ul>
+        <li>DB per service · Shared DB</li>
+        <li>SAGA · CQRS</li>
+        <li>Event sourcing · Domain event</li>
+      </ul>
+    </div>
+    <div class="rev-card rv-green">
+      <div class="rev-title">Key Terms</div>
+      <ul>
+        <li><strong>Correlation ID</strong> = links reply to request</li>
+        <li><strong>Reply Channel</strong> = where to send reply</li>
+        <li><strong>Domain Event</strong> = state change of domain object</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>⚡ Critical Rules to Remember</h2>
+  <div class="card card-accent">
+    <ul>
+      <li>Command messages → <strong>Point-to-Point</strong> channels</li>
+      <li>Event messages → <strong>Publish-Subscribe</strong> channels</li>
+      <li>Async Req/Res requires: <code>reply channel header</code> + <code>correlation ID</code></li>
+      <li>Brokerless = direct; Broker-Based = through intermediary</li>
+      <li>Low-latency broker ≠ high-reliability broker (trade-off)</li>
+      <li>Binary formats = compact + fast but NOT human-readable</li>
+      <li>Self-describing = advantage AND source of overhead (text formats)</li>
+    </ul>
+  </div>
+
+  <div class="mnemonic">
+    <div class="mnemonic-label">🧠 Last-Minute Mnemonics</div>
+    Message Types: <strong>D.C.E</strong> (Document · Command · Event)<br>
+    Benefits: <strong>LIF</strong> (Loose · Improved · Flexible)<br>
+    Drawbacks: <strong>PSO</strong> (Performance · Single-POF · Operational)<br>
+    Interaction Styles: <strong>AOPA</strong> (Async · One-way · Pub/Sub · Pub/Async)
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.querySelector('.theme-btn');
+  if (html.dataset.theme === 'dark') {
+    html.dataset.theme = 'light';
+    btn.textContent = '🌙 Dark';
+  } else {
+    html.dataset.theme = 'dark';
+    btn.textContent = '☀️ Light';
+  }
+}
+
+// ── NAVIGATION ──
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── ACCORDION ──
+function toggleAccordion(btn) {
+  const body = btn.nextElementSibling;
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ── MCQ DATA ──
+const mcqs = [
+  {
+    q: "What are the two main components of a message?",
+    options: ["Sender and Receiver", "Header and Body", "Channel and Broker", "Command and Event"],
+    answer: 1, diff: "easy",
+    exp: "Every message has a <strong>Header</strong> (metadata as name-value pairs) and a <strong>Body</strong> (the actual data in text or binary format)."
+  },
+  {
+    q: "Which type of message is equivalent to an RPC request and specifies an operation with its parameters?",
+    options: ["Document message", "Event message", "Command message", "Reply message"],
+    answer: 2, diff: "easy",
+    exp: "A <strong>Command message</strong> is the messaging equivalent of an RPC request — it tells the receiver exactly what operation to invoke and includes all necessary parameters."
+  },
+  {
+    q: "A message indicating that something notable has occurred in the sender is called a:",
+    options: ["Command message", "Document message", "Event message", "Notification message"],
+    answer: 2, diff: "easy",
+    exp: "An <strong>Event message</strong> signals that something notable occurred. It's often a <em>domain event</em> representing a state change (e.g., OrderPlaced, CustomerRegistered)."
+  },
+  {
+    q: "Which message format is described as 'self-describing'?",
+    options: ["Binary formats", "Protocol Buffers", "Text-based formats (JSON, XML)", "Avro"],
+    answer: 2, diff: "easy",
+    exp: "Text-based formats like <strong>JSON and XML</strong> are self-describing because they include field names alongside their values, making them human-readable and interpretable without a separate schema."
+  },
+  {
+    q: "A channel that delivers a message to exactly ONE consumer is called:",
+    options: ["Publish-Subscribe channel", "Broadcast channel", "Point-to-Point channel", "Event channel"],
+    answer: 2, diff: "easy",
+    exp: "A <strong>Point-to-Point channel</strong> ensures exactly one consumer receives each message. It's used for one-to-one interaction styles."
+  },
+  {
+    q: "Which channel type delivers each message to ALL attached consumers?",
+    options: ["Point-to-Point channel", "Command channel", "Publish-Subscribe channel", "Request channel"],
+    answer: 2, diff: "easy",
+    exp: "A <strong>Publish-Subscribe channel</strong> delivers each message to every subscribed consumer. Event messages are typically sent over pub/sub channels."
+  },
+  {
+    q: "In asynchronous request/response messaging, what does the client include in the command message to tell the service where to send a reply?",
+    options: ["Correlation ID", "Message body", "Reply channel header", "Destination address"],
+    answer: 2, diff: "medium",
+    exp: "The client includes a <strong>reply channel header</strong> in the command message. This tells the service which channel to use when sending its reply back."
+  },
+  {
+    q: "In asynchronous request/response, what does the client use to match a reply message with its original request?",
+    options: ["The message timestamp", "The reply channel name", "The service name", "The correlation ID"],
+    answer: 3, diff: "medium",
+    exp: "The client uses the <strong>correlation ID</strong>. The service sets the correlation ID in its reply to match the identifier of the original request message, allowing the client to pair them."
+  },
+  {
+    q: "Which interaction style does NOT send any reply after processing the message?",
+    options: ["Asynchronous request/response", "One-way notification", "Publish/Subscribe", "Publish/Async responses"],
+    answer: 1, diff: "easy",
+    exp: "In <strong>one-way notification</strong>, the client sends a command message and the service processes it without sending any reply. It's the simplest interaction style."
+  },
+  {
+    q: "The Publish/Async Responses interaction style combines which two interaction styles?",
+    options: ["One-way notification and Publish/Subscribe", "Asynchronous request/response and one-way notification", "Publish/Subscribe and request/response", "Point-to-point and asynchronous messaging"],
+    answer: 2, diff: "medium",
+    exp: "Publish/Async Responses is a higher-level style that combines <strong>Publish/Subscribe</strong> (broadcasting to multiple consumers) and <strong>Request/Response</strong> (collecting replies via correlation ID)."
+  },
+  {
+    q: "Which of the following is a popular brokerless messaging technology?",
+    options: ["Apache Kafka", "RabbitMQ", "ActiveMQ", "ZeroMQ"],
+    answer: 3, diff: "easy",
+    exp: "<strong>ZeroMQ</strong> is the popular brokerless messaging technology mentioned in the lecture. It supports TCP, UNIX-style domain sockets, and multicast transports."
+  },
+  {
+    q: "Which is NOT an advantage of brokerless messaging?",
+    options: ["Lower latency", "No single point of failure", "Less operational complexity", "Simpler guaranteed delivery"],
+    answer: 3, diff: "medium",
+    exp: "Implementing <strong>guaranteed delivery is harder</strong> (a disadvantage) in brokerless messaging. The three advantages are: lower latency, no single point of failure, and less operational complexity."
+  },
+  {
+    q: "A key benefit of using a message broker is that the sender does not need to know:",
+    options: ["What data to send", "The network location of the consumer", "Which message format to use", "How many messages to send"],
+    answer: 1, diff: "medium",
+    exp: "With a message broker, the sender writes to the broker and the broker handles delivery. This provides <strong>location transparency</strong> — the sender doesn't need to know the consumer's network address."
+  },
+  {
+    q: "Which of the following is NOT listed as a popular broker-based messaging technology?",
+    options: ["Apache Kafka", "RabbitMQ", "ZeroMQ", "ActiveMQ"],
+    answer: 2, diff: "medium",
+    exp: "<strong>ZeroMQ</strong> is a <em>brokerless</em> technology, not broker-based. Kafka, RabbitMQ, and ActiveMQ are all broker-based systems. AWS Kinesis and SQS are cloud-based broker alternatives."
+  },
+  {
+    q: "Which message broker selection factor refers to whether a consumer can receive messages it missed while disconnected?",
+    options: ["Persistence", "Durability", "Delivery guarantees", "Scalability"],
+    answer: 1, diff: "hard",
+    exp: "<strong>Durability</strong> is the factor that addresses whether a consumer can receive messages sent while it was disconnected. <em>Persistence</em> is about surviving broker crashes (messages written to disk)."
+  },
+  {
+    q: "Which of the following is a disadvantage of text-based message formats?",
+    options: ["Not self-describing", "Not human-readable", "Overhead from including attribute names", "Requires a schema to decode"],
+    answer: 2, diff: "medium",
+    exp: "Text formats like JSON include the <strong>attribute names in every message</strong> (e.g., <code>'orderId': 123</code>). This creates overhead in both size and parsing. Binary formats avoid this by using numeric identifiers."
+  },
+  {
+    q: "The fact that text-based messages include field names in every message is simultaneously a(n) _____ and a(n) _____.",
+    options: ["advantage and disadvantage", "strength and weakness", "feature and bug", "all of the above"],
+    answer: 3, diff: "hard",
+    exp: "All of the above are conceptually correct. The self-describing nature (field names included) is both an <strong>advantage</strong> (human-readable, no external schema needed) and a <strong>disadvantage</strong> (creates size and parsing overhead). This trade-off is a common exam question."
+  },
+  {
+    q: "In brokerless messaging, what is a key disadvantage regarding service availability?",
+    options: ["The broker must be always online", "Both sender and receiver must be available simultaneously", "Messages are not persisted", "The broker buffers messages"],
+    answer: 1, diff: "medium",
+    exp: "In brokerless messaging, there is no intermediary to buffer messages. Therefore, <strong>both the sender and the receiver must be available at the same time</strong> for message exchange to occur — reducing availability."
+  },
+  {
+    q: "Which messaging pattern benefit directly relates to the message broker buffering messages?",
+    options: ["Loose coupling", "Improved availability", "Flexible communication", "Lower latency"],
+    answer: 1, diff: "medium",
+    exp: "<strong>Improved availability</strong> comes from the broker buffering messages. Even if the consumer is temporarily down, messages are stored in the broker and delivered when the consumer comes back online."
+  },
+  {
+    q: "A 'domain event' is best described as:",
+    options: ["A network communication protocol", "An event representing a state change of a domain object", "A command message to invoke an operation", "A binary message format"],
+    answer: 1, diff: "medium",
+    exp: "A <strong>domain event</strong> represents a state change of a domain object such as an Order or a Customer (e.g., OrderPlaced, CustomerUpdated). Domain events are typically event messages sent over pub/sub channels."
+  },
+  {
+    q: "AMQP and STOMP are examples of:",
+    options: ["Binary message formats", "Brokerless messaging technologies", "Messaging standards that brokers may support", "Types of message channels"],
+    answer: 2, diff: "medium",
+    exp: "<strong>AMQP</strong> (Advanced Message Queuing Protocol) and <strong>STOMP</strong> (Simple Text Oriented Messaging Protocol) are <em>messaging standards</em>. When selecting a broker, one factor is whether it supports these standards or uses a proprietary protocol."
+  },
+  {
+    q: "Protocol Buffers and Avro are examples of:",
+    options: ["Text-based message formats", "Message broker software", "Binary message formats", "Types of message channels"],
+    answer: 2, diff: "easy",
+    exp: "<strong>Protocol Buffers</strong> (by Google) and <strong>Avro</strong> (from Apache) are binary message formats. They organize data as bit streams around data structures rather than character sequences, making them compact and fast."
+  },
+  {
+    q: "In the asynchronous request/response pattern, the correlation ID in the reply message has the same value as:",
+    options: ["The consumer's ID", "The reply channel name", "The original message identifier", "The service endpoint URL"],
+    answer: 2, diff: "hard",
+    exp: "The service sets the <strong>correlation ID in the reply to match the message identifier of the original request</strong>. The client then uses this value to pair the reply with the corresponding request it sent."
+  },
+  {
+    q: "Which interaction style uses a pub/sub channel where subscribers DON'T need to know about each other?",
+    options: ["Asynchronous request/response", "One-way notification", "Publish/Subscribe", "Competing consumers"],
+    answer: 2, diff: "medium",
+    exp: "In <strong>Publish/Subscribe</strong>, each service only needs to subscribe to the relevant channel. The Order Service, Delivery Service, and Notification Service can all independently subscribe to the Order channel without knowing about each other."
+  },
+  {
+    q: "Which of the following is a potential disadvantage of broker-based messaging?",
+    options: ["Reduced flexibility in interaction styles", "Sender must know consumer's location", "Message broker could be a performance bottleneck", "No message buffering support"],
+    answer: 2, diff: "medium",
+    exp: "The message broker could become a <strong>performance bottleneck</strong> if message volume is very high. However, most modern brokers are designed to be highly scalable to mitigate this risk."
+  },
+  {
+    q: "The lecture states that 'different parts of your application will have different messaging requirements.' This means:",
+    options: ["One broker should be used for the entire system", "Binary formats are always better", "There is no universally best message broker", "Brokerless is always preferred"],
+    answer: 2, diff: "hard",
+    exp: "The lecture explicitly says it's even possible that different parts of an application need different brokers. This means <strong>there is no universally best broker</strong> — the choice depends on each component's specific requirements for latency, ordering, delivery guarantees, etc."
+  },
+  {
+    q: "The 'competing consumers' factor when selecting a broker refers to:",
+    options: ["Multiple senders writing to the same channel", "Whether the broker supports multiple consumers on one channel", "Consumers competing for lower latency", "Brokers competing against each other"],
+    answer: 1, diff: "hard",
+    exp: "<strong>Competing consumers</strong> is a pattern where multiple consumer instances read from the same channel to process messages in parallel, improving throughput. It's a broker feature to look for when scalability of consumption is needed."
+  },
+  {
+    q: "What is the key difference between 'persistence' and 'durability' in broker selection?",
+    options: ["They are the same thing", "Persistence = survives crashes; Durability = receives missed messages after reconnect", "Durability = survives crashes; Persistence = receives missed messages", "Neither is a real broker factor"],
+    answer: 1, diff: "hard",
+    exp: "<strong>Persistence</strong> refers to messages being written to disk so they survive broker crashes. <strong>Durability</strong> refers to a consumer receiving messages that were sent while it was disconnected. These are distinct capabilities."
+  },
+  {
+    q: "In the Publish/Async Responses pattern, how does the client collect responses from multiple consumers?",
+    options: ["By polling each consumer's endpoint", "By checking the original pub/sub channel", "Using correlation IDs to match reply messages", "Through a point-to-point command channel"],
+    answer: 2, diff: "hard",
+    exp: "The client publishes with a <strong>reply channel header</strong>, and each consumer sends a reply containing a <strong>correlation ID</strong>. The client collects and matches all reply messages using these correlation IDs."
+  },
+  {
+    q: "Which data management pattern maintains 'one or more materialized views that can be efficiently queried'?",
+    options: ["SAGA", "Event sourcing", "CQRS", "Database per service"],
+    answer: 2, diff: "hard",
+    exp: "<strong>CQRS</strong> (Command Query Responsibility Segregation) implements queries by maintaining one or more materialized views optimized for reading, separate from the write model. This allows efficient querying in microservices."
+  }
+];
+
+// ── WRITTEN QUESTIONS DATA ──
+const writtenQs = [
+  {
+    type: "short",
+    q: "Briefly explain the difference between a command message and an event message. Give one example of each.",
+    answer: `<h5>Model Answer</h5>
+<p>A <strong>command message</strong> is like an RPC request — it instructs the receiver to perform a specific operation and includes the necessary parameters. It tells the service <em>what to do</em>.<br><em>Example:</em> "PlaceOrder(customerId: 42, items: [...])"</p>
+<p>An <strong>event message</strong> announces that something notable has already happened. It does not instruct anyone to do anything — interested parties react on their own.<br><em>Example:</em> "OrderPlaced(orderId: 99, timestamp: ...)"</p>`
+  },
+  {
+    type: "short",
+    q: "What are the two disadvantages of text-based message formats? Explain why these disadvantages exist.",
+    answer: `<h5>Model Answer</h5>
+<p><strong>1. Attribute name overhead:</strong> Text formats like JSON include field names in every message (e.g., <code>"orderId": 123</code>). As message volume grows, these repeated keys add significant size.</p>
+<p><strong>2. Parsing overhead:</strong> Converting raw text characters into structured data objects requires computational work — especially problematic for large messages or high-frequency systems where performance matters.</p>
+<p>Both disadvantages exist because text formats are designed to be self-describing and human-readable, which necessarily means more bytes and more processing work compared to compact binary formats.</p>`
+  },
+  {
+    type: "short",
+    q: "What is a correlation ID and why is it needed in asynchronous request/response messaging?",
+    answer: `<h5>Model Answer</h5>
+<p>A <strong>correlation ID</strong> is a value included in a reply message that matches the identifier of the original request message.</p>
+<p>It is needed because in asynchronous messaging, a client may have sent multiple requests to a service simultaneously. When replies arrive, there is no guarantee of ordering, and the client cannot know which reply corresponds to which request without an explicit link. The correlation ID provides this link, allowing the client to correctly match each reply to its original request.</p>`
+  },
+  {
+    type: "short",
+    q: "List three advantages and three disadvantages of brokerless messaging.",
+    answer: `<h5>Model Answer</h5>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Lower latency — messages travel directly without an intermediary hop</li>
+<li>No single point of failure — no broker that can crash</li>
+<li>Less operational complexity — no broker to install, configure, or maintain</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Services must use discovery mechanisms to locate each other</li>
+<li>Reduced availability — both sender and receiver must be running simultaneously</li>
+<li>Guaranteed delivery is harder to implement without a broker</li>
+</ul>`
+  },
+  {
+    type: "long",
+    q: "Compare and contrast broker-based messaging with brokerless messaging. In your answer, discuss: (a) the key architectural difference, (b) at least 3 advantages of each, and (c) a scenario where each approach is more suitable.",
+    answer: `<h5>Model Answer</h5>
+<p><strong>(a) Architectural Difference:</strong><br>
+In <strong>brokerless messaging</strong>, services communicate directly with each other — messages travel from sender to receiver without passing through any intermediary. ZeroMQ is a popular example.<br>
+In <strong>broker-based messaging</strong>, all messages flow through a central <em>message broker</em>. The sender writes to the broker, and the broker delivers to the consumer. Examples include Apache Kafka, RabbitMQ, and ActiveMQ.</p>
+
+<p><strong>(b) Advantages:</strong><br>
+<em>Brokerless:</em>
+<ul>
+<li>Lower latency — no extra network hop through a broker</li>
+<li>No single point of failure — broker cannot crash</li>
+<li>Lighter operational footprint — no broker to manage</li>
+</ul>
+<em>Broker-Based:</em>
+<ul>
+<li>Location transparency — sender doesn't need the consumer's network address</li>
+<li>Message buffering — broker stores messages while consumer is offline, improving availability</li>
+<li>Supports guaranteed delivery and message persistence natively</li>
+</ul></p>
+
+<p><strong>(c) Suitable Scenarios:</strong><br>
+<em>Brokerless</em> is suitable for a high-frequency trading system where ultra-low latency is critical, both services are always running, and the overhead of a broker is unacceptable.<br>
+<em>Broker-Based</em> is suitable for an e-commerce order processing system where services may go offline for maintenance, message delivery must be guaranteed (no lost orders), and multiple services (inventory, payments, notifications) need to receive order events independently.</p>`
+  },
+  {
+    type: "long",
+    q: "Explain all four interaction styles that can be implemented using the messaging pattern. For each style, describe: how it works, which channel type it uses, and a practical example.",
+    answer: `<h5>Model Answer</h5>
+<p><strong>1. Asynchronous Request/Response:</strong><br>
+The client sends a <em>command message</em> to a <strong>point-to-point channel</strong> owned by the service. The message includes a <em>reply channel header</em> indicating where the service should send its response. The service processes the request and sends a <em>reply message</em> containing a <em>correlation ID</em> (equal to the original message ID) to that reply channel. The client matches replies to requests using the correlation ID.<br>
+<em>Example:</em> An Order Service sends a request to the Payment Service to process a payment. The Payment Service replies with success/failure.</p>
+
+<p><strong>2. One-Way Notification:</strong><br>
+The client sends a command message to a <strong>point-to-point channel</strong> owned by the service. The service processes the message and sends <em>no reply</em>. This is the simplest interaction style.<br>
+<em>Example:</em> An Order Service sends a "SendConfirmationEmail" notification to the Email Service. No reply is expected.</p>
+
+<p><strong>3. Publish/Subscribe:</strong><br>
+A client publishes a message (typically an event) to a <strong>publish-subscribe channel</strong>. All subscribed consumers receive a copy of the message and react independently.<br>
+<em>Example:</em> The Order Service publishes an "OrderPlaced" event. The Delivery Service, Inventory Service, and Notification Service are all subscribed and each reacts independently.</p>
+
+<p><strong>4. Publish/Async Responses:</strong><br>
+This hybrid style combines pub/sub and request/response. The client publishes a message to a <strong>pub/sub channel</strong>, including a reply channel header. Multiple consumers process the message and each sends a reply containing a correlation ID to the reply channel. The client collects all replies using correlation IDs.<br>
+<em>Example:</em> A travel booking system publishes a "SearchFlights" request. Multiple airline services respond with available flights, and the aggregator collects all responses.</p>`
+  },
+  {
+    type: "long",
+    q: "List and explain the factors to consider when selecting a message broker. Why might different parts of the same application need different brokers?",
+    answer: `<h5>Model Answer</h5>
+<p>When selecting a message broker, the following factors must be evaluated:</p>
+<ol>
+<li><strong>Programming Language Support:</strong> The broker should support the languages used in the system to ensure integration is straightforward.</li>
+<li><strong>Messaging Standards:</strong> Does the broker support open standards like AMQP or STOMP, or is it proprietary? Open standards provide vendor flexibility.</li>
+<li><strong>Message Ordering:</strong> Some applications require messages to be processed in the exact order they were sent (e.g., financial transactions).</li>
+<li><strong>Delivery Guarantees:</strong> The broker's guarantee level (at-most-once, at-least-once, exactly-once) must match the application's reliability requirements.</li>
+<li><strong>Persistence:</strong> Are messages written to disk so they survive broker crashes? Critical for financial and healthcare systems.</li>
+<li><strong>Durability:</strong> Can a consumer receive messages sent while it was temporarily disconnected?</li>
+<li><strong>Scalability:</strong> Can the broker handle the expected message volume as the system grows?</li>
+<li><strong>Latency:</strong> What is the end-to-end message delay? Critical for real-time applications.</li>
+<li><strong>Competing Consumers:</strong> Does the broker allow multiple consumer instances to read from the same channel (enabling parallel processing)?</li>
+</ol>
+<p><strong>Why different parts may need different brokers:</strong> Each factor involves trade-offs. A broker optimized for ultra-low latency may not preserve message ordering or guarantee delivery. A broker designed for guaranteed delivery with disk persistence will typically have higher latency. Therefore, a real-time analytics component might use a low-latency broker, while an order processing component uses a high-reliability, persistent broker. The lecture explicitly states: "different parts of your application will have different messaging requirements."</p>`
+  }
+];
+
+// ── RENDER MCQs ──
+let correct = 0, answered = 0;
+function renderMCQs() {
+  const container = document.getElementById('mcqContainer');
+  container.innerHTML = mcqs.map((q, i) => `
+    <div class="mcq-item" id="mcq-${i}">
+      <div class="mcq-question">
+        <span class="mcq-num">Q${String(i+1).padStart(2,'0')}</span>
+        <span class="diff-badge diff-${q.diff}">${q.diff}</span>
+        ${q.q}
+      </div>
+      <ul class="mcq-options">
+        ${q.options.map((opt, j) => `
+          <li onclick="selectOption(${i}, ${j})" id="mcq-${i}-opt-${j}">
+            <strong>${String.fromCharCode(65+j)}.</strong> ${opt}
+          </li>
+        `).join('')}
+      </ul>
+      <div class="mcq-explanation" id="mcq-${i}-exp">
+        <strong>✅ Explanation:</strong> ${q.exp}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectOption(qi, optIdx) {
+  const mcqEl = document.getElementById(`mcq-${qi}`);
+  if (mcqEl.dataset.answered) return;
+  mcqEl.dataset.answered = '1';
+  answered++;
+
+  const opts = mcqEl.querySelectorAll('.mcq-options li');
+  opts.forEach((li, i) => {
+    li.classList.add('disabled');
+    if (i === mcqs[qi].answer) li.classList.add('correct');
+    else if (i === optIdx) li.classList.add('wrong');
+  });
+
+  if (optIdx === mcqs[qi].answer) correct++;
+  document.getElementById(`mcq-${qi}-exp`).classList.add('show');
+  document.getElementById('scoreDisplay').textContent = `${correct} / ${mcqs.length}`;
+}
+
+function resetMCQ() {
+  correct = 0; answered = 0;
+  document.getElementById('scoreDisplay').textContent = `0 / ${mcqs.length}`;
+  renderMCQs();
+}
+
+// ── RENDER WRITTEN ──
+function renderWritten() {
+  const container = document.getElementById('writtenContainer');
+  container.innerHTML = writtenQs.map((wq, i) => `
+    <div class="written-item">
+      <div class="written-q">
+        <span class="tag ${wq.type === 'long' ? 'tag-orange' : 'tag-cyan'}">${wq.type === 'long' ? 'Long Answer' : 'Short Answer'}</span>
+        <br><br>
+        <strong>Q${i+1}:</strong> ${wq.q}
+      </div>
+      <button class="show-answer-btn" onclick="toggleAnswer(${i})">Show Model Answer</button>
+      <div class="model-answer" id="written-${i}">
+        ${wq.answer}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAnswer(i) {
+  const el = document.getElementById(`written-${i}`);
+  const btn = el.previousElementSibling;
+  if (el.classList.toggle('show')) {
+    btn.textContent = 'Hide Answer';
+  } else {
+    btn.textContent = 'Show Model Answer';
+  }
+}
+
+// ── INIT ──
+renderMCQs();
+renderWritten();
+</script>
+</body>
+</html>
