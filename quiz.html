@@ -1,655 +1,1222 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IS 352 - System Analysis & Design Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>IS 352 — Exam Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --border: #1e2d45;
-    --accent: #00d4ff;
-    --accent2: #7c3aed;
-    --green: #10b981;
-    --red: #ef4444;
-    --yellow: #f59e0b;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --card-glow: 0 0 30px rgba(0,212,255,0.07);
-  }
+:root {
+  --bg: #0b0d12;
+  --bg2: #111318;
+  --bg3: #171a22;
+  --surface: #1c2030;
+  --surface2: #222738;
+  --border: #2a3048;
+  --border2: #353d5a;
+  --accent: #5b8ef0;
+  --accent2: #8b5cf6;
+  --text: #e8eaf2;
+  --text2: #8a95b0;
+  --text3: #4a5270;
+  --success-bg: rgba(34,197,94,0.12);
+  --success-border: rgba(34,197,94,0.4);
+  --success-text: #4ade80;
+  --danger-bg: rgba(239,68,68,0.12);
+  --danger-border: rgba(239,68,68,0.4);
+  --danger-text: #f87171;
+  --mid-color: #f59e0b;
+  --fin-color: #38bdf8;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── HEADER ── */
+.site-header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.logo span { color: var(--text2); font-weight: 400; font-size: 0.78rem; margin-left: 6px; }
+.score-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.score-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 14px;
+  font-size: 0.8rem;
+}
+.score-pill .num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.score-pill .num.green { color: var(--success-text); }
+.score-pill .num.red { color: var(--danger-text); }
+.score-pill .lbl { color: var(--text2); font-size: 0.72rem; }
 
-  body {
-    font-family: 'Cairo', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.06) 0%, transparent 60%);
-  }
+/* ── FILTER BAR ── */
+.filter-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 8px 0;
+}
+.f-btn {
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s;
+}
+.f-btn:hover { border-color: var(--border2); color: var(--text); }
+.f-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
 
-  /* HEADER */
-  header {
-    background: linear-gradient(135deg, #0d1526 0%, #111827 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-  .header-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .header-title {
-    font-size: 1.15rem;
-    font-weight: 900;
-    color: var(--accent);
-    letter-spacing: -0.5px;
-  }
-  .header-sub {
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-weight: 400;
-  }
-  .progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .progress-bar-outer {
-    width: 140px;
-    height: 6px;
-    background: var(--border);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-    border-radius: 99px;
-    transition: width 0.4s cubic-bezier(.4,0,.2,1);
-  }
-  .progress-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-family: 'Fira Mono', monospace;
-    white-space: nowrap;
-  }
+/* ── PROGRESS ── */
+.progress-section {
+  background: var(--bg2);
+  padding: 10px 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.progress-inner { max-width: 860px; margin: 0 auto; }
+.progress-track {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-label {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
 
-  /* SCOREBOARD */
-  .scoreboard {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .score-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 0.78rem;
-    font-family: 'Fira Mono', monospace;
-  }
-  .score-chip .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-  }
-  .dot-green { background: var(--green); }
-  .dot-red { background: var(--red); }
+/* ── MAIN ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 5rem;
+}
 
-  /* MAIN */
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 28px 16px 60px;
-  }
+/* ── RESULT BANNER ── */
+.result-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: none;
+  animation: fadeUp 0.3s ease;
+}
+.result-banner.show { display: block; }
+.result-score {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.result-pct {
+  font-size: 1rem;
+  color: var(--text2);
+  margin-top: 6px;
+}
+.result-grade {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 12px;
+}
+.result-grade.a { color: var(--success-text); }
+.result-grade.b { color: var(--mid-color); }
+.result-grade.c { color: var(--danger-text); }
+.reset-btn {
+  margin-top: 1rem;
+  padding: 10px 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reset-btn:hover { background: var(--surface); border-color: var(--accent); color: var(--accent); }
 
-  /* SECTION DIVIDER */
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 36px 0 20px;
-  }
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
-  .section-tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent2);
-    background: rgba(124,58,237,0.1);
-    border: 1px solid rgba(124,58,237,0.25);
-    padding: 4px 12px;
-    border-radius: 99px;
-    white-space: nowrap;
-  }
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+  animation: fadeUp 0.25s ease both;
+}
+.q-card:hover { border-color: var(--border2); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.q-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text3);
+  font-weight: 500;
+}
+.source-badge {
+  padding: 2px 10px;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.badge-mid { background: rgba(245,158,11,0.15); color: var(--mid-color); border: 1px solid rgba(245,158,11,0.3); }
+.badge-fin { background: rgba(56,189,248,0.12); color: var(--fin-color); border: 1px solid rgba(56,189,248,0.25); }
+.q-text {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg3);
+  user-select: none;
+}
+.opt:hover:not(.locked) {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+.opt.locked { cursor: default; }
+.opt.correct {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+.opt.wrong {
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
+  opacity: 0.75;
+}
+.opt-letter {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text3);
+  min-width: 18px;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.opt-text {
+  font-size: 0.87rem;
+  color: var(--text2);
+  line-height: 1.45;
+}
+.opt.correct .opt-text,
+.opt.correct .opt-letter { color: var(--success-text); font-weight: 500; }
+.opt.wrong .opt-text,
+.opt.wrong .opt-letter { color: var(--danger-text); }
 
-  /* QUESTION CARD */
-  .q-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    box-shadow: var(--card-glow);
-    transition: border-color 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .q-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent2), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .q-card.answered::before { opacity: 1; }
-  .q-card.correct { border-color: rgba(16,185,129,0.4); }
-  .q-card.wrong { border-color: rgba(239,68,68,0.3); }
+/* ── FEEDBACK ── */
+.feedback {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  display: none;
+  border-left: 3px solid transparent;
+}
+.feedback.show { display: block; animation: fadeUp 0.2s ease; }
+.feedback.ok {
+  border-left-color: var(--success-border);
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+.feedback.bad {
+  border-left-color: var(--danger-border);
+  background: var(--danger-bg);
+  color: #fca5a5;
+}
+.feedback .fb-head {
+  font-weight: 600;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.feedback .fb-body { color: var(--text2); font-size: 0.82rem; margin-top: 4px; }
+.feedback.ok .fb-body { color: #86efac; }
 
-  .q-number {
-    font-family: 'Fira Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--accent);
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    opacity: 0.7;
-  }
-  .q-text {
-    font-size: 0.97rem;
-    font-weight: 600;
-    line-height: 1.65;
-    color: var(--text);
-    margin-bottom: 18px;
-  }
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text3);
+  font-size: 0.9rem;
+  display: none;
+}
+.empty-state.show { display: block; }
 
-  /* OPTIONS */
-  .options { display: flex; flex-direction: column; gap: 10px; }
-  .option-btn {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 13px 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: right;
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.9rem;
-    color: var(--text);
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-  .option-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    background: rgba(0,212,255,0.05);
-    transform: translateX(-2px);
-  }
-  .option-btn:disabled { cursor: default; }
-  .option-letter {
-    font-family: 'Fira Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--muted);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 2px 8px;
-    min-width: 28px;
-    text-align: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-  .option-text { flex: 1; line-height: 1.5; }
-
-  /* States */
-  .option-btn.selected-correct {
-    border-color: var(--green);
-    background: rgba(16,185,129,0.08);
-  }
-  .option-btn.selected-correct .option-letter {
-    background: var(--green);
-    color: #fff;
-    border-color: var(--green);
-  }
-  .option-btn.selected-wrong {
-    border-color: var(--red);
-    background: rgba(239,68,68,0.08);
-  }
-  .option-btn.selected-wrong .option-letter {
-    background: var(--red);
-    color: #fff;
-    border-color: var(--red);
-  }
-  .option-btn.show-correct {
-    border-color: rgba(16,185,129,0.5);
-    background: rgba(16,185,129,0.05);
-  }
-  .option-btn.show-correct .option-letter {
-    background: rgba(16,185,129,0.3);
-    color: var(--green);
-    border-color: var(--green);
-  }
-
-  /* Feedback badge */
-  .feedback-badge {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-  .feedback-badge.show { display: flex; }
-  .feedback-badge.correct-fb {
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.3);
-    color: var(--green);
-  }
-  .feedback-badge.wrong-fb {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.3);
-    color: var(--red);
-  }
-
-  /* RESULTS PANEL */
-  #results-panel {
-    display: none;
-    margin-top: 40px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 36px 28px;
-    text-align: center;
-    animation: fadeUp 0.5s ease;
-  }
-  #results-panel.show { display: block; }
-  .result-score-ring {
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: conic-gradient(var(--accent) 0%, var(--accent2) var(--pct), var(--border) var(--pct));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    position: relative;
-  }
-  .result-score-ring-inner {
-    width: 88px; height: 88px;
-    background: var(--surface);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Fira Mono', monospace;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .result-title {
-    font-size: 1.5rem;
-    font-weight: 900;
-    margin-bottom: 8px;
-  }
-  .result-subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
-  .result-stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-  .stat-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 24px;
-    min-width: 100px;
-  }
-  .stat-num { font-family: 'Fira Mono', monospace; font-size: 1.6rem; font-weight: 700; }
-  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-  .stat-green .stat-num { color: var(--green); }
-  .stat-red .stat-num { color: var(--red); }
-  .stat-yellow .stat-num { color: var(--yellow); }
-
-  .reset-btn {
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border: none;
-    border-radius: 12px;
-    color: #fff;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 14px 36px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-  }
-  .reset-btn:hover { opacity: 0.9; transform: scale(1.03); }
-
-  /* FLOATING SUBMIT */
-  .fab-wrap {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 200;
-  }
-  #submit-btn {
-    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
-    border: none;
-    border-radius: 99px;
-    color: #fff;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 14px 40px;
-    cursor: pointer;
-    box-shadow: 0 8px 32px rgba(0,212,255,0.25), 0 2px 8px rgba(0,0,0,0.4);
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #submit-btn:hover { transform: scale(1.04); box-shadow: 0 12px 40px rgba(0,212,255,0.35); }
-  #submit-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .q-card { animation: fadeUp 0.4s ease both; }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    .header-inner { flex-direction: column; align-items: flex-start; }
-    .progress-wrap { width: 100%; justify-content: space-between; }
-    .progress-bar-outer { flex: 1; }
-    .q-card { padding: 18px 14px; }
-    .option-btn { font-size: 0.84rem; padding: 11px 12px; gap: 10px; }
-    .result-stats { gap: 12px; }
-    .stat-box { padding: 12px 16px; min-width: 80px; }
-  }
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .site-header { padding: 0 1rem; }
+  .header-inner { height: auto; padding: 10px 0; }
+  .logo span { display: none; }
+  main { padding: 1rem 1rem 4rem; }
+  .q-card { padding: 1rem 1rem; }
+  .result-score { font-size: 2.2rem; }
+}
 </style>
 </head>
 <body>
 
-<header>
+<header class="site-header">
   <div class="header-inner">
-    <div>
-      <div class="header-title">IS 352 — System Analysis & Design</div>
-      <div class="header-sub">Final Exam + Midterm Exam — كل الأسئلة</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-      <div class="scoreboard">
-        <div class="score-chip"><span class="dot dot-green"></span><span id="score-correct">0</span> صح</div>
-        <div class="score-chip"><span class="dot dot-red"></span><span id="score-wrong">0</span> غلط</div>
+    <div class="logo">IS 352 <span>System Analysis &amp; Design — Exam Quiz</span></div>
+    <div class="score-row">
+      <div class="score-pill">
+        <span class="num" id="sAnswered">0</span>
+        <span class="lbl">/ <span id="sTotal">56</span> done</span>
       </div>
-      <div class="progress-wrap">
-        <div class="progress-bar-outer"><div class="progress-bar-inner" id="prog-bar" style="width:0%"></div></div>
-        <div class="progress-label" id="prog-label">0 / 56</div>
+      <div class="score-pill">
+        <span class="num green" id="sCorrect">0</span>
+        <span class="lbl">correct</span>
+      </div>
+      <div class="score-pill">
+        <span class="num red" id="sWrong">0</span>
+        <span class="lbl">wrong</span>
       </div>
     </div>
   </div>
 </header>
 
-<main id="quiz-container">
-  <!-- injected by JS -->
-</main>
-
-<div class="fab-wrap">
-  <button id="submit-btn" onclick="submitQuiz()">
-    <span>✦</span> إنهاء وتصحيح الامتحان
-  </button>
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="f-btn active" onclick="setFilter('all',this)">All (56)</button>
+    <button class="f-btn" onclick="setFilter('mid',this)">Midterm 2026 (25)</button>
+    <button class="f-btn" onclick="setFilter('fin',this)">Final 2024 (31)</button>
+  </div>
 </div>
 
+<div class="progress-section">
+  <div class="progress-inner">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progLeft">0 answered</span>
+      <span id="progPct">0%</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="result-banner" id="resultBanner">
+    <div class="result-score" id="resultScore">0/0</div>
+    <div class="result-pct" id="resultPct"></div>
+    <div class="result-grade" id="resultGrade"></div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset &amp; Try Again</button>
+  </div>
+  <div class="empty-state" id="emptyState">No questions match this filter.</div>
+  <div id="qContainer"></div>
+</main>
+
 <script>
-const QUESTIONS = [
-  // ==================== FINAL EXAM ====================
+const ALL_QUESTIONS = [
+  /* ════════════════════════════ MIDTERM 2026 ════════════════════════════ */
   {
-    section: "Final Exam — Q1: اختر الإجابة الصحيحة",
-    num: 1,
-    text: ".......... in NoSQL systems ensure that at some future point in time the data assumes a consistent state.",
-    options: ["Immediate consistency", "Eventually consistency", "Partition tolerance", "Isolation"],
-    answer: 1
+    id: 1, src: 'mid',
+    q: "When deciding between monolithic, SOA, and microservices for a project, which consideration is most important to evaluate first?",
+    opts: [
+      "The availability of an enterprise service bus product with vendor support",
+      "Team organization, release cadence, scalability needs, and the operational maturity to manage distributed systems",
+      "Whether all services can be written in the same programming language to avoid integration issues",
+      "The requirement to deploy everything on a single physical server to reduce costs"
+    ],
+    ans: 1,
+    exp: "Architecture decisions must align with team structure, delivery speed, scalability needs, and ability to operate distributed systems — NOT tooling or language constraints. Choosing microservices for a team that can't operate them creates more problems than it solves."
   },
   {
-    num: 2,
-    text: "Suppose we use a database server per service pattern in microservices architecture, what is the suitable database type for a microservice that requires high aggregation level for large-scale data?",
-    options: ["Key-value", "Graph", "Column", "Document database"],
-    answer: 2
+    id: 2, src: 'mid',
+    q: "Which of the following is a characteristic of the Waterfall methodology?",
+    opts: [
+      "Emphasizes adaptability and flexibility",
+      "Progress flows down in linear sequential phases",
+      "Requires continuous customer collaboration",
+      "Uses iterations and incremental development"
+    ],
+    ans: 1,
+    exp: "Waterfall is a plan-driven, linear-sequential model. Each phase (Requirements → Design → Implementation → Testing → Deployment) flows downward like a waterfall, with no going back to previous phases."
   },
   {
-    num: 3,
-    text: "Suppose we use a database server per service pattern in microservices architecture, what is the suitable database type for a microservice that provides a very fast for the traversing of relationships or joins?",
-    options: ["Key-value", "Graph", "Column", "Relational Databases"],
-    answer: 1
+    id: 3, src: 'mid',
+    q: "Which artifact provides a transparent, ordered list of everything that is known to be needed in the product?",
+    opts: [
+      "Sprint Backlog",
+      "Increment",
+      "Product Backlog",
+      "Definition of Done"
+    ],
+    ans: 2,
+    exp: "The Product Backlog is the single, ordered, transparent list of all known product needs. The Sprint Backlog is the subset selected for one sprint. The Increment is the output. Definition of Done is a quality checklist."
   },
   {
-    num: 4,
-    text: ".......... databases avoided when query patterns are updated frequently.",
-    options: ["Document", "Column", "Relational databases", "Key-value"],
-    answer: 1
+    id: 4, src: 'mid',
+    q: "A team practicing Agile notices recurring work left undone each sprint because stories are too large. Which practice is the best immediate remedy?",
+    opts: [
+      "Increase sprint length so large stories can be completed",
+      "Break large stories into smaller, independently valuable backlog items",
+      "Assign more developers to the large stories to finish them faster",
+      "Remove acceptance criteria to simplify completion"
+    ],
+    ans: 1,
+    exp: "The root cause is story size. Breaking into smaller, independently deliverable items is the core Agile technique (story splitting). Increasing sprint length postpones the problem. Removing acceptance criteria lowers quality. Adding developers doesn't split the work logically."
   },
   {
-    num: 5,
-    text: ".......... ensures that services are loosely coupled.",
-    options: ["Shared database pattern", "Database per server pattern", "Schema per service pattern", "Private tables per service pattern"],
-    answer: 1
+    id: 5, src: 'mid',
+    q: "In Scrum, which role is primarily responsible for maximizing the value of the product and managing the product backlog?",
+    opts: [
+      "Scrum Master",
+      "Development Team Lead",
+      "Product Owner",
+      "Project Sponsor"
+    ],
+    ans: 2,
+    exp: "The Product Owner (PO) owns the Product Backlog — orders it, refines it, and ensures the team works on highest-value items. Scrum Master facilitates the process. Dev Team builds. There is no 'Team Lead' role in Scrum."
   },
   {
-    num: 6,
-    text: "What is a choreography-based SAGA?",
-    options: [
+    id: 6, src: 'mid',
+    q: "Which of the triple constraints is fixed when implementing the Waterfall methodology?",
+    opts: [
+      "Time",
+      "Cost",
+      "Scope",
+      "Effort"
+    ],
+    ans: 2,
+    exp: "In Waterfall, Scope is fixed upfront during the requirements phase and defined in a contract. Time and Cost may be adjusted, but the scope is the agreed deliverable that doesn't change."
+  },
+  {
+    id: 7, src: 'mid',
+    q: "Which component contains the actual source code, libraries, and runtime that perform the business logic of the service?",
+    opts: [
+      "The contract",
+      "The interface",
+      "The implementation",
+      "The API gateway"
+    ],
+    ans: 2,
+    exp: "The Implementation is the internal engine — contains source code, libraries, and runtime. The contract/interface defines how consumers interact with the service externally. The API gateway routes and manages traffic."
+  },
+  {
+    id: 8, src: 'mid',
+    q: "Which architecture is more suitable for small, simple applications?",
+    opts: [
+      "Microservices",
+      "Monolithic",
+      "Hybrid",
+      "Edge"
+    ],
+    ans: 1,
+    exp: "Monolithic architecture is simpler to develop, test, and deploy for small applications. Microservices add significant overhead (networking, service discovery, distributed tracing, deployment complexity) that isn't justified for simple systems."
+  },
+  {
+    id: 9, src: 'mid',
+    q: "Which component primarily specifies the methods, endpoints, message formats, and expected inputs/outputs that a consumer uses to call a service?",
+    opts: [
+      "The implementation",
+      "The business logic",
+      "The contract",
+      "The deployment pipeline"
+    ],
+    ans: 2,
+    exp: "The Contract (API contract / interface definition) specifies exactly how consumers interact — endpoints, HTTP methods, message formats, inputs, and outputs. It is separate from the internal implementation."
+  },
+  {
+    id: 10, src: 'mid',
+    q: "What is a common approach to scaling in microservices architecture?",
+    opts: [
+      "Horizontal scaling",
+      "Vertical scaling",
+      "No scaling needed",
+      "Static scaling of the entire system"
+    ],
+    ans: 0,
+    exp: "Microservices scale horizontally — you spin up more instances of only the services under load. This is far more efficient than vertically scaling an entire monolith or scaling all services uniformly."
+  },
+  {
+    id: 11, src: 'mid',
+    q: "What is the primary purpose of service discovery in SOA?",
+    opts: [
+      "To encrypt messages between consumers and providers",
+      "To allow consumers to locate available services dynamically",
+      "To replace the need for an Enterprise Service Bus",
+      "To store the source code of all services"
+    ],
+    ans: 1,
+    exp: "Service discovery allows consumers to dynamically find service instances without hardcoding locations. As services scale and move, their URLs change — service discovery (like Consul or Eureka) keeps track of live instances."
+  },
+  {
+    id: 12, src: 'mid',
+    q: "Which ceremony is focused on inspecting and adapting the team's processes?",
+    opts: [
+      "Sprint Planning",
+      "Sprint Review",
+      "Daily Scrum",
+      "Sprint Retrospective"
+    ],
+    ans: 3,
+    exp: "Sprint Retrospective = team inspects HOW they worked and improves their processes. Sprint Review = inspect the product increment with stakeholders. Sprint Planning = plan the sprint. Daily Scrum = 15-min daily sync."
+  },
+  {
+    id: 13, src: 'mid',
+    q: "What is an advantage of using containers like Docker in microservices architecture?",
+    opts: [
+      "Tight coupling between services",
+      "Cross-platform compatibility issues",
+      "Standardized environment across services",
+      "Increased dependency on server configurations"
+    ],
+    ans: 2,
+    exp: "Docker containers package the app with all its dependencies, creating a standardized environment that runs identically on any machine. This eliminates 'works on my machine' problems and ensures consistency across dev, test, and production."
+  },
+  {
+    id: 14, src: 'mid',
+    q: "Which protocol is commonly used for synchronous communication in SOA with web services?",
+    opts: [
+      "UDP",
+      "FTP",
+      "SOAP",
+      "SMTP"
+    ],
+    ans: 2,
+    exp: "SOAP (Simple Object Access Protocol) is the standard protocol for synchronous web service communication in SOA. It uses XML over HTTP and supports WS-Security, WS-ReliableMessaging, and other enterprise standards."
+  },
+  {
+    id: 15, src: 'mid',
+    q: "What is a disadvantage of monolithic architecture?",
+    opts: [
+      "High network latency",
+      "Complex service orchestration",
+      "Difficult to scale specific components",
+      "Expensive initial setup"
+    ],
+    ans: 2,
+    exp: "In a monolith, you cannot scale just the checkout service — you must scale the entire application. High network latency and service orchestration are microservices problems. Monoliths are actually cheaper to set up initially."
+  },
+  {
+    id: 16, src: 'mid',
+    q: "Which tool is used for continuous integration?",
+    opts: [
+      "Puppet",
+      "Splunk",
+      "Nagios",
+      "Jenkins"
+    ],
+    ans: 3,
+    exp: "Jenkins is the industry-standard CI tool that automates build, test, and deployment pipelines. Puppet = infrastructure configuration management. Splunk = log analysis. Nagios = infrastructure monitoring."
+  },
+  {
+    id: 17, src: 'mid',
+    q: "What is a benefit of microservices in terms of technology stack?",
+    opts: [
+      "Limited flexibility in technology choices",
+      "Standardized technology stack across services",
+      "No interoperability issues",
+      "Ability to use different technologies for different services"
+    ],
+    ans: 3,
+    exp: "Microservices enable polyglot development — each service can use the best technology for its job (Python for ML, Go for performance, Node.js for real-time). This is a key advantage over monoliths where the entire app uses one stack."
+  },
+  {
+    id: 18, src: 'mid',
+    q: "Which architecture style provides the best support for polyglot persistence?",
+    opts: [
+      "Monolithic",
+      "Microservices",
+      "Traditional n-tier",
+      "Single database architecture"
+    ],
+    ans: 1,
+    exp: "Microservices' 'database per service' pattern enables polyglot persistence — each service uses the best database for its needs (PostgreSQL, MongoDB, Redis, Cassandra, etc.). Monoliths typically share one database type."
+  },
+  {
+    id: 19, src: 'mid',
+    q: "Who owns the Sprint Retrospective process?",
+    opts: [
+      "Product Owner",
+      "Scrum Master",
+      "Development Team",
+      "Stakeholders"
+    ],
+    ans: 1,
+    exp: "The Scrum Master facilitates and owns the Sprint Retrospective process. The Scrum Master ensures the team has a productive retrospective and that action items are captured. Note: The entire Scrum Team attends, but the SM runs it."
+  },
+  {
+    id: 20, src: 'mid',
+    q: "Which SOA principle encourages services to be designed so they can be used by multiple different applications?",
+    opts: [
+      "Service autonomy",
+      "Service reusability",
+      "Service granularity",
+      "Service discoverability"
+    ],
+    ans: 1,
+    exp: "Service reusability means designing services as generic, reusable components usable by multiple applications. Autonomy = independent operation. Granularity = size/scope of service. Discoverability = ability to find services."
+  },
+  {
+    id: 21, src: 'mid',
+    q: "Which of the following is an example of plan-driven software process models?",
+    opts: [
+      "Scrum",
+      "Waterfall",
+      "Kanban",
+      "eXtreme Programming"
+    ],
+    ans: 1,
+    exp: "Waterfall is the classic plan-driven model — all planning happens upfront before any implementation. Scrum, Kanban, and XP are all Agile (adaptive/iterative) methodologies."
+  },
+  {
+    id: 22, src: 'mid',
+    q: "In the service registry model, what is the first step that occurs?",
+    opts: [
+      "Consumer binds to the service provider",
+      "Consumer queries the registry for a service",
+      "Service provider registers its service in the public registry",
+      "Registry provides the contract and endpoint address"
+    ],
+    ans: 2,
+    exp: "The service registry flow: (1) Provider REGISTERS in registry → (2) Consumer QUERIES registry → (3) Registry returns contract/endpoint → (4) Consumer BINDS directly to provider. Registration is always the first step."
+  },
+  {
+    id: 23, src: 'mid',
+    q: "Which factor is most important when deciding to adopt microservices?",
+    opts: [
+      "Team size",
+      "Business complexity and scalability needs",
+      "Programming language preference",
+      "Database type"
+    ],
+    ans: 1,
+    exp: "Business complexity and scalability needs are the primary drivers. Microservices solve the problems of large, complex, high-scale systems. Language preference and DB type are secondary technical choices made after architecture is decided."
+  },
+  {
+    id: 24, src: 'mid',
+    q: "Which of the following are agile methodologies EXCEPT:",
+    opts: [
+      "eXtreme Programming",
+      "Spiral",
+      "Kanban",
+      "Scrum"
+    ],
+    ans: 1,
+    exp: "Spiral is NOT an Agile methodology — it's a risk-driven, iterative model that is plan-driven (like Waterfall but with risk analysis loops). XP, Kanban, and Scrum are all Agile methodologies. Spiral predates the Agile Manifesto."
+  },
+  {
+    id: 25, src: 'mid',
+    q: "When integrating a legacy application with modern services using an ESB, which advantage does the ESB most commonly provide?",
+    opts: [
+      "It eliminates the need to test the legacy application after integration",
+      "It allows direct modification of the legacy application's source code",
+      "It enables protocol and data-format translation so the legacy system can interoperate without major internal changes",
+      "It guarantees zero-latency communication between the legacy and modern systems"
+    ],
+    ans: 2,
+    exp: "The ESB's primary value is protocol and data-format translation (e.g., converting SOAP to REST, XML to JSON). This lets legacy systems participate in modern architectures without rewriting their internal code. Zero-latency is impossible; ESBs actually add some latency."
+  },
+
+  /* ════════════════════════════ FINAL 2024 ════════════════════════════ */
+  {
+    id: 26, src: 'fin',
+    q: "Which of the following in NoSQL systems ensures that at some future point in time the data assumes a consistent state?",
+    opts: [
+      "Immediate consistency",
+      "Eventual consistency",
+      "Partition tolerance",
+      "Isolation"
+    ],
+    ans: 1,
+    exp: "Eventual consistency is the NoSQL guarantee that data will become consistent across all nodes eventually — not immediately. It's the 'E' in BASE (Basically Available, Soft state, Eventually consistent)."
+  },
+  {
+    id: 27, src: 'fin',
+    q: "In the database per service pattern, what is the suitable database type for a microservice that requires high aggregation level for large-scale data?",
+    opts: [
+      "Key-value",
+      "Graph",
+      "Column",
+      "Document database"
+    ],
+    ans: 2,
+    exp: "Column databases (like Apache Cassandra, HBase) are optimized for high-volume data aggregation and analytics. They store data by columns rather than rows, enabling efficient aggregation of large datasets."
+  },
+  {
+    id: 28, src: 'fin',
+    q: "In the database per service pattern, what is the suitable database type for a microservice that provides very fast traversing of relationships or joins?",
+    opts: [
+      "Key-value",
+      "Graph",
+      "Column",
+      "Relational Databases"
+    ],
+    ans: 1,
+    exp: "Graph databases (like Neo4j) are purpose-built for traversing relationships — social networks, recommendation engines, fraud detection. They represent data as nodes and edges, making relationship traversal orders of magnitude faster than relational JOIN operations."
+  },
+  {
+    id: 29, src: 'fin',
+    q: "Which type of databases are avoided when query patterns are updated frequently?",
+    opts: [
+      "Document",
+      "Column",
+      "Relational databases",
+      "Key-value"
+    ],
+    ans: 1,
+    exp: "Column databases require defining column families upfront. Frequently changing query patterns means restructuring column families, which is expensive. They are optimized for known, stable query patterns with heavy reads/writes on specific columns."
+  },
+  {
+    id: 30, src: 'fin',
+    q: "Which pattern ensures that services are loosely coupled?",
+    opts: [
+      "Shared database pattern",
+      "Database per server pattern",
+      "Schema per service pattern",
+      "Private tables per service pattern"
+    ],
+    ans: 1,
+    exp: "Database per service means each microservice has its own database, with no other service accessing it directly. This enforces loose coupling because services can only communicate via APIs, not by sharing database access."
+  },
+  {
+    id: 31, src: 'fin',
+    q: "What is a choreography-based SAGA?",
+    opts: [
       "A centrally coordinated transaction",
       "A pattern where each service publishes events that trigger other services",
       "A single database transaction",
       "A synchronous communication pattern"
     ],
-    answer: 1
+    ans: 1,
+    exp: "Choreography-based SAGA: services are decentralized — each service listens for events and publishes new events when done. There is no central coordinator. Compare with Orchestration-based SAGA where a central orchestrator tells each service what to do."
   },
   {
-    num: 7,
-    text: ".......... pattern is not suitable for maintaining data consistency that spans microservices.",
-    options: ["Shared database", "Database server per service", "Saga", "CQRS"],
-    answer: 0
+    id: 32, src: 'fin',
+    q: "Which pattern is NOT suitable for maintaining data consistency that spans microservices?",
+    opts: [
+      "Shared database",
+      "Database server per service",
+      "Saga",
+      "CQRS"
+    ],
+    ans: 1,
+    exp: "Database server per service isolates each service's data, making cross-service ACID transactions impossible. For cross-service consistency you need SAGA (eventual consistency via compensating transactions). Shared database allows cross-service transactions but breaks isolation."
   },
   {
-    num: 8,
-    text: ".......... message format used when the efficiency and performance are important requirements.",
-    options: ["Text-based", "Binary-based"],
-    answer: 1
+    id: 33, src: 'fin',
+    q: "Which message format is used when efficiency and performance are important requirements?",
+    opts: [
+      "Text-based",
+      "Binary-based"
+    ],
+    ans: 1,
+    exp: "Binary-based formats (like Protocol Buffers/protobuf, Avro, Thrift) are compact, fast to serialize/deserialize, and use less bandwidth than text-based formats (JSON, XML). Used when performance is critical — e.g., high-throughput financial systems."
   },
   {
-    num: 9,
-    text: "In the SAGA pattern, what happens if a step fails?",
-    options: [
+    id: 34, src: 'fin',
+    q: "In the SAGA pattern, what happens if a step fails?",
+    opts: [
       "The entire system shuts down",
       "The transaction is immediately rolled back",
       "Compensating transactions are executed",
       "The failure is ignored"
     ],
-    answer: 2
+    ans: 2,
+    exp: "SAGAs use compensating transactions (undo actions) when a step fails. Since there's no global transaction rollback across microservices, each completed step must have a corresponding compensating transaction that reverses its effect."
   },
   {
-    num: 10,
-    text: ".......... is a broker-less messaging technology.",
-    options: ["ZeroMQ", "Apache Kafka", "AWS SQS", "AWS Kinesis"],
-    answer: 0
+    id: 35, src: 'fin',
+    q: "Which of the following is a broker-less messaging technology?",
+    opts: [
+      "ZeroMQ",
+      "Apache Kafka",
+      "AWS SQS",
+      "AWS Kinesis"
+    ],
+    ans: 0,
+    exp: "ZeroMQ is broker-less — messages go directly between sockets without a central broker. Apache Kafka, AWS SQS, and AWS Kinesis all use a central broker/server to store and route messages."
   },
   {
-    num: 11,
-    text: "AWS Kinesis uses ..... to implement point-to-point message channel.",
-    options: ["queue", "topic", "stream", "exchange + queue"],
-    answer: 0
-  },
-
-  // ==================== SCREEN QUESTIONS SET 1 ====================
-  {
-    section: "Final Exam — أسئلة الشاشة (Data & Architecture)",
-    num: 12,
-    text: "Data that does not have a pre-defined data model or is not organized in a pre-defined manner is:",
-    options: ["Structured data", "Semi-structured data", "Unstructured data", "Relational data"],
-    answer: 2
+    id: 36, src: 'fin',
+    q: "AWS Kinesis uses _____ to implement point-to-point message channel.",
+    opts: [
+      "Queue",
+      "Topic",
+      "Stream",
+      "Exchange + Queue"
+    ],
+    ans: 2,
+    exp: "AWS Kinesis uses Streams for point-to-point messaging. Topics are used in publish-subscribe (like SNS). Queues are used in point-to-point systems like SQS. Exchange+Queue is a RabbitMQ concept."
   },
   {
-    num: 13,
-    text: "A large e-commerce platform processes customer orders through two parallel systems: a daily batch job that calculates total sales for inventory forecasting, and a real-time stream that updates the current cart value. This architecture is an example of:",
-    options: ["Kappa Architecture", "Lambda Architecture", "Microservices Architecture", "Data Lake Architecture"],
-    answer: 1
+    id: 37, src: 'fin',
+    q: "Data that does not have a pre-defined data model or is not organized in a pre-defined manner is:",
+    opts: [
+      "Structured data",
+      "Semi-structured data",
+      "Unstructured data",
+      "Relational data"
+    ],
+    ans: 2,
+    exp: "Unstructured data has no predefined data model (e.g., images, videos, social media posts, emails). Structured = tables/SQL. Semi-structured = JSON/XML (has some structure but flexible). Relational = stored in relational tables."
   },
   {
-    num: 14,
-    text: "What is a key disadvantage of NoSQL compared to SQL databases in enterprise environments?",
-    options: [
+    id: 38, src: 'fin',
+    q: "A large e-commerce platform uses a daily batch job for inventory forecasting AND a real-time stream for cart updates. This architecture is an example of:",
+    opts: [
+      "Kappa Architecture",
+      "Lambda Architecture",
+      "Microservices Architecture",
+      "Data Lake Architecture"
+    ],
+    ans: 1,
+    exp: "Lambda Architecture has TWO paths: Batch layer (processes historical data in bulk, high accuracy) + Speed/Streaming layer (processes real-time data, low latency). Results from both are merged in a Serving layer. Kappa Architecture uses only streaming."
+  },
+  {
+    id: 39, src: 'fin',
+    q: "What is a key disadvantage of NoSQL compared to SQL databases in enterprise environments?",
+    opts: [
       "Lack of standardized query language",
       "Inability to scale horizontally",
       "Poor performance for simple lookups",
       "Strict schema requirements"
     ],
-    answer: 0
+    ans: 0,
+    exp: "NoSQL databases each have their own query language (CQL for Cassandra, MQL for MongoDB, etc.) — there's no universal standard like SQL. This means developers must learn different languages for different databases and tooling integration is harder."
   },
   {
-    num: 15,
-    text: "Which architectural pattern is designed to handle both batch and real-time processing by having two separate paths for data flow and merging the results in a serving layer?",
-    options: ["Kappa Architecture", "Service-Oriented Architecture (SOA)", "Lambda Architecture", "Microservices Architecture"],
-    answer: 2
+    id: 40, src: 'fin',
+    q: "Which architectural pattern handles both batch and real-time processing with two separate paths merged in a serving layer?",
+    opts: [
+      "Kappa Architecture",
+      "Service-Oriented Architecture (SOA)",
+      "Lambda Architecture",
+      "Microservices Architecture"
+    ],
+    ans: 2,
+    exp: "Lambda Architecture: Batch layer (all historical data) + Speed layer (real-time stream) → Serving layer merges results. Kappa Architecture simplifies this by using only the streaming layer for everything."
   },
   {
-    num: 16,
-    text: "Which factor would MOST strongly favour choosing a SQL database over NoSQL?",
-    options: [
+    id: 41, src: 'fin',
+    q: "Which factor would MOST strongly favour choosing a SQL database over NoSQL?",
+    opts: [
       "Need for schema flexibility",
       "Complex transactions with multiple constraints",
       "Rapid prototyping with unstructured data",
       "Handling petabytes of log data"
     ],
-    answer: 1
+    ans: 1,
+    exp: "Complex multi-table transactions with ACID guarantees (atomicity, consistency, isolation, durability) are SQL's strongest suit. Schema flexibility, unstructured data, and petabyte-scale logs all favor NoSQL."
   },
   {
-    num: 17,
-    text: "Which of the following is NOT a responsibility of the HDFS NameNode?",
-    options: [
+    id: 42, src: 'fin',
+    q: "Which of the following is NOT a responsibility of the HDFS NameNode?",
+    opts: [
       "Managing the file system namespace",
       "Recording the mapping of file blocks to DataNodes",
       "Storing the actual data blocks of files",
       "Handling client requests for file location data"
     ],
-    answer: 2
+    ans: 2,
+    exp: "The NameNode stores METADATA (namespace, block-to-DataNode mapping) — NOT the actual data blocks. DataNodes store the actual data blocks. The NameNode is the master server that directs clients to the correct DataNodes."
   },
   {
-    num: 18,
-    text: "Which scenario best justifies choosing a NoSQL database over an SQL database?",
-    options: [
+    id: 43, src: 'fin',
+    q: "Which scenario best justifies choosing a NoSQL database over an SQL database?",
+    opts: [
       "Fixed schema and normalized data",
       "Frequent schema evolution and horizontal scaling",
       "Complex joins across many tables",
       "Strong referential integrity"
     ],
-    answer: 1
+    ans: 1,
+    exp: "NoSQL excels when schema changes frequently (agile development, evolving requirements) and when horizontal scaling is needed (millions of users, high write throughput). Fixed schemas, complex joins, and referential integrity all favor SQL."
   },
   {
-    num: 19,
-    text: "What is the primary purpose of the 'Serving Layer' in the Lambda Architecture?",
-    options: [
+    id: 44, src: 'fin',
+    q: "What is the primary purpose of the 'Serving Layer' in the Lambda Architecture?",
+    opts: [
       "To perform batch processing on historical data",
       "To store raw, immutable data",
       "To serve processed data from both batch and speed layers",
       "To ingest data in real-time"
     ],
-    answer: 2
+    ans: 2,
+    exp: "The Serving Layer merges and serves the pre-computed results from the Batch layer with the real-time results from the Speed layer. It responds to ad-hoc queries by combining both views. It does NOT perform processing itself."
   },
   {
-    num: 20,
-    text: "According to the CAP theorem, if a distributed database chooses Consistency and Partition Tolerance (CP) during a network partition, what is the trade-off?",
-    options: [
+    id: 45, src: 'fin',
+    q: "According to CAP theorem, if a system chooses Consistency and Partition Tolerance (CP) during a network partition, what is the trade-off?",
+    opts: [
       "The system will remain fully available but may return stale data",
       "The system will automatically merge conflicting writes using timestamp ordering",
       "The system may reject some or all write requests until the partition is resolved",
       "The system will continue operating normally but with degraded performance"
     ],
-    answer: 2
+    ans: 2,
+    exp: "CP systems sacrifice Availability during a partition. To maintain consistency, the system refuses to serve requests (returns errors) rather than risk returning inconsistent data. Example: HBase, ZooKeeper, MongoDB in strong consistency mode."
   },
-
-  // ==================== SCREEN QUESTIONS SET 2 ====================
   {
-    section: "Final Exam — أسئلة الشاشة (ACID, BASE, CAP)",
-    num: 21,
-    text: "Which statement correctly distinguishes between ACID and BASE?",
-    options: [
+    id: 46, src: 'fin',
+    q: "Which statement correctly distinguishes between ACID and BASE?",
+    opts: [
       "ACID guarantees high availability; BASE guarantees strong consistency",
       "ACID is used in NoSQL databases; BASE is used in relational databases",
       "ACID is for transaction processing; BASE is only for analytical workloads",
       "ACID prioritizes consistency and isolation; BASE prioritizes availability and performance"
     ],
-    answer: 3
+    ans: 3,
+    exp: "ACID (Atomicity, Consistency, Isolation, Durability) = SQL/relational, strong consistency, transactional integrity. BASE (Basically Available, Soft state, Eventually consistent) = NoSQL, high availability, performance, accepts temporary inconsistency."
   },
   {
-    num: 22,
-    text: "In HDFS, what is the purpose of the fsimage and edit logs maintained by the NameNode?",
-    options: [
+    id: 47, src: 'fin',
+    q: "In HDFS, what is the purpose of the fsimage and edit logs maintained by the NameNode?",
+    opts: [
       "The fsimage stores actual data blocks; the edit logs store client IP addresses",
       "The fsimage is a checkpoint of the file system metadata; the edit logs record all changes",
       "The fsimage stores replication factor information; the edit logs store block checksums",
       "The fsimage is a backup of DataNode contents; the edit logs track DataNode failures"
     ],
-    answer: 1
+    ans: 1,
+    exp: "fsimage = persistent checkpoint snapshot of the entire file system metadata at a point in time. Edit logs = append-only log of all subsequent changes since the last fsimage. Together they allow the NameNode to reconstruct the full metadata state."
   },
   {
-    num: 23,
-    text: "In the BASE property, 'Soft State' refers to:",
-    options: [
+    id: 48, src: 'fin',
+    q: "In the BASE property, 'Soft State' refers to:",
+    opts: [
       "The database state is always consistent and never changes",
       "The state of the system may change over time due to eventual consistency",
       "The database state is stored on volatile memory (RAM) rather than disk",
       "The schema can be changed easily without migrating data"
     ],
-    answer: 1
+    ans: 1,
+    exp: "Soft State = the state of the system can change over time, even without new input, due to eventual consistency propagating updates across nodes. The system doesn't guarantee that state is consistent at any given moment."
   },
   {
-    num: 24,
-    text: "With respect to the CAP Theorem, which property can be relaxed for: 'Data is stored and processed on a single server.'",
-    options: ["Partition tolerance", "Availability", "Consistency", "There is no difference"],
-    answer: 0
+    id: 49, src: 'fin',
+    q: "With respect to the CAP Theorem, which property can be relaxed for the use case: 'Data is stored and processed on a single server.'",
+    opts: [
+      "Partition tolerance",
+      "Availability",
+      "Consistency",
+      "There is no difference"
+    ],
+    ans: 0,
+    exp: "On a single server there is no network partition possible — data never needs to be distributed across nodes. Therefore, Partition Tolerance is irrelevant and can be 'relaxed.' The system can provide full Consistency and Availability (like a traditional RDBMS)."
   },
   {
-    num: 25,
-    text: "Which property can be relaxed for: 'Data is too big to be served on a single server and is not modified after creation.'",
-    options: ["Partition tolerance", "Availability", "Consistency", "There is no difference"],
-    answer: 1
+    id: 50, src: 'fin',
+    q: "Which property can be relaxed for the use case: 'Data is too big to be served on a single server and is not modified after creation.'",
+    opts: [
+      "Partition tolerance",
+      "Availability",
+      "Consistency",
+      "There is no difference"
+    ],
+    ans: 2,
+    exp: "If data is never modified after creation (immutable/append-only), consistency becomes less critical — there are no conflicting writes to reconcile. The system can relax Consistency and focus on Availability + Partition Tolerance (AP system, like a distributed read-only archive)."
   },
   {
-    num: 26,
-    text: "Which data model is the best for the use case: 'A system needs to reflect a change immediately'?",
-    options: ["BASE", "ACID", "ETL", "OAP"],
-    answer: 1
+    id: 51, src: 'fin',
+    q: "Which data model is best for the use case: 'A system needs to reflect a change immediately'?",
+    opts: [
+      "BASE",
+      "ACID",
+      "ETL",
+      "OAP"
+    ],
+    ans: 1,
+    exp: "ACID provides immediate/strong consistency — changes are immediately visible to all transactions after commit. BASE provides eventual consistency, meaning changes propagate gradually. For 'reflect immediately' (e.g., banking), ACID is required."
   },
   {
-    num: 27,
-    text: "Figure (i) represents __________ architecture, while Figure (ii) represents the __________ architecture. (Figure i: Batch + Real-time → Serving Layer | Figure ii: Real-time only → Serving)",
-    options: ["
+    id: 52, src: 'fin',
+    q: "Figure (i) shows: Data Source → [Batch mode + Real-time mode] → Serving Layer. Figure (ii) shows: Data Source → [Real-time mode only] → Serving Layer. Figure (i) represents _______ architecture, Figure (ii) represents _______ architecture.",
+    opts: [
+      "Kappa, Lambda",
+      "Lambda, Kappa",
+      "Dedicated Serving Layer, Common Serving Layer",
+      "Batch, Online"
+    ],
+    ans: 1,
+    exp: "Lambda Architecture uses BOTH batch and real-time paths (Figure i). Kappa Architecture uses ONLY the real-time/streaming path (Figure ii) — it simplifies Lambda by eliminating the batch layer and reprocessing everything as a stream."
+  },
+  {
+    id: 53, src: 'fin',
+    q: "The data access connector that involves publishers, brokers, and consumers is called:",
+    opts: [
+      "Messaging Queues",
+      "Publish-Subscribe Messaging",
+      "Source-Sink Connectors",
+      "Custom Connector"
+    ],
+    ans: 1,
+    exp: "Publish-Subscribe Messaging involves 3 components: Publishers (send messages), Brokers (route/distribute messages), and Consumers (receive messages). Messaging Queues are point-to-point (no broker in the pub-sub sense). Source-Sink is a stream processing concept."
+  },
+  {
+    id: 54, src: 'fin',
+    q: "When designing applications that use key-value data stores, which of the following should be considered?",
+    opts: [
+      "Workload",
+      "Data Structure",
+      "Data Distribution",
+      "All of the above"
+    ],
+    ans: 3,
+    exp: "All three matter for key-value stores: Workload (read-heavy vs write-heavy affects cache TTL and replication), Data Structure (what you store as values affects query patterns), Data Distribution (how keys are partitioned across nodes affects hotspots and performance)."
+  },
+  {
+    id: 55, src: 'fin',
+    q: "The following are among the characteristics of NoSQL systems EXCEPT:",
+    opts: [
+      "Schema-less",
+      "Polyglot persistence",
+      "Scaling up (vertical scaling)",
+      "Aggregate model"
+    ],
+    ans: 2,
+    exp: "NoSQL systems are known for horizontal scaling (Scaling OUT — adding more machines), NOT vertical scaling up (adding more CPU/RAM to one machine). The other three are genuine NoSQL characteristics: schema-less, polyglot persistence, and aggregate data model."
+  },
+  {
+    id: 56, src: 'fin',
+    q: "What does it mean to maintain 'eventual consistency'?",
+    opts: [
+      "Not ok to send 'pessimistic' answers to the external client",
+      "Ok to send 'optimistic' answers to the external client",
+      "Not ok to send 'optimistic' answers to the external client",
+      "Ok to send 'pessimistic' answers to the external client"
+    ],
+    ans: 1,
+    exp: "Eventual consistency means it's OK to send 'optimistic' (hopeful/stale) answers — you can return data that might not be the most current, with the expectation it will eventually become consistent. 'Pessimistic' answers would mean refusing to respond until consistency is guaranteed (that's strong consistency / ACID)."
+  }
+];
+
+/* ── STATE ── */
+let answered = 0;
+let correct = 0;
+let wrong = 0;
+let currentFilter = 'all';
+let visibleQs = [];
+
+/* ── FILTER ── */
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuestions();
+  updateStats();
+}
+
+/* ── RENDER ── */
+function renderQuestions() {
+  const container = document.getElementById('qContainer');
+  const emptyState = document.getElementById('emptyState');
+  
+  visibleQs = currentFilter === 'all'
+    ? ALL_QUESTIONS
+    : ALL_QUESTIONS.filter(q => q.src === currentFilter);
+
+  document.getElementById('sTotal').textContent = visibleQs.length;
+  
+  if (visibleQs.length === 0) {
+    emptyState.classList.add('show');
+    container.innerHTML = '';
+    return;
+  }
+  emptyState.classList.remove('show');
+
+  container.innerHTML = visibleQs.map((q, idx) => {
+    const letters = ['a', 'b', 'c', 'd'];
+    const optsHtml = q.opts.map((o, oi) => `
+      <div class="opt" id="opt-${q.id}-${oi}" onclick="checkAnswer(${q.id}, ${oi})">
+        <span class="opt-letter">${letters[oi]}.</span>
+        <span class="opt-text">${o}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="q-card" id="qcard-${q.id}" style="animation-delay:${idx * 0.025}s">
+        <div class="q-meta">
+          <span class="q-num">Q${String(idx + 1).padStart(2, '0')}</span>
+          <span class="source-badge ${q.src === 'mid' ? 'badge-mid' : 'badge-fin'}">
+            ${q.src === 'mid' ? 'Midterm 2026' : 'Final 2024'}
+          </span>
+        </div>
+        <div class="q-text">${q.q}</div>
+        <div class="opts" id="opts-${q.id}">${optsHtml}</div>
+        <div class="feedback" id="fb-${q.id}"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── CHECK ANSWER ── */
+function checkAnswer(qId, chosenIdx) {
+  const card = document.getElementById(`qcard-${qId}`);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+
+  const q = ALL_QUESTIONS.find(x => x.id === qId);
+  const isCorrect = chosenIdx === q.ans;
+  const letters = ['a', 'b', 'c', 'd'];
+
+  const opts = document.querySelectorAll(`#opts-${qId} .opt`);
+  opts.forEach((opt, i) => {
+    opt.classList.add('locked');
+    if (i === q.ans) opt.classList.add('correct');
+    else if (i === chosenIdx) opt.classList.add('wrong');
+  });
+
+  const fb = document.getElementById(`fb-${qId}`);
+  fb.className = `feedback show ${isCorrect ? 'ok' : 'bad'}`;
+  fb.innerHTML = `
+    <div class="fb-head">
+      ${isCorrect
+        ? '<span>✓ Correct!</span>'
+        : `<span>✗ Wrong — Correct answer: (${letters[q.ans].toUpperCase()}) ${q.opts[q.ans]}</span>`
+      }
+    </div>
+    <div class="fb-body">${q.exp}</div>
+  `;
+
+  if (isCorrect) correct++; else wrong++;
+  answered++;
+
+  updateStats();
+  checkCompletion();
+}
+
+/* ── STATS ── */
+function updateStats() {
+  document.getElementById('sAnswered').textContent = answered;
+  document.getElementById('sCorrect').textContent = correct;
+  document.getElementById('sWrong').textContent = wrong;
+
+  const total = visibleQs.length;
+  const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progLeft').textContent = `${answered} answered`;
+  document.getElementById('progPct').textContent = pct + '%';
+}
+
+/* ── COMPLETION ── */
+function checkCompletion() {
+  const total = visibleQs.length;
+  if (answered < total) return;
+
+  const pct = Math.round((correct / total) * 100);
+  const banner = document.getElementById('resultBanner');
+  document.getElementById('resultScore').textContent = `${correct} / ${total}`;
+  document.getElementById('resultPct').textContent = `Score: ${pct}%`;
+
+  let grade, cls;
+  if (pct >= 85) { grade = '🏆 Excellent! You are ready for the exam.'; cls = 'a'; }
+  else if (pct >= 65) { grade = '👍 Good — review your wrong answers.'; cls = 'b'; }
+  else { grade = '📚 Needs more study — review all explanations.'; cls = 'c'; }
+
+  const gradeEl = document.getElementById('resultGrade');
+  gradeEl.textContent = grade;
+  gradeEl.className = `result-grade ${cls}`;
+  banner.classList.add('show');
+  banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── RESET ── */
+function resetAll() {
+  answered = 0; correct = 0; wrong = 0;
+  document.getElementById('resultBanner').classList.remove('show');
+  updateStats();
+  renderQuestions();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── INIT ── */
+renderQuestions();
+updateStats();
+</script>
+</body>
+</html>
