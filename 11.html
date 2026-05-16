@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS-352 | Lecture 11 | Microservices Data Patterns — Exam Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0d11;
+    --surface: #13151c;
+    --surface2: #1a1d28;
+    --border: #252836;
+    --accent: #5b7fff;
+    --accent2: #ff6b6b;
+    --accent3: #43d9a2;
+    --accent4: #f5a623;
+    --text: #e8eaf0;
+    --text-muted: #7a8099;
+    --text-dim: #4a5070;
+    --correct: #43d9a2;
+    --wrong: #ff6b6b;
+    --tag-bg: #1e2236;
+  }
+  .light {
+    --bg: #f4f5f9;
+    --surface: #ffffff;
+    --surface2: #edf0f7;
+    --border: #d8dce8;
+    --accent: #3a5ccc;
+    --accent2: #d94040;
+    --accent3: #1a8f6a;
+    --accent4: #c47a00;
+    --text: #1a1d2e;
+    --text-muted: #5a6080;
+    --text-dim: #9aa0b8;
+    --tag-bg: #e4e8f5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.75;
+    transition: background 0.3s, color 0.3s;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 62px;
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .logo span { color: var(--text-muted); font-weight: 400; }
+  nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+  nav button {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  nav button:hover { color: var(--text); border-color: var(--border); }
+  nav button.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(91,127,255,0.08);
+  }
+  .theme-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .theme-btn:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 4rem 2rem 3rem;
+    max-width: 900px; margin: 0 auto;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: rgba(91,127,255,0.1);
+    border: 1px solid rgba(91,127,255,0.25);
+    padding: 0.25rem 0.9rem;
+    border-radius: 100px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  h1 em { color: var(--accent); font-style: normal; }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 600px; margin: 0 auto 2rem;
+  }
+  .stats {
+    display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 2rem;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main { max-width: 920px; margin: 0 auto; padding: 0 2rem 6rem; }
+  .section { display: none; animation: fadeUp 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1.7rem;
+    letter-spacing: -0.01em;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  h2 .num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 400;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+  }
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600; font-size: 1.15rem;
+    margin: 1.75rem 0 0.6rem;
+    color: var(--text);
+  }
+  p { margin-bottom: 1rem; color: var(--text); }
+  strong { color: var(--accent4); font-weight: 600; }
+  em { color: var(--accent3); font-style: italic; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .icon { font-size: 1.1rem; }
+
+  /* ── PHASE HEADER ── */
+  .phase-header {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .phase-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    min-width: 3rem;
+  }
+  .phase-info h2 {
+    border: none; padding: 0; margin: 0 0 0.2rem;
+    font-size: 1.3rem;
+  }
+  .phase-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    border-left: 3px solid;
+    font-size: 0.95rem;
+  }
+  .callout.info  { background: rgba(91,127,255,0.07); border-color: var(--accent);  }
+  .callout.warn  { background: rgba(245,166,35,0.07); border-color: var(--accent4); }
+  .callout.good  { background: rgba(67,217,162,0.07); border-color: var(--accent3); }
+  .callout.bad   { background: rgba(255,107,107,0.07); border-color: var(--accent2);}
+  .callout-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    opacity: 0.7;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 1.25rem 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead tr { background: var(--surface2); }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--surface2); }
+  .yes { color: var(--correct); font-weight: 600; }
+  .no  { color: var(--wrong);   font-weight: 600; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex; align-items: flex-start; gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    min-width: 130px;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+  .flow-node .fn-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .flow-arrow {
+    align-self: center;
+    padding: 0 0.4rem;
+    color: var(--accent);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .flow-down {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    margin: 1rem 0;
+  }
+  .flow-down .flow-node { min-width: 250px; }
+  .flow-down .flow-arrow { transform: rotate(90deg); }
+
+  /* ── PROSE STEPS ── */
+  .steps { counter-reset: steps; list-style: none; }
+  .steps li {
+    counter-increment: steps;
+    display: flex; gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(steps);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--accent);
+    color: #fff;
+    min-width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── PROS/CONS ── */
+  .pros-cons {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media(max-width:600px) { .pros-cons { grid-template-columns: 1fr; } }
+  .pros, .cons {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .pros { border-top: 3px solid var(--accent3); }
+  .cons { border-top: 3px solid var(--accent2); }
+  .pros h4, .cons h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .pros h4 { color: var(--accent3); }
+  .cons h4 { color: var(--accent2); }
+  .pros ul, .cons ul { list-style: none; }
+  .pros ul li, .cons ul li {
+    font-size: 0.88rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1.2rem;
+    position: relative;
+    color: var(--text-muted);
+  }
+  .pros ul li::before { content: '✓'; position: absolute; left: 0; color: var(--accent3); }
+  .cons ul li::before { content: '✗'; position: absolute; left: 0; color: var(--accent2); }
+
+  /* ── SUMMARY BULLETS ── */
+  .summary-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .summary-block h3 {
+    font-size: 1rem; margin-top: 0;
+    color: var(--accent);
+  }
+  .summary-block ul {
+    list-style: none;
+    margin-top: 0.5rem;
+  }
+  .summary-block ul li {
+    font-size: 0.9rem;
+    padding: 0.3rem 0 0.3rem 1.4rem;
+    position: relative;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-block ul li:last-child { border: none; }
+  .summary-block ul li::before {
+    content: '›';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+  .kw { color: var(--text); font-weight: 600; }
+
+  /* ── MCQ ── */
+  .mcq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .mcq-item:hover { border-color: var(--accent); }
+  .mcq-q {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 0.97rem;
+    line-height: 1.55;
+  }
+  .mcq-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .difficulty {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    float: right;
+  }
+  .easy   { background: rgba(67,217,162,0.12); color: var(--accent3); }
+  .medium { background: rgba(245,166,35,0.12);  color: var(--accent4); }
+  .hard   { background: rgba(255,107,107,0.12); color: var(--accent2); }
+
+  .options { list-style: none; }
+  .options li {
+    margin-bottom: 0.5rem;
+  }
+  .options li button {
+    width: 100%;
+    text-align: left;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Lora', serif;
+    font-size: 0.88rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s;
+    line-height: 1.5;
+  }
+  .options li button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(91,127,255,0.07);
+  }
+  .options li button.correct {
+    border-color: var(--correct);
+    background: rgba(67,217,162,0.1);
+    color: var(--correct);
+    font-weight: 600;
+  }
+  .options li button.wrong {
+    border-color: var(--wrong);
+    background: rgba(255,107,107,0.1);
+    color: var(--wrong);
+  }
+  .options li button:disabled { cursor: not-allowed; }
+  .explanation {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    background: rgba(91,127,255,0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent); }
+  .mcq-score {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+  }
+  .score-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--accent);
+  }
+  .score-display span { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+  .reset-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+  }
+  .reset-btn:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── WRITTEN Q's ── */
+  .wq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .wq-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent4);
+    margin-bottom: 0.5rem;
+  }
+  .wq-q {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .toggle-answer-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 0.4rem 1rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toggle-answer-btn:hover { background: rgba(91,127,255,0.08); }
+  .model-answer {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface2);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    display: none;
+    line-height: 1.7;
+  }
+  .model-answer.show { display: block; }
+  .model-answer h5 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent3);
+    margin-bottom: 0.75rem;
+  }
+  .model-answer ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    color: var(--text-muted);
+  }
+  .model-answer ul li { margin-bottom: 0.4rem; font-size: 0.88rem; }
+
+  /* ── REVISION SHEET ── */
+  .rev-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .rev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .rev-card h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent);
+  }
+  .rev-card ul { list-style: none; }
+  .rev-card ul li {
+    font-size: 0.82rem;
+    padding: 0.2rem 0;
+    color: var(--text-muted);
+    padding-left: 1rem;
+    position: relative;
+  }
+  .rev-card ul li::before {
+    content: '•';
+    position: absolute; left: 0;
+    color: var(--accent);
+  }
+  .rev-card ul li strong { color: var(--text); }
+
+  .mnemonic-box {
+    background: linear-gradient(135deg, rgba(91,127,255,0.12), rgba(67,217,162,0.08));
+    border: 1px solid rgba(91,127,255,0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+  .mnemonic-box h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--accent); margin-bottom: 0.75rem;
+  }
+  .mnemonic-box .big {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text);
+  }
+  .mnemonic-box .big span { color: var(--accent); }
+  .mnemonic-box p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0; }
+
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.25rem 0.7rem;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+  }
+  .tag.accent { background: rgba(91,127,255,0.12); color: var(--accent); border-color: rgba(91,127,255,0.3); }
+
+  /* ── COLLAPSIBLE ── */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+  }
+  summary {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--text);
+  }
+  summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); }
+  details[open] summary::after { content: '−'; }
+  details > div { padding: 0 1.25rem 1.25rem; font-size: 0.9rem; }
+
+  /* ── PROTOCOL BOX ── */
+  .protocol {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    line-height: 2;
+    color: var(--text-muted);
+  }
+  .protocol .coord { color: var(--accent); font-weight: 500; }
+  .protocol .part  { color: var(--accent3); font-weight: 500; }
+  .protocol .phase-label { color: var(--accent4); font-weight: 500; }
+  .protocol .arrow { color: var(--text-dim); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media(max-width: 640px) {
+    header { padding: 0 1rem; flex-wrap: wrap; height: auto; padding-top: 0.5rem; padding-bottom: 0.5rem; gap: 0.5rem; }
+    nav { gap: 0.15rem; }
+    nav button { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+    main { padding: 0 1rem 4rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS-352 <span>| L11 Exam Prep</span></div>
+  <nav>
+    <button class="active" onclick="show('explain')">📖 Explain</button>
+    <button onclick="show('summary')">📋 Summary</button>
+    <button onclick="show('memory')">🧩 Memory</button>
+    <button onclick="show('mcq')">❓ MCQs</button>
+    <button onclick="show('written')">✍️ Written</button>
+    <button onclick="show('revision')">⚡ Revision</button>
+  </nav>
+  <button class="theme-btn" onclick="toggleTheme()">☀ / ☾</button>
+</header>
+
+<!-- ═══════════════════════════════════════════════ HERO ═══ -->
+<div class="hero">
+  <div class="hero-tag">IS-352 · System Analysis & Design 2 · Lecture 11</div>
+  <h1>Microservices <em>Data Management</em> Patterns</h1>
+  <p>Complete exam preparation system covering 2PC, 3PC, and Saga Pattern — everything you need to ace MCQs and written questions.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Core Protocols</div></div>
+    <div class="stat"><div class="stat-num">30</div><div class="stat-label">MCQ Questions</div></div>
+    <div class="stat"><div class="stat-num">12</div><div class="stat-label">Written Q's</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Study Phases</div></div>
+  </div>
+</div>
+
+<main>
+
+<!-- ═════════════════════════════════════════ PHASE 1: EXPLAIN ═══ -->
+<div id="explain" class="section active">
+  <div class="phase-header">
+    <div class="phase-num">01</div>
+    <div class="phase-info">
+      <h2>Deep Understanding</h2>
+      <p>Step-by-step explanations with analogies · Every concept covered</p>
+    </div>
+  </div>
+
+  <!-- 2PC -->
+  <h2><span class="num">1.1</span> Two-Phase Commit (2PC)</h2>
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> What is 2PC? — The Core Concept</div>
+    <p>Imagine you're organizing a group dinner. Before the chef starts cooking, you call every guest and ask: <em>"Can you make it tonight?"</em> Only if <strong>everyone says YES</strong> does the dinner proceed. If even one person says NO, you cancel for everyone. That's exactly how 2PC works — it's an <strong>all-or-nothing</strong> agreement mechanism across distributed databases.</p>
+    <p><strong>Formal definition:</strong> 2PC is a distributed algorithm that guarantees <strong>atomicity</strong> — either all participating nodes commit a transaction, or none of them do.</p>
+    <div class="tag-row">
+      <span class="tag accent">Atomicity</span>
+      <span class="tag">Coordinator</span>
+      <span class="tag">Participants</span>
+      <span class="tag">All-or-Nothing</span>
+    </div>
+  </div>
+
+  <h3>The Two Roles</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>🎮 Coordinator</h4>
+      <ul>
+        <li>Starts the transaction</li>
+        <li>Sends PREPARE messages to all participants</li>
+        <li>Collects votes from participants</li>
+        <li>Broadcasts final COMMIT or ABORT decision</li>
+      </ul>
+    </div>
+    <div class="cons" style="border-top-color: var(--accent)">
+      <h4 style="color:var(--accent)">🖥 Participants</h4>
+      <ul>
+        <li>Execute local transaction steps</li>
+        <li>Write actions to recovery log</li>
+        <li>Vote COMMIT if ready</li>
+        <li>Vote ABORT if any problem exists</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Phase-by-Phase Walkthrough</h3>
+  <div class="callout info">
+    <div class="callout-title">Phase 1 — Prepare (Voting)</div>
+    The coordinator sends a <strong>PREPARE</strong> message ("Are you ready to commit?"). Each participant executes the transaction up to the commit point, writes to its recovery log, then replies <strong>VOTE-COMMIT</strong> (ready) or <strong>VOTE-ABORT</strong> (problem detected).
+  </div>
+  <div class="callout good">
+    <div class="callout-title">Phase 2 — Commit / Abort</div>
+    If <strong>all</strong> participants voted COMMIT → coordinator sends <strong>COMMIT</strong> to all. If <strong>any</strong> participant voted ABORT → coordinator sends <strong>ABORT</strong> to all. Each participant finalizes and releases held locks, then sends ACK.
+  </div>
+
+  <div class="protocol">
+<span class="coord">Coordinator</span>          <span class="part">Participant 1</span>      <span class="part">Participant 2</span>
+<span class="phase-label">─── PHASE 1: PREPARE ───────────────────────────</span>
+<span class="coord">──► PREPARE ──────────────────────────────────►</span>
+<span class="part">◄── VOTE-COMMIT ◄──────────────────────────────</span>
+<span class="phase-label">─── PHASE 2: COMMIT ────────────────────────────</span>
+<span class="coord">──► COMMIT ───────────────────────────────────►</span>
+<span class="part">◄── ACK ◄──────────────────────────────────────</span>
+  </div>
+
+  <h3>Why 2PC Fails for Microservices — 6 Critical Problems</h3>
+  <div class="card">
+    <ol class="steps">
+      <li><strong>Blocking Protocol:</strong> Participants lock resources until ALL parties respond. If the coordinator crashes mid-commit, every participant freezes forever — they can't commit or rollback independently.</li>
+      <li><strong>Single Point of Failure:</strong> If the coordinator dies during Phase 2, participants are in limbo — they don't know whether to commit or rollback, and they stay blocked indefinitely.</li>
+      <li><strong>Tight Coupling:</strong> Microservices must be independent. 2PC creates hard cross-service dependencies, violating the fundamental principle of microservices architecture.</li>
+      <li><strong>Poor Fault Tolerance:</strong> Network failures and node crashes are extremely common in distributed systems. 2PC cannot handle these scenarios gracefully.</li>
+      <li><strong>Performance Bottleneck:</strong> The additional round-trips and locking add significant latency, making it unsuitable for high-throughput microservices.</li>
+      <li><strong>No Native Broker Support:</strong> Kafka, RabbitMQ, and REST (the standard tools of microservices) simply do not support distributed 2PC.</li>
+    </ol>
+  </div>
+
+  <!-- 3PC -->
+  <h2><span class="num">1.2</span> Three-Phase Commit (3PC)</h2>
+  <div class="card">
+    <div class="card-title"><span class="icon">🔧</span> What is 3PC? — Fixing 2PC's Biggest Problem</div>
+    <p>3PC adds a middle phase — <strong>PreCommit</strong> — as a "warning shot" before the final commit. Think of it like a group project where you first check everyone's availability (CanCommit?), then tell everyone "we're definitely doing this, get ready" (PreCommit), and finally say "GO!" (DoCommit). The key insight: if the project manager (coordinator) disappears after the "get ready" announcement, everyone already knows a commit is coming and can proceed independently.</p>
+    <p>Introduced by <strong>Dale Skeen in 1982</strong> to eliminate indefinite blocking caused by coordinator failure in 2PC.</p>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">The 2PC Problem 3PC Solves</div>
+    In 2PC: if both the coordinator AND a participant fail during the Commit phase, a new coordinator <strong>cannot determine</strong> whether a commit occurred — all remaining participants block indefinitely. 3PC introduces a "Prepared-to-Commit" state that allows any new coordinator to infer the correct decision.
+  </div>
+
+  <h3>The Three Phases in Detail</h3>
+  <div class="callout info">
+    <div class="callout-title">Phase 1 — CanCommit (Vote)</div>
+    Coordinator sends <strong>CanCommit?</strong> to all participants. Each replies YES or NO. If ANY says NO → coordinator sends immediate ABORT to all.
+  </div>
+  <div class="callout good">
+    <div class="callout-title">Phase 2 — PreCommit (Prepare)</div>
+    If all voted YES → coordinator sends <strong>PreCommit</strong>. Participants write to recovery log, enter "prepared" state (not yet committed), send ACK. <em>KEY: All participants now KNOW a commit is coming — coordinator can safely fail here.</em>
+  </div>
+  <div class="callout info" style="border-color:var(--accent3); background:rgba(67,217,162,0.07)">
+    <div class="callout-title">Phase 3 — DoCommit (Commit)</div>
+    Coordinator sends <strong>DoCommit</strong>. Participants make changes permanent, release locks, send final ACK. If coordinator fails HERE, participants can safely commit independently (they're all in PreCommit state).
+  </div>
+
+  <div class="protocol">
+<span class="coord">Coordinator</span>          <span class="part">Participant 1</span>      <span class="part">Participant 2</span>
+<span class="phase-label">─── PHASE 1: CanCommit ──────────────────────────</span>
+<span class="coord">──► CanCommit? ───────────────────────────────►</span>
+<span class="part">◄── YES ◄──────────────────────────────────────</span>
+<span class="phase-label">─── PHASE 2: PreCommit ──────────────────────────</span>
+<span class="coord">──► PreCommit ────────────────────────────────►</span>
+<span class="part">◄── ACK ◄──────────────────────────────────────</span>
+<span class="phase-label">─── PHASE 3: DoCommit ───────────────────────────</span>
+<span class="coord">──► DoCommit ─────────────────────────────────►</span>
+<span class="part">◄── ACK ◄──────────────────────────────────────</span>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Critical Limitation of 3PC</div>
+    3PC assumes <strong>bounded network delays</strong>. In real-world systems with <strong>network partitions</strong> (split-brain scenarios), 3PC can violate atomicity — different partitions may make conflicting commit decisions. This is why it's rarely used in production.
+  </div>
+
+  <!-- 2PC vs 3PC Table -->
+  <h2><span class="num">1.3</span> 2PC vs 3PC — Head-to-Head</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Criterion</th><th>2PC</th><th>3PC</th></tr></thead>
+      <tbody>
+        <tr><td>Number of Phases</td><td>2 (Prepare, Commit/Abort)</td><td>3 (CanCommit, PreCommit, DoCommit)</td></tr>
+        <tr><td>Blocking on Failure</td><td class="no">YES — blocks if coordinator crashes</td><td class="yes">NO — recover independently via PreCommit</td></tr>
+        <tr><td>Message Rounds (RTTs)</td><td>2 RTTs (lower latency)</td><td>3 RTTs (higher latency)</td></tr>
+        <tr><td>Fault Tolerance</td><td class="no">Low — single coordinator failure halts all</td><td class="yes">Higher — new coordinator can infer state</td></tr>
+        <tr><td>Network Partitions</td><td>Blocks on partition</td><td class="no">Can violate atomicity (split-brain)</td></tr>
+        <tr><td>Complexity</td><td>Moderate</td><td>High — extra state, messages, recovery logic</td></tr>
+        <tr><td>Real-world Use</td><td>Some RDBMS & XA transactions</td><td class="no">Rarely used; mostly academic</td></tr>
+        <tr><td>Microservices Fit</td><td class="no">Poor — blocking, tight coupling</td><td class="no">Slightly better but still impractical</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SAGA -->
+  <h2><span class="num">1.4</span> Saga Pattern — The Right Answer for Microservices</h2>
+  <div class="card">
+    <div class="card-title"><span class="icon">⚡</span> Context: The Problem Saga Solves</div>
+    <p>In microservices, each service owns its own database (the <strong>Database Per Service</strong> pattern). When a business transaction spans multiple services — like placing an order that must check inventory AND charge a customer — you cannot use a single ACID transaction. 2PC and 3PC are not viable.</p>
+    <p><strong>Classic Example:</strong> An e-commerce order must not exceed a customer's credit limit. Orders and Customers live in <em>separate databases</em> — a simple local ACID transaction is impossible.</p>
+  </div>
+
+  <div class="callout good">
+    <div class="callout-title">Saga Definition</div>
+    Implement each business transaction spanning multiple services as a <strong>saga</strong> — a sequence of local transactions. Each local transaction updates the database and publishes an event. If a step fails, <strong>compensating transactions</strong> undo all previously completed steps.
+  </div>
+
+  <h3>Two Coordination Approaches</h3>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎵</span> Approach 1: Choreography (Event-Driven)</div>
+    <p><strong>Analogy:</strong> A relay race. Each runner (service) runs their leg, then passes the baton (event) to the next runner. No coach (central coordinator) tells each runner what to do — they react to receiving the baton automatically.</p>
+    <ol class="steps">
+      <li>Order Service creates order → publishes <strong>OrderCreatedEvent</strong></li>
+      <li>Payment Service listens → charges customer → publishes <strong>PaymentCompletedEvent</strong></li>
+      <li>Inventory Service listens → reserves stock → publishes <strong>InventoryReservedEvent</strong></li>
+    </ol>
+    <div class="callout bad">
+      <div class="callout-title">Failure & Compensation</div>
+      If Payment fails → publishes <strong>PaymentFailedEvent</strong> → Order Service listens → cancels order (compensating action). If Inventory fails → publishes <strong>InventoryFailedEvent</strong> → Payment Service listens → issues refund.
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✔ Pros</h4>
+        <ul>
+          <li>Loosely coupled services</li>
+          <li>No single point of failure</li>
+          <li>Natural for event-driven architecture</li>
+          <li>Works great with Kafka/RabbitMQ</li>
+          <li>Simpler for small workflows</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Cons</h4>
+        <ul>
+          <li>Hard to understand overall flow</li>
+          <li>Complex failure handling</li>
+          <li>No central monitoring point</li>
+          <li>Event ordering challenges</li>
+          <li>Coordination effort grows with complexity</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Approach 2: Orchestration (Centralized)</div>
+    <p><strong>Analogy:</strong> A conductor leading an orchestra. The conductor (orchestrator) tells each musician (service) exactly when and what to play. The orchestra members don't know about each other — only the conductor knows the full score.</p>
+    <p>A central <strong>CreateOrderSaga orchestrator</strong> manages the entire flow:</p>
+    <ol class="steps">
+      <li>Orchestrator → Order Service: <strong>createOrder()</strong> → sets state = PENDING</li>
+      <li>Orchestrator → Payment Service: <strong>reserveCredit()</strong> → charge customer</li>
+      <li>Orchestrator → Inventory Service: <strong>reserveInventory()</strong> → reserve stock → state = APPROVED</li>
+    </ol>
+    <div class="callout bad">
+      <div class="callout-title">On Failure</div>
+      If creditLimitExceeded → Orchestrator sends <strong>rejectOrder()</strong> to Order Service → state = REJECTED. (Inventory not yet reached → no compensation needed there.)
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✔ Pros</h4>
+        <ul>
+          <li>Centralized control & visibility</li>
+          <li>Clear business logic flow</li>
+          <li>Better error handling & retries</li>
+          <li>Easy monitoring & observability</li>
+          <li>Consistent flow execution</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Cons</h4>
+        <ul>
+          <li>Tight coupling with orchestrator</li>
+          <li>Single point of failure</li>
+          <li>Scalability constraints</li>
+          <li>Complexity accumulates ("god service")</li>
+          <li>Less reactive / asynchronous</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>Saga: Rolling Back & API Design</h3>
+  <div class="callout warn">
+    <div class="callout-title">⚠ Compensating Transactions ≠ ROLLBACK</div>
+    Unlike a simple SQL <code>ROLLBACK TRANSACTION</code>, rolling back a saga requires <strong>compensating transactions</strong> — application-level logic that semantically reverses each committed step. Each completed step needs a corresponding compensating transaction written by the developer.
+  </div>
+
+  <h3>Saga Orchestrator — How It Works</h3>
+  <div class="card">
+    <p>A saga orchestrator is a <strong>persistent object</strong> that tracks saga state and invokes participants.</p>
+    <div class="pros-cons">
+      <div class="pros" style="border-top-color: var(--accent)">
+        <h4 style="color:var(--accent)">On Create</h4>
+        <ul>
+          <li>Invokes the first saga participant</li>
+          <li>Persists state in the database</li>
+          <li>Determines which participant to invoke next</li>
+        </ul>
+      </div>
+      <div class="pros" style="border-top-color: var(--accent4)">
+        <h4 style="color:var(--accent4)">On Reply</h4>
+        <ul>
+          <li>Loads current state from database</li>
+          <li>Determines the next participant</li>
+          <li>Invokes that participant</li>
+          <li>Updates & persists its state</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>API Design: Sync vs Async Saga Initiation</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Option</th><th>Approach</th><th>Response Timing</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td>Synchronous</td><td>Wait for saga to fully complete</td><td>Response specifies outcome</td><td class="no">Reduced availability — client must wait</td></tr>
+        <tr><td><strong>Asynchronous ✔</strong></td><td>Respond immediately after creating saga</td><td>Response doesn't specify outcome</td><td class="yes">Improved availability — client polls or gets notified</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════ PHASE 2: SUMMARY ═══ -->
+<div id="summary" class="section">
+  <div class="phase-header">
+    <div class="phase-num">02</div>
+    <div class="phase-info">
+      <h2>Smart Summary</h2>
+      <p>High-yield bullet points · Hierarchical · Exam-focused</p>
+    </div>
+  </div>
+
+  <div class="summary-block">
+    <h3>🔵 Two-Phase Commit (2PC)</h3>
+    <ul>
+      <li><span class="kw">Purpose:</span> Guarantee atomicity across distributed nodes — all-or-nothing commit</li>
+      <li><span class="kw">Roles:</span> Coordinator (controls) + Participants (execute & vote)</li>
+      <li><span class="kw">Phase 1 (Prepare):</span> Coordinator sends PREPARE → participants vote COMMIT/ABORT</li>
+      <li><span class="kw">Phase 2 (Commit/Abort):</span> All COMMIT → send COMMIT; any ABORT → send ABORT to all</li>
+      <li><span class="kw">Key guarantee:</span> Atomicity ✔ · Strong consistency ✔</li>
+      <li><span class="kw">Key weakness:</span> Blocking if coordinator fails ✗ · Resources locked until resolved ✗</li>
+      <li><span class="kw">Why NOT for microservices:</span> Blocking · Single-point-of-failure · Tight coupling · No broker support · Performance bottleneck · Poor fault tolerance</li>
+    </ul>
+  </div>
+
+  <div class="summary-block">
+    <h3>🟡 Three-Phase Commit (3PC)</h3>
+    <ul>
+      <li><span class="kw">Created by:</span> Dale Skeen, 1982 — extension of 2PC</li>
+      <li><span class="kw">Core fix:</span> Adds PreCommit phase to eliminate indefinite blocking</li>
+      <li><span class="kw">Phase 1 (CanCommit):</span> Vote YES/NO — any NO → immediate ABORT</li>
+      <li><span class="kw">Phase 2 (PreCommit):</span> All say YES → enter "prepared" state — commit is guaranteed</li>
+      <li><span class="kw">Phase 3 (DoCommit):</span> Make changes permanent, release locks</li>
+      <li><span class="kw">Key advantage:</span> Non-blocking recovery — participants can decide independently after PreCommit</li>
+      <li><span class="kw">Key limitation:</span> Assumes bounded delays · NOT partition-safe · 3 RTTs · Complex · Rarely used in production</li>
+    </ul>
+  </div>
+
+  <div class="summary-block">
+    <h3>🟢 Saga Pattern</h3>
+    <ul>
+      <li><span class="kw">Context:</span> Database-per-service pattern — cross-service transactions needed</li>
+      <li><span class="kw">Definition:</span> Sequence of local transactions, each publishing events; compensating transactions on failure</li>
+      <li><span class="kw">Consistency model:</span> Eventual consistency (not strong/ACID)</li>
+      <li><span class="kw">Rollback mechanism:</span> Compensating transactions (NOT database ROLLBACK)</li>
+      <li><span class="kw">Approach 1 — Choreography:</span> Event-driven; each service reacts to events; no central controller; loosely coupled; harder to debug</li>
+      <li><span class="kw">Approach 2 — Orchestration:</span> Central orchestrator commands each service; clear flow; single point of failure risk; easier to monitor</li>
+      <li><span class="kw">Orchestrator:</span> Persistent object — tracks state, persists to DB, invokes participants</li>
+      <li><span class="kw">API recommendation:</span> Asynchronous (respond immediately, client polls for outcome)</li>
+    </ul>
+  </div>
+
+  <div class="summary-block">
+    <h3>⚖️ 2PC vs 3PC vs Saga — Quick Reference</h3>
+    <ul>
+      <li><span class="kw">2PC:</span> 2 phases · blocking · simple · used in RDBMS/XA · NOT for microservices</li>
+      <li><span class="kw">3PC:</span> 3 phases · non-blocking · complex · partition-unsafe · academic/rare</li>
+      <li><span class="kw">Saga:</span> N local transactions · eventual consistency · compensating rollback · THE microservices solution</li>
+      <li><span class="kw">Choreography vs Orchestration:</span> No central brain vs Central brain · Events vs Commands · Decoupled vs Controlled</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════ PHASE 3: MEMORY ═══ -->
+<div id="memory" class="section">
+  <div class="phase-header">
+    <div class="phase-num">03</div>
+    <div class="phase-info">
+      <h2>Memory Optimization</h2>
+      <p>Mnemonics · Chunking · Common Exam Traps · Spaced Repetition Tips</p>
+    </div>
+  </div>
+
+  <h3>🧠 Mnemonics</h3>
+
+  <div class="mnemonic-box">
+    <h4>Remember 2PC Phases</h4>
+    <div class="big"><span>P</span>repare → <span>C</span>ommit</div>
+    <p>"<strong>Politicians Commit</strong>" — Politicians always Prepare their speech before they Commit to a promise</p>
+  </div>
+
+  <div class="mnemonic-box">
+    <h4>Remember 3PC Phases</h4>
+    <div class="big"><span>C</span>an · <span>P</span>re · <span>D</span>o</div>
+    <p>"<strong>Can People Do it?</strong>" — CanCommit · PreCommit · DoCommit</p>
+  </div>
+
+  <div class="mnemonic-box">
+    <h4>2PC's 6 Problems in Microservices</h4>
+    <div class="big"><span>B</span>S<span>T</span>P<span>P</span>N</div>
+    <p><strong>B</strong>locking · <strong>S</strong>ingle-point-of-failure · <strong>T</strong>ight coupling · <strong>P</strong>oor fault tolerance · <strong>P</strong>erformance bottleneck · <strong>N</strong>o broker support</p>
+  </div>
+
+  <div class="mnemonic-box">
+    <h4>Saga Choreography vs Orchestration</h4>
+    <div class="big" style="font-size:1.5rem"><span>C</span>horeography = <span>C</span>haos (distributed) · <span>O</span>rchestration = <span>O</span>ne boss</div>
+    <p>Choreography: think of a <strong>dance</strong> — everyone reacts to music (events) on their own. Orchestration: think of an <strong>orchestra</strong> — one conductor controls everything.</p>
+  </div>
+
+  <h3>🧩 Chunking Strategy</h3>
+  <div class="rev-grid">
+    <div class="rev-card">
+      <h4>Chunk 1: Blocking Protocols</h4>
+      <ul>
+        <li>2PC = 2 phases, BLOCKS on failure</li>
+        <li>3PC = 3 phases, NON-BLOCKING (but partition-unsafe)</li>
+        <li>Both unsuitable for microservices</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Chunk 2: Saga Mechanics</h4>
+      <ul>
+        <li>Local transactions + events</li>
+        <li>Compensating transactions for rollback</li>
+        <li>Eventual consistency (not ACID)</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Chunk 3: Choreography</h4>
+      <ul>
+        <li>Event-driven, no central controller</li>
+        <li>OrderCreatedEvent → PaymentCompletedEvent → InventoryReservedEvent</li>
+        <li>Good: decoupled · Bad: hard to debug</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Chunk 4: Orchestration</h4>
+      <ul>
+        <li>Central orchestrator sends commands</li>
+        <li>createOrder() → reserveCredit() → reserveInventory()</li>
+        <li>Good: clear flow · Bad: single point of failure</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>⚠️ Common Exam Traps & Mistakes</h3>
+  <div class="card">
+    <details>
+      <summary>Trap 1: "3PC is always better than 2PC"</summary>
+      <div>❌ FALSE. 3PC is <strong>non-blocking</strong>, but it's more complex, has higher latency (3 vs 2 RTTs), and is <strong>NOT partition-safe</strong>. In real production systems, 3PC is rarely used. The better answer for microservices is the <strong>Saga Pattern</strong>.</div>
+    </details>
+    <details>
+      <summary>Trap 2: "Saga uses ROLLBACK to undo transactions"</summary>
+      <div>❌ FALSE. Saga uses <strong>compensating transactions</strong> — application-level logic written by the developer. There is NO database ROLLBACK. Each committed local transaction has a corresponding compensating transaction that semantically reverses it.</div>
+    </details>
+    <details>
+      <summary>Trap 3: "Choreography has a central coordinator"</summary>
+      <div>❌ FALSE. Choreography is the <strong>decentralized</strong> approach — no central coordinator. Services react autonomously to events. The <strong>Orchestration</strong> approach has a central coordinator (the orchestrator).</div>
+    </details>
+    <details>
+      <summary>Trap 4: "2PC guarantees consistency in microservices"</summary>
+      <div>❌ MISLEADING. While 2PC guarantees atomicity, it's <strong>not suitable</strong> for microservices because of blocking, tight coupling, no broker support, and poor fault tolerance. The Saga Pattern provides eventual consistency which is the correct trade-off for microservices.</div>
+    </details>
+    <details>
+      <summary>Trap 5: "3PC solves network partitions"</summary>
+      <div>❌ FALSE. 3PC can actually <strong>violate atomicity</strong> during network partitions (split-brain scenario). It assumes bounded network delays, which don't exist in real-world distributed systems. 3PC reduces blocking but does NOT solve the partition problem.</div>
+    </details>
+    <details>
+      <summary>Trap 6: "Orchestration is better than Choreography"</summary>
+      <div>❌ NEITHER IS UNIVERSALLY BETTER. Orchestration offers better control and monitoring. Choreography offers better decoupling and resilience. Choice depends on system complexity, team structure, and requirements.</div>
+    </details>
+  </div>
+
+  <h3>📅 Spaced Repetition Hints</h3>
+  <div class="callout info">
+    <div class="callout-title">Study Schedule Recommendation</div>
+    <p><strong>Day 1:</strong> Read the full explanation of 2PC, 3PC, and Saga.<br>
+    <strong>Day 2:</strong> Review the summary without looking at explanations. Quiz yourself on differences.<br>
+    <strong>Day 3:</strong> Do all MCQs. Focus on wrong answers.<br>
+    <strong>Day 5:</strong> Redo the tricky MCQs. Write out the choreography flow from memory.<br>
+    <strong>Day before exam:</strong> Read only the Rapid Revision sheet.</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════ PHASE 4: MCQ ═══ -->
+<div id="mcq" class="section">
+  <div class="phase-header">
+    <div class="phase-num">04</div>
+    <div class="phase-info">
+      <h2>Exam Training — MCQs</h2>
+      <p>30 questions · Easy / Medium / Hard · Click to reveal answers</p>
+    </div>
+  </div>
+
+  <div class="mcq-score">
+    <div>
+      <div class="score-display" id="scoreDisplay">0 <span>/ 0 answered</span></div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-dim)">Score updates as you answer</div>
+    </div>
+    <button class="reset-btn" onclick="resetMCQ()">↺ Reset All</button>
+  </div>
+
+  <div id="mcq-container"></div>
+</div>
+
+<!-- ═════════════════════════════════════════ PHASE 5: WRITTEN ═══ -->
+<div id="written" class="section">
+  <div class="phase-header">
+    <div class="phase-num">05</div>
+    <div class="phase-info">
+      <h2>Written Questions</h2>
+      <p>Short answer + Long form · Model answers included</p>
+    </div>
+  </div>
+
+  <div id="written-container"></div>
+</div>
+
+<!-- ═════════════════════════════════════════ PHASE 6: REVISION ═══ -->
+<div id="revision" class="section">
+  <div class="phase-header">
+    <div class="phase-num">06</div>
+    <div class="phase-info">
+      <h2>Rapid Revision Sheet</h2>
+      <p>Night-before-exam cheat sheet · Ultra-compressed · High yield</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">Night Before Exam — Read This Only</div>
+    Everything you need in one place. Read once, sleep well.
+  </div>
+
+  <div class="rev-grid">
+    <div class="rev-card">
+      <h4>2PC — Key Facts</h4>
+      <ul>
+        <li><strong>2 phases:</strong> Prepare → Commit/Abort</li>
+        <li><strong>Goal:</strong> Atomicity (all-or-nothing)</li>
+        <li><strong>Roles:</strong> Coordinator + Participants</li>
+        <li><strong>Phase 1:</strong> PREPARE → VOTE-COMMIT/ABORT</li>
+        <li><strong>Phase 2:</strong> All commit? COMMIT. Any abort? ABORT</li>
+        <li><strong>Problem:</strong> BLOCKING if coordinator fails</li>
+        <li><strong>NOT for microservices</strong> (6 reasons: B-S-T-P-P-N)</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>3PC — Key Facts</h4>
+      <ul>
+        <li><strong>3 phases:</strong> CanCommit → PreCommit → DoCommit</li>
+        <li><strong>By:</strong> Dale Skeen, 1982</li>
+        <li><strong>Fixes:</strong> 2PC's indefinite blocking</li>
+        <li><strong>Key idea:</strong> PreCommit = all know commit is coming</li>
+        <li><strong>Participants can commit independently</strong> after PreCommit</li>
+        <li><strong>NOT partition-safe</strong> (split-brain risk)</li>
+        <li><strong>Rarely used in production</strong></li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Saga Pattern — Key Facts</h4>
+      <ul>
+        <li><strong>Context:</strong> Database-per-service</li>
+        <li><strong>= Sequence</strong> of local transactions</li>
+        <li><strong>Rollback:</strong> Compensating transactions (NOT ROLLBACK)</li>
+        <li><strong>Consistency:</strong> Eventual (not ACID)</li>
+        <li><strong>2 types:</strong> Choreography + Orchestration</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Choreography</h4>
+      <ul>
+        <li>Event-driven, <strong>no central controller</strong></li>
+        <li>OrderCreated → PaymentCompleted → InventoryReserved</li>
+        <li>Failure: compensating events published</li>
+        <li>✔ Loosely coupled, resilient</li>
+        <li>✗ Hard to debug, no central monitoring</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Orchestration</h4>
+      <ul>
+        <li><strong>Central orchestrator</strong> sends commands</li>
+        <li>createOrder() → reserveCredit() → reserveInventory()</li>
+        <li>Failure: orchestrator triggers compensation</li>
+        <li>✔ Clear flow, easy to monitor</li>
+        <li>✗ Single point of failure, "god service"</li>
+      </ul>
+    </div>
+    <div class="rev-card">
+      <h4>Critical Distinctions</h4>
+      <ul>
+        <li>2PC blocks ← coordinator failure</li>
+        <li>3PC non-blocking but ← partition-unsafe</li>
+        <li>Saga uses <strong>compensating transactions</strong></li>
+        <li>Choreography: events · Orchestration: commands</li>
+        <li>Async API response = recommended for sagas</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mnemonic-box">
+    <h4>Ultimate Decision Tree</h4>
+    <div style="font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--text-muted); line-height:2.2; text-align:left">
+      Need distributed transaction?<br>
+      ├── RDBMS / few nodes → <strong style="color:var(--accent4)">2PC</strong> (XA)<br>
+      ├── Need non-blocking + not worried about partitions → <strong style="color:var(--accent4)">3PC</strong> (rarely practical)<br>
+      └── Microservices / high availability needed → <strong style="color:var(--accent3)">SAGA PATTERN ✔</strong><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── Small, simple, event-driven → <strong style="color:var(--accent)">Choreography</strong><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;└── Complex, need monitoring → <strong style="color:var(--accent)">Orchestration</strong>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Protocol</th><th>Phases</th><th>RTTs</th><th>Blocks?</th><th>Partition-safe?</th><th>Production use?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>2PC</strong></td><td>2</td><td>2</td><td class="no">YES</td><td class="no">NO (blocks)</td><td>RDBMS/XA only</td></tr>
+        <tr><td><strong>3PC</strong></td><td>3</td><td>3</td><td class="yes">NO</td><td class="no">NO (split-brain)</td><td>Rarely</td></tr>
+        <tr><td><strong>Saga</strong></td><td>N local</td><td>N</td><td class="yes">NO</td><td class="yes">YES</td><td class="yes">YES — microservices</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  IS-352 · System Analysis & Design 2 · Lecture 11 · Dr. Wael Abbas · 2025–2026<br>
+  Generated Exam Preparation System · All content derived from course material
+</footer>
+
+<script>
+// ── NAV ──
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach((b, i) => {
+    const ids = ['explain','summary','memory','mcq','written','revision'];
+    b.classList.toggle('active', ids[i] === id);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── THEME ──
+function toggleTheme() {
+  document.body.classList.toggle('light');
+}
+
+// ── MCQ DATA ──
+const mcqs = [
+  {
+    q: "What does 2PC stand for and what is its primary goal?",
+    opts: ["Two-Phase Completion — ensuring all transactions are completed within two steps","Two-Phase Commit — ensuring atomicity across distributed nodes","Two-Phase Control — managing network partitions in distributed systems","Two-Phase Communication — enabling message passing between nodes"],
+    ans: 1,
+    diff: "easy",
+    exp: "2PC = Two-Phase Commit. Its primary goal is to guarantee <strong>atomicity</strong> across distributed nodes — ensuring all participating nodes either commit or abort a transaction (all-or-nothing)."
+  },
+  {
+    q: "In 2PC, what happens if even ONE participant votes ABORT during Phase 1?",
+    opts: ["Only that participant aborts; others continue and commit","The coordinator retries the PREPARE phase","The coordinator sends ABORT to ALL participants","The coordinator waits for the participant to recover and re-vote"],
+    ans: 2,
+    diff: "easy",
+    exp: "2PC is all-or-nothing. If ANY participant votes ABORT, the coordinator sends ABORT to <strong>ALL</strong> participants. No partial commits are allowed."
+  },
+  {
+    q: "What is the correct sequence of messages in the 2PC Prepare phase?",
+    opts: ["Coordinator sends COMMIT → Participants send ACK","Coordinator sends PREPARE → Participants send VOTE-COMMIT or VOTE-ABORT","Participants send PREPARE → Coordinator sends VOTE","Coordinator sends ABORT → Participants send VOTE-ABORT"],
+    ans: 1,
+    diff: "easy",
+    exp: "Phase 1 (Prepare): Coordinator sends <strong>PREPARE</strong> to all participants. Each participant executes the transaction, writes to its recovery log, and replies with either <strong>VOTE-COMMIT</strong> or <strong>VOTE-ABORT</strong>."
+  },
+  {
+    q: "Which of the following is NOT one of the 6 critical problems that make 2PC unsuitable for microservices?",
+    opts: ["Blocking Protocol","Single Point of Failure","Lack of ACID guarantees","No Native Broker Support"],
+    ans: 2,
+    diff: "medium",
+    exp: "The 6 problems are: Blocking Protocol, Single Point of Failure, Tight Coupling, Poor Fault Tolerance, Performance Bottleneck, and No Native Broker Support. '2PC actually provides ACID-like guarantees for atomicity' — the issue is not lack of ACID, but rather the operational problems of blocking, coupling, and broker incompatibility."
+  },
+  {
+    q: "What does 3PC add that 2PC lacks?",
+    opts: ["A second coordinator for redundancy","A PreCommit (intermediate) phase between voting and committing","Support for Kafka and RabbitMQ","Automatic conflict resolution for network partitions"],
+    ans: 1,
+    diff: "easy",
+    exp: "3PC adds the <strong>PreCommit phase</strong> (also called CanCommit/PreCommit/DoCommit). This intermediate phase ensures all participants know a commit is coming before it actually happens, allowing them to recover independently if the coordinator fails."
+  },
+  {
+    q: "Who introduced the Three-Phase Commit protocol and when?",
+    opts: ["Leslie Lamport, 1978","Jim Gray, 1979","Dale Skeen, 1982","Edgar Codd, 1970"],
+    ans: 2,
+    diff: "medium",
+    exp: "3PC was introduced by <strong>Dale Skeen in 1982</strong> as an extension of 2PC to eliminate indefinite blocking caused by coordinator failure."
+  },
+  {
+    q: "In 3PC, what is the KEY insight of the PreCommit phase?",
+    opts: ["It allows participants to commit locally without coordinator approval","All participants know a commit is coming, so they can safely recover independently if the coordinator fails","It reduces the number of messages needed for commitment","It enables participants to vote multiple times if needed"],
+    ans: 1,
+    diff: "medium",
+    exp: "The key insight: after PreCommit, <strong>all participants know a commit is coming</strong>. If the coordinator fails at this point, any new coordinator can safely infer the correct decision from participant states — eliminating indefinite blocking."
+  },
+  {
+    q: "How many round-trip times (RTTs) does 3PC require compared to 2PC?",
+    opts: ["2PC: 1 RTT, 3PC: 2 RTTs","2PC: 2 RTTs, 3PC: 3 RTTs","2PC: 3 RTTs, 3PC: 4 RTTs","Both require the same number of RTTs"],
+    ans: 1,
+    diff: "medium",
+    exp: "2PC requires <strong>2 RTTs</strong> (Prepare + Commit/Abort). 3PC requires <strong>3 RTTs</strong> (CanCommit + PreCommit + DoCommit). This extra RTT adds latency for every transaction."
+  },
+  {
+    q: "What is the critical limitation of 3PC in real-world distributed systems?",
+    opts: ["It requires a central coordinator at all times","It assumes bounded network delays and is NOT partition-safe (split-brain risk)","It only works with relational databases","It cannot handle more than 3 participants"],
+    ans: 1,
+    diff: "hard",
+    exp: "3PC's critical limitation: it <strong>assumes bounded network delays</strong> — an assumption that rarely holds in production. During network partitions (split-brain), different partitions may make conflicting commit decisions, violating atomicity."
+  },
+  {
+    q: "In the context of 3PC, what does 'split-brain' refer to?",
+    opts: ["The coordinator having two conflicting states simultaneously","A network partition where different parts of the system make conflicting commit/abort decisions","A participant that votes both COMMIT and ABORT","A recovery mechanism that splits the transaction into smaller parts"],
+    ans: 1,
+    diff: "hard",
+    exp: "<strong>Split-brain</strong> occurs during a network partition: different partitions of the system may make conflicting decisions (one commits, another aborts), violating atomicity. This is why 3PC is not partition-safe."
+  },
+  {
+    q: "What pattern is recommended for implementing cross-service transactions in microservices?",
+    opts: ["Two-Phase Commit (2PC)","Three-Phase Commit (3PC)","Saga Pattern","XA Transactions"],
+    ans: 2,
+    diff: "easy",
+    exp: "The <strong>Saga Pattern</strong> is the recommended solution for cross-service transactions in microservices. It uses local transactions with compensating transactions for failure scenarios, providing eventual consistency without distributed locks."
+  },
+  {
+    q: "What is the 'Database per Service' pattern in the context of Sagas?",
+    opts: ["A pattern where all microservices share a single central database","Each microservice has its own dedicated database, making simple ACID transactions across services impossible","A pattern where services replicate each other's databases","A pattern where services access databases through a shared API"],
+    ans: 1,
+    diff: "easy",
+    exp: "In the <strong>Database per Service</strong> pattern, each microservice owns its own dedicated database. This means cross-service transactions cannot use a single ACID transaction — which is exactly why the Saga Pattern is needed."
+  },
+  {
+    q: "What is a 'compensating transaction' in the Saga Pattern?",
+    opts: ["A standard database ROLLBACK command issued across services","An application-level transaction that semantically reverses a previously committed local transaction","A retry mechanism that re-executes a failed transaction","A two-phase commit used only for compensation steps"],
+    ans: 1,
+    diff: "medium",
+    exp: "A <strong>compensating transaction</strong> is application-level logic that semantically reverses a previously committed local transaction. Unlike a database ROLLBACK, it must be explicitly written by the developer for each step in the saga."
+  },
+  {
+    q: "In Choreography-based Saga for order placement, if the Payment Service fails, what event does it publish?",
+    opts: ["OrderFailedEvent","InventoryFailedEvent","PaymentFailedEvent","CreditLimitExceededEvent"],
+    ans: 2,
+    diff: "medium",
+    exp: "The Payment Service publishes <strong>PaymentFailedEvent</strong>. The Order Service listens to this event and triggers its compensating action — cancelling the order (setting state = CANCELLED)."
+  },
+  {
+    q: "In Orchestration-based Saga, what command does the orchestrator send to the Payment Service?",
+    opts: ["processPayment()","chargeCustomer()","reserveCredit()","verifyFunds()"],
+    ans: 2,
+    diff: "medium",
+    exp: "The CreateOrderSaga orchestrator sends <strong>reserveCredit()</strong> to the Payment Service. The sequence is: createOrder() → reserveCredit() → reserveInventory()."
+  },
+  {
+    q: "Which of the following is a key advantage of Choreography over Orchestration?",
+    opts: ["Easier to debug and monitor the overall flow","Centralized control of the entire saga","No single point of failure — no orchestrator to crash","Clearer business logic defined in one place"],
+    ans: 2,
+    diff: "medium",
+    exp: "Choreography's key advantage: <strong>no single point of failure</strong> — since there's no central orchestrator, the system is more resilient. Each service reacts independently to events."
+  },
+  {
+    q: "Which is a key disadvantage of Orchestration compared to Choreography?",
+    opts: ["Event ordering challenges","The orchestrator can become a 'god service' — accumulating too much business logic","Harder to understand the overall flow","Services must handle their own compensating actions independently"],
+    ans: 1,
+    diff: "medium",
+    exp: "Orchestration's key disadvantage: business logic accumulates in the orchestrator, leading to a <strong>'god service' anti-pattern</strong> — where one service becomes too complex and a bottleneck. Also, the orchestrator is a single point of failure."
+  },
+  {
+    q: "A saga orchestrator is best described as:",
+    opts: ["A stateless service that coordinates service calls without persistence","A persistent object that tracks saga state and invokes participants, persisting state to a database","A message broker that routes events between services","A load balancer that distributes transaction requests"],
+    ans: 1,
+    diff: "hard",
+    exp: "A saga orchestrator is a <strong>persistent object</strong> that tracks the state of the saga and invokes participants at each step. On each reply, it loads current state from the database, determines the next participant, invokes it, then updates and persists its own state."
+  },
+  {
+    q: "For Saga API design, which approach is recommended and why?",
+    opts: ["Synchronous — so the client always knows the outcome immediately","Asynchronous — because it improves availability; the client polls or gets notified","Synchronous — because it's simpler to implement","Asynchronous — because it provides stronger consistency guarantees"],
+    ans: 1,
+    diff: "medium",
+    exp: "<strong>Asynchronous</strong> is recommended. The service responds immediately after creating the saga (improving availability), and the client must poll or be notified upon completion. Synchronous responses reduce availability because the client must wait for the entire saga to complete."
+  },
+  {
+    q: "What type of consistency does the Saga Pattern provide?",
+    opts: ["Strong consistency (ACID)","Eventual consistency","Linearizability","Causal consistency"],
+    ans: 1,
+    diff: "medium",
+    exp: "The Saga Pattern provides <strong>eventual consistency</strong> — not ACID/strong consistency. Each service commits its local transaction independently, and consistency is achieved eventually through the chain of local transactions and compensating transactions."
+  },
+  {
+    q: "In the 3PC CanCommit phase, what happens if ANY participant replies NO?",
+    opts: ["The coordinator retries the CanCommit phase after a timeout","The coordinator immediately sends ABORT to all participants","The coordinator moves to the PreCommit phase with remaining YES participants","The coordinator waits for all participants to respond before deciding"],
+    ans: 1,
+    diff: "medium",
+    exp: "In 3PC Phase 1 (CanCommit): if ANY participant says NO, the coordinator sends <strong>immediate ABORT</strong> to all participants. This is analogous to 2PC's behavior on VOTE-ABORT."
+  },
+  {
+    q: "Which tools are standard in microservices that do NOT natively support 2PC?",
+    opts: ["Oracle, MySQL, PostgreSQL","Kafka, RabbitMQ, REST","Docker, Kubernetes, Helm","Git, Jenkins, Ansible"],
+    ans: 1,
+    diff: "easy",
+    exp: "<strong>Kafka, RabbitMQ, and REST</strong> are standard microservices tools that do not support distributed 2PC. This is one of the 6 reasons 2PC is unsuitable for microservices."
+  },
+  {
+    q: "What is the 'happy path' in the choreographed Order Placement Saga?",
+    opts: ["Order → Inventory → Payment → Confirmed","Order (PENDING) → OrderCreatedEvent → Payment (PAID) → PaymentCompletedEvent → Inventory (RESERVED)","Payment → Order → Inventory → Confirmed","Inventory → Payment → Order → Confirmed"],
+    ans: 1,
+    diff: "medium",
+    exp: "Happy path: Order Service creates order (state=PENDING) → publishes <strong>OrderCreatedEvent</strong> → Payment Service charges customer (state=PAID) → publishes <strong>PaymentCompletedEvent</strong> → Inventory Service reserves stock (state=RESERVED)."
+  },
+  {
+    q: "In the Orchestrated Saga failure path, if credit limit is exceeded, what specific compensating action occurs?",
+    opts: ["Orchestrator sends cancelPayment() to Payment Service","Orchestrator sends rejectOrder() to Order Service (state = REJECTED)","Orchestrator sends returnInventory() to Inventory Service","Orchestrator sends refundCustomer() to Payment Service"],
+    ans: 1,
+    diff: "hard",
+    exp: "If <strong>creditLimitExceeded</strong>: the orchestrator sends <strong>rejectOrder()</strong> to the Order Service, setting state = REJECTED. Note: since Inventory Service was not yet reached, no compensation is needed there."
+  },
+  {
+    q: "Why are Kafka, RabbitMQ preferred with Choreography over Orchestration?",
+    opts: ["They provide stronger ACID guarantees","They natively support asynchronous event-driven communication — perfect for service-to-service event publishing","They provide better security than REST APIs","They support distributed 2PC transactions"],
+    ans: 1,
+    diff: "hard",
+    exp: "Kafka and RabbitMQ are message brokers that natively support <strong>asynchronous event-driven communication</strong>. Choreography's model — where services publish and subscribe to events — maps perfectly to these tools. Orchestration uses direct command-reply communication."
+  },
+  {
+    q: "What does 'participant releases held locks' mean in Phase 2 of 2PC?",
+    opts: ["The participant deletes its recovery log entries","The participant frees database resources (rows, tables) it was holding exclusively during the transaction","The participant disconnects from the coordinator","The participant resets its connection to the database"],
+    ans: 1,
+    diff: "hard",
+    exp: "During a transaction, participants hold <strong>exclusive locks</strong> on database resources (rows, tables) to prevent other transactions from modifying them. After Phase 2 (commit or abort), these locks are released, allowing other transactions to proceed. This locking is why 2PC causes performance bottlenecks."
+  },
+  {
+    q: "In the Orchestration Saga, services do NOT need to know about each other. What does this mean?",
+    opts: ["Services cannot communicate at all","Each service only receives commands from the orchestrator and sends replies to it — they have no direct knowledge of other services","Services share a common database schema","Services use the same programming language"],
+    ans: 1,
+    diff: "hard",
+    exp: "In Orchestration, each service only interacts with the <strong>orchestrator</strong> — receiving commands and sending replies. Services don't know about or communicate with each other directly. This is a form of decoupling, though services are still tightly coupled to the orchestrator itself."
+  },
+  {
+    q: "Which statement about 3PC is CORRECT?",
+    opts: ["3PC is widely used in production microservices systems","3PC completely eliminates the possibility of atomicity violations","3PC reduces (but doesn't fully eliminate) blocking issues compared to 2PC, but introduces partition-safety concerns","3PC requires fewer messages than 2PC"],
+    ans: 2,
+    diff: "hard",
+    exp: "3PC <strong>reduces but doesn't fully eliminate</strong> blocking issues. It's non-blocking for coordinator failures (after PreCommit), but during network partitions, it can still violate atomicity. It requires MORE messages than 2PC (3 vs 2 RTTs), and is rarely used in production."
+  },
+  {
+    q: "Why is the Choreography approach considered 'harder to understand'?",
+    opts: ["Services are written in different programming languages","The flow is spread across many services with no single place to view the overall saga — debugging requires tracing events across multiple services","It requires more database connections","It doesn't support error handling"],
+    ans: 1,
+    diff: "medium",
+    exp: "In Choreography, <strong>the flow is distributed across many services</strong>. There's no single place (like a diagram or dashboard) that shows the complete saga flow. Debugging requires tracing events across multiple services and logs, making it very difficult to understand and troubleshoot."
+  },
+  {
+    q: "What is a 'recovery log' in the context of 2PC and 3PC?",
+    opts: ["A system error log for debugging coordinator failures","A persistent log where participants write transaction details before voting, enabling recovery after failure","A network monitoring tool for detecting packet loss","A backup database that stores transaction history"],
+    ans: 1,
+    diff: "hard",
+    exp: "A <strong>recovery log</strong> is a persistent log where participants write transaction details before voting. If a participant crashes and restarts, it can read the recovery log to determine what the transaction was doing and whether it should commit or abort — enabling crash recovery."
+  },
+  {
+    q: "A company uses microservices with Kafka. Orders must check inventory AND process payment. 2PC was rejected. Which is the BEST architectural approach and why?",
+    opts: ["Use 3PC because it is non-blocking and works with Kafka","Use Saga Pattern with Choreography because services can publish/subscribe to Kafka events, are loosely coupled, and no central coordinator is needed","Use Saga Pattern with Orchestration because it provides ACID guarantees","Use 2PC with a REST API adapter that wraps Kafka"],
+    ans: 1,
+    diff: "hard",
+    exp: "The <strong>Saga Pattern with Choreography</strong> is best here. Kafka natively supports event-driven communication. Choreography maps perfectly — Order Service publishes OrderCreatedEvent, Payment Service subscribes, etc. There's no central coordinator (resilient), services are loosely coupled, and it works natively with Kafka. 3PC doesn't support Kafka. 2PC doesn't support Kafka. Orchestration could also work but Choreography is more natural with Kafka's event model."
+  }
+];
+
+// ── RENDER MCQs ──
+let score = 0, answered = 0;
+function renderMCQ() {
+  const container = document.getElementById('mcq-container');
+  container.innerHTML = '';
+  mcqs.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'mcq-item';
+    div.id = `mcq-${qi}`;
+    div.innerHTML = `
+      <span class="mcq-num">Question ${qi+1} of ${mcqs.length}</span>
+      <span class="difficulty ${q.diff}">${q.diff}</span>
+      <div class="mcq-q">${q.q}</div>
+      <ul class="options">
+        ${q.opts.map((opt, oi) => `
+          <li><button onclick="answerMCQ(${qi},${oi})" id="opt-${qi}-${oi}">${String.fromCharCode(65+oi)}. ${opt}</button></li>
+        `).join('')}
+      </ul>
+      <div class="explanation" id="exp-${qi}"><strong>💡 Explanation:</strong> ${q.exp}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function answerMCQ(qi, oi) {
+  const q = mcqs[qi];
+  const buttons = document.querySelectorAll(`#mcq-${qi} .options button`);
+  if (buttons[0].disabled) return; // already answered
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === oi && oi !== q.ans) btn.classList.add('wrong');
+  });
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  answered++;
+  if (oi === q.ans) score++;
+  document.getElementById('scoreDisplay').innerHTML = `${score} <span>/ ${answered} answered</span>`;
+}
+
+function resetMCQ() {
+  score = 0; answered = 0;
+  document.getElementById('scoreDisplay').innerHTML = `0 <span>/ 0 answered</span>`;
+  renderMCQ();
+}
+
+// ── WRITTEN QUESTIONS DATA ──
+const writtenQs = [
+  {
+    type: "short",
+    q: "What are the two phases of the Two-Phase Commit protocol? Briefly describe each.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Phase 1 — Prepare (Voting):</strong> The coordinator sends a PREPARE message to all participants. Each participant executes the transaction up to the commit point, writes details to its recovery log, and replies with VOTE-COMMIT (ready) or VOTE-ABORT (problem detected).</li>
+      <li><strong>Phase 2 — Commit/Abort:</strong> If all participants voted COMMIT, the coordinator sends COMMIT to all. If any participant voted ABORT, the coordinator sends ABORT to all. Each participant finalizes (commits or aborts), releases held locks, and sends ACK back to the coordinator.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "List any four reasons why 2PC is NOT suitable for microservices architectures.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Blocking Protocol:</strong> Participants lock resources until all respond — if the coordinator fails, participants block indefinitely.</li>
+      <li><strong>Single Point of Failure:</strong> Coordinator failure during commit leaves participants unable to determine whether to commit or rollback.</li>
+      <li><strong>Tight Coupling:</strong> Creates hard cross-service dependencies, violating microservices' independence principle.</li>
+      <li><strong>No Native Broker Support:</strong> Kafka, RabbitMQ, and REST — standard microservices tools — do not support distributed 2PC.</li>
+      <li><em>(Also valid: Poor Fault Tolerance, Performance Bottleneck)</em></li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "What specific problem does 3PC solve that 2PC cannot handle, and HOW does it solve it?",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Problem 2PC cannot handle:</strong> In 2PC, if both the coordinator AND a participant fail during the Commit phase, a new coordinator cannot determine whether a commit occurred — all remaining participants block indefinitely.</li>
+      <li><strong>How 3PC solves it:</strong> 3PC introduces the <strong>PreCommit phase</strong>. No participant commits until all participants are known to be in the "Prepared" state. If the coordinator fails after PreCommit, a new coordinator can safely infer that all participants expected a commit, and they can proceed to commit independently — eliminating indefinite blocking.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "Define the Saga Pattern and explain what 'compensating transactions' are.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Saga Pattern:</strong> Each business transaction spanning multiple services is implemented as a saga — a sequence of local transactions. Each local transaction updates its own database and publishes an event or message to trigger the next step.</li>
+      <li><strong>Compensating Transactions:</strong> If a step fails, the saga executes compensating transactions to undo all previously committed local transactions. Unlike a database ROLLBACK, these are application-level transactions explicitly written by the developer that semantically reverse each committed step.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "What is the difference between Choreography and Orchestration in the Saga Pattern?",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Choreography (Decentralized):</strong> Each service publishes domain events and reacts to events published by other services. There is no central coordinator — services are autonomous and loosely coupled. Failure triggers compensating events automatically.</li>
+      <li><strong>Orchestration (Centralized):</strong> A central orchestrator manages the entire saga — telling each service what to execute via commands. Explicit business logic flow is defined in one place, making it easier to debug but creating a single point of failure.</li>
+    </ul>`
+  },
+  {
+    type: "long",
+    q: "Compare and contrast 2PC and 3PC across the following dimensions: (a) number of phases and RTTs, (b) behavior on coordinator failure, (c) behavior on network partitions, (d) real-world usage. Conclude with which is preferable for microservices and why.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>(a) Phases & RTTs:</strong> 2PC has 2 phases (Prepare, Commit/Abort) requiring 2 RTTs. 3PC has 3 phases (CanCommit, PreCommit, DoCommit) requiring 3 RTTs — higher latency per transaction.</li>
+      <li><strong>(b) Coordinator Failure:</strong> 2PC: if the coordinator fails during Commit, all participants BLOCK INDEFINITELY — they cannot commit or rollback independently. 3PC: if coordinator fails after PreCommit, participants can RECOVER INDEPENDENTLY and commit safely because they know a commit decision was made.</li>
+      <li><strong>(c) Network Partitions:</strong> 2PC blocks on partition. 3PC can violate atomicity — different partitions may make conflicting commit/abort decisions (split-brain), because 3PC assumes bounded network delays which don't hold during partitions.</li>
+      <li><strong>(d) Real-world Use:</strong> 2PC is used in some RDBMS and XA transaction systems. 3PC is rarely used in production — mostly academic. Most systems use Saga, Paxos, or Raft instead.</li>
+      <li><strong>Conclusion:</strong> NEITHER is suitable for microservices. Both create blocking or partition problems, involve tight coupling, add latency, and have no native broker support (Kafka, RabbitMQ, REST). The <strong>Saga Pattern</strong> — with its local transactions and compensating transactions — is the correct solution for microservices, providing eventual consistency without distributed locks or coordinator bottlenecks.</li>
+    </ul>`
+  },
+  {
+    type: "long",
+    q: "An e-commerce platform uses microservices with separate databases for Order, Payment, and Inventory services. Design a Choreography-based Saga for placing an order. Include: (a) the happy path flow with event names, (b) what happens if the Payment step fails, (c) two advantages and two disadvantages of this approach.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>(a) Happy Path:</strong><br>
+        1. Order Service creates order (state=PENDING) → publishes <strong>OrderCreatedEvent</strong><br>
+        2. Payment Service listens to OrderCreatedEvent → charges customer → publishes <strong>PaymentCompletedEvent</strong><br>
+        3. Inventory Service listens to PaymentCompletedEvent → reserves stock → publishes <strong>InventoryReservedEvent</strong> (state=RESERVED)</li>
+      <li><strong>(b) Payment Failure:</strong><br>
+        Payment Service fails → publishes <strong>PaymentFailedEvent</strong> → Order Service listens → executes compensating transaction: cancels order (state=CANCELLED). Inventory Service is not involved since payment failed before reaching it.</li>
+      <li><strong>(c) Advantages:</strong> (1) Loosely coupled — no central coordinator means services are independent and autonomous. (2) No single point of failure — resilient; if one service crashes, others continue processing events from the broker.</li>
+      <li><strong>Disadvantages:</strong> (1) Hard to debug — the overall flow is distributed across services; tracing a failed saga requires correlating events across multiple logs. (2) Event ordering challenges — must handle out-of-order events and message duplication; requires idempotency guarantees.</li>
+    </ul>`
+  },
+  {
+    type: "long",
+    q: "Explain the role and behavior of a Saga Orchestrator. How does it handle (a) starting a saga and (b) receiving a reply? Additionally, explain why asynchronous API response is preferred over synchronous for saga initiation.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Saga Orchestrator Definition:</strong> A persistent object that tracks the state of the saga and invokes participants at each step. It persists its state to a database to survive failures.</li>
+      <li><strong>(a) On Create (Starting):</strong> Invokes the first saga participant → persists its current state to the database → determines which participant to invoke next → waits for a reply before proceeding.</li>
+      <li><strong>(b) On Reply (Handling Response):</strong> Loads current state from the database → determines the next saga participant based on the reply → invokes that participant → updates and persists its state → waits for the next reply.</li>
+      <li><strong>Async vs Sync API Response:</strong><br>
+        <strong>Synchronous:</strong> Client waits for the full saga to complete before receiving a response. Provides the outcome directly but reduces availability — the client is blocked during the entire saga execution.<br>
+        <strong>Asynchronous (Recommended):</strong> Service responds immediately after creating the saga. Client must poll or be notified upon completion. Improves availability significantly because the client is not blocked. Trade-off: client must handle eventual notification and the response does not include the final outcome immediately.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "Why is it incorrect to say that the Saga Pattern uses ROLLBACK for error recovery? What does it use instead?",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Why ROLLBACK is incorrect:</strong> A database ROLLBACK undoes an uncommitted transaction within a single database. In the Saga Pattern, each service's local transaction is committed independently to its own database. By the time a failure occurs, earlier steps are already permanently committed — a simple ROLLBACK cannot cross service boundaries or databases.</li>
+      <li><strong>What Saga uses instead:</strong> <strong>Compensating transactions</strong> — application-level logic explicitly written by the developer for each step. These semantically reverse a committed step (e.g., if payment was committed, the compensating transaction issues a refund). Each committed step must have a corresponding compensating transaction.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "In which scenario is Orchestration preferable to Choreography, and in which is Choreography preferable?",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Prefer Orchestration when:</strong> The saga is complex with many steps and conditional branches; you need centralized monitoring, debugging, and observability; the business logic must be auditable in one place; the team needs to track saga state easily.</li>
+      <li><strong>Prefer Choreography when:</strong> Services are small, the workflow is simple and linear; maximum service autonomy and decoupling is required; you're already using an event-driven architecture (Kafka/RabbitMQ); resilience and no single point of failure are priorities.</li>
+    </ul>`
+  },
+  {
+    type: "long",
+    q: "A student argues: '3PC is strictly better than 2PC because it eliminates blocking. Therefore, 3PC should always be used instead of 2PC.' Critically evaluate this statement. Address: blocking behavior, latency, partition safety, complexity, and real-world adoption.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Blocking:</strong> The student is partially correct — 3PC does reduce blocking after PreCommit by allowing participants to recover independently. However, 3PC only eliminates blocking for specific coordinator-failure scenarios. During network partitions, 3PC can cause split-brain violations.</li>
+      <li><strong>Latency:</strong> 3PC requires 3 RTTs vs 2PC's 2 RTTs — every transaction incurs higher latency. In high-throughput systems, this overhead is significant and favors 2PC when blocking is not a concern.</li>
+      <li><strong>Partition Safety:</strong> 3PC is NOT partition-safe. It assumes bounded network delays. In real distributed systems, network partitions violate this assumption, causing different partitions to make conflicting commit/abort decisions — a potential atomicity violation worse than blocking.</li>
+      <li><strong>Complexity:</strong> 3PC is significantly more complex — extra state tracking, additional messages, and complex recovery logic. This increases the chance of implementation bugs.</li>
+      <li><strong>Real-world Adoption:</strong> 3PC is rarely used in production. Most systems prefer Saga (microservices), Paxos, or Raft for coordination. The claim that 3PC "should always be used" is incorrect — most production systems avoid it.</li>
+      <li><strong>Conclusion:</strong> The statement is an oversimplification. 3PC solves ONE specific problem of 2PC (coordinator-failure blocking) but introduces new problems (partition-unsafe, higher latency, complexity). Neither 2PC nor 3PC is suitable for microservices. The correct solution is the Saga Pattern.</li>
+    </ul>`
+  },
+  {
+    type: "short",
+    q: "What are the 3 phases of 3PC in order? For each, state the message sent by the coordinator and what happens if the coordinator fails at that point.",
+    answer: `<h5>Model Answer</h5><ul>
+      <li><strong>Phase 1 — CanCommit:</strong> Coordinator sends CanCommit? If coordinator fails here: participants simply haven't started → safe to abort. No data has been changed.</li>
+      <li><strong>Phase 2 — PreCommit:</strong> Coordinator sends PreCommit. If coordinator fails here: participants are in "prepared" state and KNOW a commit is coming → new coordinator or participants can safely commit independently. This is the key safety guarantee of 3PC.</li>
+      <li><strong>Phase 3 — DoCommit:</strong> Coordinator sends DoCommit. If coordinator fails here: participants are already committing or have committed → they can complete safely on their own. State is deterministic.</li>
+    </ul>`
+  }
+];
+
+function renderWritten() {
+  const container = document.getElementById('written-container');
+  container.innerHTML = '';
+  writtenQs.forEach((wq, i) => {
+    const div = document.createElement('div');
+    div.className = 'wq-item';
+    div.innerHTML = `
+      <div class="wq-label">${wq.type === 'short' ? '✏️ Short Answer' : '📝 Long Answer / Essay'} · Q${i+1}</div>
+      <div class="wq-q">${wq.q}</div>
+      <button class="toggle-answer-btn" onclick="toggleAnswer(${i})">Show Model Answer</button>
+      <div class="model-answer" id="wq-ans-${i}">${wq.answer}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function toggleAnswer(i) {
+  const ans = document.getElementById(`wq-ans-${i}`);
+  const btn = ans.previousElementSibling;
+  ans.classList.toggle('show');
+  btn.textContent = ans.classList.contains('show') ? 'Hide Model Answer' : 'Show Model Answer';
+}
+
+// ── INIT ──
+renderMCQ();
+renderWritten();
+</script>
+</body>
+</html>
