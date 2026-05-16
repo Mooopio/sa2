@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CQRS Pattern — Exam Preparation System</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface2: #edeae3;
+  --border: #d6d2c8;
+  --text: #1a1814;
+  --text2: #5a5650;
+  --text3: #8a8680;
+  --accent: #1a4fd6;
+  --accent-bg: #e8edfb;
+  --accent2: #c84b11;
+  --accent2-bg: #faeee8;
+  --green: #1a7a3c;
+  --green-bg: #e4f4eb;
+  --red: #b91c1c;
+  --red-bg: #fdeaea;
+  --amber: #92400e;
+  --amber-bg: #fef3c7;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Sora', sans-serif;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+[data-theme="dark"] {
+  --bg: #111010;
+  --surface: #1c1b1a;
+  --surface2: #252422;
+  --border: #333230;
+  --text: #f0ede8;
+  --text2: #a8a49e;
+  --text3: #6a6660;
+  --accent: #5d8af0;
+  --accent-bg: #1a2240;
+  --accent2: #e8713a;
+  --accent2-bg: #2a1608;
+  --green: #4ade80;
+  --green-bg: #0d2918;
+  --red: #f87171;
+  --red-bg: #2a0d0d;
+  --amber: #fcd34d;
+  --amber-bg: #271c03;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+a{color:var(--accent)}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase}
+.logo span{color:var(--text2)}
+.header-right{display:flex;gap:8px;align-items:center}
+.theme-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;font-family:var(--sans);transition:all .2s}
+.theme-btn:hover{background:var(--border)}
+
+/* NAV TABS */
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0;overflow-x:auto}
+.tab{padding:14px 20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text3);border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:var(--sans);letter-spacing:.02em}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* CONTENT */
+main{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+section{display:none}
+section.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow)}
+.card-accent{border-left:4px solid var(--accent)}
+.card-orange{border-left:4px solid var(--accent2)}
+.card-green{border-left:4px solid var(--green)}
+.card-red{border-left:4px solid var(--red)}
+
+h1{font-size:28px;font-weight:700;margin-bottom:.4rem}
+h2{font-size:20px;font-weight:600;margin-bottom:1rem;color:var(--text)}
+h3{font-size:16px;font-weight:600;margin-bottom:.6rem;color:var(--text)}
+p{line-height:1.75;color:var(--text2);margin-bottom:.75rem;font-size:15px}
+p:last-child{margin-bottom:0}
+ul,ol{padding-left:1.2rem;color:var(--text2);font-size:15px;line-height:1.8}
+li{margin-bottom:.25rem}
+strong{color:var(--text);font-weight:600}
+
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:.75rem;letter-spacing:.04em}
+.badge-blue{background:var(--accent-bg);color:var(--accent)}
+.badge-orange{background:var(--accent2-bg);color:var(--accent2)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+
+.hero{background:var(--accent-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:1.75rem 2rem;margin-bottom:2rem}
+.hero h1{color:var(--accent)}
+.hero p{color:var(--accent);opacity:.85;font-size:15px;margin:0}
+.hero .sub{font-family:var(--mono);font-size:12px;margin-bottom:.5rem;opacity:.7;color:var(--accent)}
+
+/* CONCEPT BOX */
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+@media(max-width:620px){.concept-grid{grid-template-columns:1fr}}
+.concept-box{background:var(--surface2);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--border)}
+.concept-box h4{font-size:14px;font-weight:600;margin-bottom:.5rem;color:var(--accent)}
+
+/* ANALOGY */
+.analogy{background:var(--amber-bg);border:1px solid var(--amber);border-radius:var(--radius);padding:1.25rem;margin:1rem 0}
+.analogy .label{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--amber);margin-bottom:.4rem}
+.analogy p{color:var(--amber);font-size:14px;margin:0}
+
+/* HIGHLIGHT */
+.highlight{background:var(--accent-bg);border-radius:6px;padding:2px 7px;color:var(--accent);font-family:var(--mono);font-size:13px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;color:var(--text);border:1px solid var(--border)}
+td{padding:10px 14px;border:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--surface2)}
+
+/* COLLAPSIBLE */
+.collapsible{cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.collapsible .arrow{font-size:18px;color:var(--text3);transition:transform .25s}
+.collapsible.open .arrow{transform:rotate(180deg)}
+.collapsible-body{display:none;margin-top:1rem}
+.collapsible-body.open{display:block}
+
+/* MCQ */
+.mcq-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
+.mcq-q{font-weight:600;font-size:15px;margin-bottom:1rem;color:var(--text);line-height:1.6}
+.mcq-num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;margin-bottom:.5rem}
+.mcq-diff{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:10px;float:right}
+.diff-easy{background:var(--green-bg);color:var(--green)}
+.diff-med{background:var(--amber-bg);color:var(--amber)}
+.diff-hard{background:var(--red-bg);color:var(--red)}
+.option{display:block;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:14px;color:var(--text2);transition:all .2s;background:var(--surface)}
+.option:hover{background:var(--surface2);border-color:var(--accent)}
+.option.correct{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.option.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.option.reveal{background:var(--accent-bg);border-color:var(--accent)}
+.answer-exp{margin-top:1rem;padding:1rem;background:var(--surface2);border-radius:8px;font-size:14px;color:var(--text2);display:none;line-height:1.7}
+.answer-exp.show{display:block}
+.mcq-controls{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.btn{padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--sans);font-weight:600;transition:all .2s}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{opacity:.9}
+.btn-sm{padding:6px 12px;font-size:12px}
+.score-bar{background:var(--surface2);border-radius:20px;height:8px;margin:1rem 0;overflow:hidden}
+.score-fill{height:100%;background:var(--accent);border-radius:20px;transition:width .5s}
+.score-info{font-family:var(--mono);font-size:13px;color:var(--text2)}
+
+/* WRITTEN Q */
+.wq-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
+.wq-type{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:.5rem}
+.wq-q{font-weight:600;font-size:15px;color:var(--text);margin-bottom:.75rem}
+.model-ans{background:var(--surface2);border-radius:8px;padding:1.25rem;margin-top:.75rem;display:none}
+.model-ans.show{display:block}
+.model-ans h4{font-size:13px;font-family:var(--mono);color:var(--green);margin-bottom:.75rem;font-weight:600}
+.model-ans p{font-size:14px}
+.model-ans ul{font-size:14px}
+.show-ans-btn{margin-top:.75rem}
+
+/* REVISION */
+.revision-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:620px){.revision-grid{grid-template-columns:1fr}}
+.rev-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.rev-box h3{font-size:14px;font-family:var(--mono);font-weight:600;margin-bottom:.75rem;color:var(--accent);letter-spacing:.03em}
+.rev-box ul{font-size:13px;padding-left:1rem}
+.rev-box li{margin-bottom:.35rem;color:var(--text2)}
+.cheat-sheet{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1.5px solid var(--accent);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem}
+.cheat-sheet h2{color:var(--accent);font-family:var(--mono);font-size:16px;margin-bottom:1rem}
+.mnemonic{background:var(--accent-bg);border-radius:8px;padding:1rem 1.25rem;margin:.75rem 0;font-family:var(--mono);font-size:14px;color:var(--accent)}
+.mnemonic strong{font-size:18px;display:block;margin-bottom:.25rem}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface2);height:4px;border-radius:2px;margin-bottom:2rem;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+
+/* SUMMARY */
+.summary-item{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.6rem}
+.summary-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:.4rem;flex-shrink:0}
+.summary-dot.orange{background:var(--accent2)}
+.summary-dot.green{background:var(--green)}
+.summary-dot.red{background:var(--red)}
+
+/* PRINT */
+@media print{nav,header .header-right{display:none}section{display:block!important}}
+
+/* ANIMATIONS */
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+section.active{animation:fadein .25s ease}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS352 <span>/</span> Lecture 12 <span>—</span> CQRS Pattern</div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" onclick="showSection('explain',this)">📖 Deep Explanation</button>
+  <button class="tab" onclick="showSection('summary',this)">📋 Smart Summary</button>
+  <button class="tab" onclick="showSection('memory',this)">🧠 Memory Tricks</button>
+  <button class="tab" onclick="showSection('mcq',this)">❓ MCQ Practice</button>
+  <button class="tab" onclick="showSection('written',this)">✍️ Written Qs</button>
+  <button class="tab" onclick="showSection('revision',this)">⚡ Rapid Revision</button>
+</nav>
+
+<main>
+
+<!-- ==================== SECTION 1: EXPLANATION ==================== -->
+<section id="explain" class="active">
+  <div class="hero">
+    <div class="sub">PHASE 1 — DEEP UNDERSTANDING</div>
+    <h1>CQRS Design Pattern</h1>
+    <p>Command Query Responsibility Segregation — separating reads from writes in microservices architecture</p>
+  </div>
+
+  <div class="card card-accent">
+    <div class="badge badge-blue">FOUNDATION</div>
+    <h2>What is CQRS?</h2>
+    <p><strong>CQRS</strong> stands for <strong>Command Query Responsibility Segregation</strong>. It is a design pattern that separates the operations that <em>change data</em> (commands) from the operations that <em>read data</em> (queries) into completely different models and often different databases.</p>
+    <p>In traditional systems (especially monolithic apps), a <strong>single database</strong> handles everything — both complex joins for reading and CRUD operations for writing. As the system grows, this becomes unmanageable.</p>
+    <div class="analogy">
+      <div class="label">💡 REAL-WORLD ANALOGY</div>
+      <p>Think of a library. The <strong>librarian who checks out books</strong> (write side) and the <strong>search catalog computer</strong> (read side) are completely different systems. The catalog is optimized for fast searching, while the checkout system handles the actual transactions. They don't interfere with each other — they just stay in sync.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-orange">THE PROBLEM CQRS SOLVES</div>
+    <h2>Why Do We Need CQRS?</h2>
+    <p>In a typical monolithic app with one database:</p>
+    <ul>
+      <li>A query joining <strong>10+ tables</strong> locks the database due to query computation latency</li>
+      <li>Complex CRUD operations with validations and business logic also lock the database</li>
+      <li>You can't scale reads and writes independently</li>
+      <li>Security policies can't easily differ for reads vs. writes</li>
+      <li>Read-heavy applications suffer because they're using the same DB as write-heavy operations</li>
+    </ul>
+    <p>CQRS solves this by applying the <strong>"Separation of Concerns"</strong> principle — use different strategies, different databases, different models for reading and writing.</p>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-blue">CORE CONCEPTS</div>
+    <h2>The Two Sides of CQRS</h2>
+    <div class="concept-grid">
+      <div class="concept-box">
+        <h4>⚡ COMMAND MODEL (Write Side)</h4>
+        <ul>
+          <li>Handles operations that <strong>change state</strong></li>
+          <li>Examples: <span class="highlight">CreateOrder</span>, <span class="highlight">UpdateCustomer</span>, <span class="highlight">CancelInvoice</span></li>
+          <li>Processed by <strong>command handlers</strong></li>
+          <li>Validates inputs &amp; enforces business rules</li>
+          <li>Emits <strong>domain events</strong> after applying changes</li>
+          <li>Often uses a <strong>relational database</strong> for ACID guarantees</li>
+        </ul>
+      </div>
+      <div class="concept-box">
+        <h4>🔍 QUERY MODEL (Read Side)</h4>
+        <ul>
+          <li>Handles <strong>data retrieval only</strong> — never modifies state</li>
+          <li>Optimized for performance using simplified views</li>
+          <li>May use <strong>Elasticsearch</strong> or denormalized SQL</li>
+          <li>Returns data as <strong>DTO objects (JSON)</strong></li>
+          <li>Often uses <strong>NoSQL</strong> for fast reads</li>
+          <li>Can be scaled independently from the write side</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-orange">KEY CONCEPT</div>
+    <h2>Eventual Consistency</h2>
+    <p>Because the write and read models are decoupled, changes made via commands are <strong>not instantly reflected</strong> in the query model. Updates propagate asynchronously using <strong>domain events</strong> or <strong>Change Data Capture (CDC)</strong>.</p>
+    <p>This is called <strong>Eventual Consistency</strong> — the system <em>eventually</em> becomes consistent given enough time and no new updates.</p>
+    <div class="analogy">
+      <div class="label">💡 ANALOGY</div>
+      <p>Like a bank account — when you deposit money at an ATM, your main account updates immediately (write), but it might take a few minutes for the transaction to show up in your phone app (read). Eventually, both show the same balance.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-blue">ARCHITECTURE PATTERNS</div>
+    <h2>CQRS + Kafka (Broker) — Manual Event Publishing</h2>
+    <p>Kafka serves as the <strong>backbone for event propagation</strong> between the write and read sides.</p>
+    <ul>
+      <li>After a command executes, the service <strong>explicitly publishes a domain event to Kafka</strong></li>
+      <li>Kafka decouples services and ensures <strong>event durability and replayability</strong></li>
+      <li>Full control over what events are published and the payload</li>
+    </ul>
+    <p><strong>Cons:</strong> Risk of dual writes (DB and Kafka out of sync). Requires <strong>Outbox Pattern</strong> or transactional Kafka for reliability.</p>
+    <p><strong>Best for:</strong> Systems where business events are central; teams comfortable managing Kafka.</p>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-green">ADVANCED PATTERN</div>
+    <h2>CQRS + Kafka + CDC (Debezium)</h2>
+    <p><strong>CDC (Change Data Capture)</strong> captures changes in the database and streams them as events — commonly using <strong>Debezium</strong>.</p>
+    <ul>
+      <li>The service <strong>only writes to the DB</strong> — no manual event publishing needed</li>
+      <li>Debezium automatically captures DB changes and emits them to Kafka</li>
+      <li>Strong consistency between DB changes and events</li>
+      <li>Great for legacy systems or minimizing write-side code changes</li>
+    </ul>
+    <p><strong>Cons:</strong> Events are low-level (row changes, not rich business events). Harder to express domain intent. Debezium + Kafka Connect adds infrastructure complexity.</p>
+    <p><strong>Best for:</strong> Synchronizing read models; teams already using Debezium; event-driven architectures preferring minimal write-side logic.</p>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-green">BENEFITS</div>
+    <h2>Benefits of CQRS</h2>
+    <div class="concept-grid">
+      <div class="concept-box">
+        <h4>📈 Scalability</h4>
+        <p style="font-size:14px;color:var(--text2)">Scale read and write sides independently based on their workload characteristics.</p>
+      </div>
+      <div class="concept-box">
+        <h4>⚡ Performance</h4>
+        <p style="font-size:14px;color:var(--text2)">Each model is optimized for its specific task — no compromises.</p>
+      </div>
+      <div class="concept-box">
+        <h4>🔒 Security</h4>
+        <p style="font-size:14px;color:var(--text2)">Enforce different security policies for reads vs. writes.</p>
+      </div>
+      <div class="concept-box">
+        <h4>📜 Auditability</h4>
+        <p style="font-size:14px;color:var(--text2)">Combined with Event Sourcing, enables full traceability and historical reconstruction.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-red">
+    <div class="badge badge-red">CHALLENGES — EXAM TRAP</div>
+    <h2>Challenges of CQRS</h2>
+    <ul>
+      <li><strong>Increased Complexity:</strong> Managing separate read/write models, event propagation, and eventual consistency</li>
+      <li><strong>Maintenance Overhead:</strong> Data duplication and synchronization between models must be handled</li>
+      <li><strong>Latency:</strong> Asynchronous update of query models introduces lag (eventual consistency)</li>
+      <li><strong>Not needed for simple apps:</strong> If CRUD is sufficient, CQRS adds more complexity than benefit</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-blue">CONTEXT</div>
+    <h2>Other Data Management Patterns (from the lecture)</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Pattern</th><th>Purpose</th></tr>
+        <tr><td><strong>Database per service</strong></td><td>Each microservice has its own private database</td></tr>
+        <tr><td><strong>Shared database</strong></td><td>Multiple services share a database</td></tr>
+        <tr><td><strong>SAGA</strong></td><td>Sequences of local transactions to maintain data consistency across services</td></tr>
+        <tr><td><strong>CQRS</strong></td><td>Separate read and write models for queries and commands</td></tr>
+        <tr><td><strong>Event Sourcing</strong></td><td>Persist aggregates as a sequence of events</td></tr>
+        <tr><td><strong>Domain Event</strong></td><td>Publish an event whenever data changes</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 2: SUMMARY ==================== -->
+<section id="summary">
+  <div class="hero">
+    <div class="sub">PHASE 2 — SMART SUMMARY</div>
+    <h1>High-Impact Summary</h1>
+    <p>Hierarchical bullet-point summary of all key concepts</p>
+  </div>
+
+  <div class="card card-accent">
+    <h2>🎯 CQRS — Core Definition</h2>
+    <div class="summary-item"><div class="summary-dot"></div><div><strong>CQRS</strong> = Command Query Responsibility Segregation</div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>Separates <strong>commands</strong> (write/change data) from <strong>queries</strong> (read data) into different models</div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>Solves the problem of one database handling both <strong>complex joins</strong> and <strong>complex CRUD</strong></div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>Applies <strong>Separation of Concerns</strong> principle to database operations</div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>Often uses <strong>NoSQL for reads</strong> and <strong>relational DB for writes</strong></div></div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ Command Model</h2>
+    <div class="summary-item"><div class="summary-dot orange"></div><div>Handles <strong>state-changing operations</strong></div></div>
+    <div class="summary-item"><div class="summary-dot orange"></div><div>Examples: <strong>CreateOrder, UpdateCustomer, CancelInvoice</strong></div></div>
+    <div class="summary-item"><div class="summary-dot orange"></div><div>Processed by <strong>command handlers</strong></div></div>
+    <div class="summary-item"><div class="summary-dot orange"></div><div>Validates inputs, enforces <strong>business rules</strong>, emits <strong>domain events</strong></div></div>
+    <div class="summary-item"><div class="summary-dot orange"></div><div>Can use <strong>message broker</strong> (Kafka) to process commands asynchronously</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🔍 Query Model</h2>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Never modifies</strong> the database</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div>Returns <strong>DTO objects (JSON)</strong></div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div>Uses <strong>Elasticsearch</strong> or denormalized SQL tables</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div>Can be <strong>scaled independently</strong> from the write side</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Eventual Consistency</h2>
+    <div class="summary-item"><div class="summary-dot"></div><div>Write and read models are <strong>decoupled</strong></div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>Changes propagate <strong>asynchronously</strong> via domain events or CDC</div></div>
+    <div class="summary-item"><div class="summary-dot"></div><div>System <strong>eventually becomes consistent</strong> — introduces lag</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📡 Architecture Variations</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Variation</th><th>How It Works</th><th>Pros</th><th>Cons</th></tr>
+        <tr>
+          <td><strong>CQRS + Kafka</strong></td>
+          <td>Service manually publishes events to Kafka after command</td>
+          <td>Full control, no extra tooling</td>
+          <td>Risk of dual writes; needs Outbox pattern</td>
+        </tr>
+        <tr>
+          <td><strong>CQRS + Kafka + CDC</strong></td>
+          <td>Debezium captures DB changes → streams to Kafka automatically</td>
+          <td>No manual publishing, strong consistency</td>
+          <td>Low-level events; complex infra; no domain intent</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <h2>✅ Benefits</h2>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Scalability</strong> — scale reads/writes independently</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Performance</strong> — each model optimized for its task</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Security</strong> — different policies for reads/writes</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Auditability</strong> — full traceability with Event Sourcing</div></div>
+    <div class="summary-item"><div class="summary-dot green"></div><div><strong>Separation of Concerns</strong> — independent development teams</div></div>
+  </div>
+
+  <div class="card card-red">
+    <h2>❌ Challenges</h2>
+    <div class="summary-item"><div class="summary-dot red"></div><div><strong>Increased Complexity</strong> — managing two models + event propagation</div></div>
+    <div class="summary-item"><div class="summary-dot red"></div><div><strong>Maintenance Overhead</strong> — data duplication and synchronization</div></div>
+    <div class="summary-item"><div class="summary-dot red"></div><div><strong>Latency</strong> — async updates introduce lag in read model</div></div>
+    <div class="summary-item"><div class="summary-dot red"></div><div><strong>Overkill for simple apps</strong> — CRUD may be sufficient</div></div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 3: MEMORY ==================== -->
+<section id="memory">
+  <div class="hero">
+    <div class="sub">PHASE 3 — MEMORY OPTIMIZATION</div>
+    <h1>Memory Tricks & Mnemonics</h1>
+    <p>Advanced learning techniques to make CQRS stick forever</p>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-blue">MNEMONIC</div>
+    <h2>Remember CQRS Benefits</h2>
+    <div class="mnemonic">
+      <strong>S.S.P.S.A.</strong>
+      <span style="font-size:13px">Scalability · Separation of Concerns · Performance · Security · Auditability</span>
+    </div>
+    <div class="mnemonic">
+      <strong>"Some Students Pass Security Audits"</strong>
+      <span style="font-size:13px">Each word starts with: S·S·P·S·A — the 5 CQRS benefits!</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-orange">MNEMONIC</div>
+    <h2>Remember CQRS Challenges</h2>
+    <div class="mnemonic">
+      <strong>I.M.L.N.</strong>
+      <span style="font-size:13px">Increased Complexity · Maintenance Overhead · Latency · Not needed for simple apps</span>
+    </div>
+    <div class="mnemonic">
+      <strong>"I Must Learn Now"</strong>
+      <span style="font-size:13px">I·M·L·N — the 4 CQRS challenges!</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-green">CHUNKING</div>
+    <h2>Mental Model: The Restaurant Kitchen</h2>
+    <div class="concept-grid">
+      <div class="concept-box">
+        <h4>👨‍🍳 Write Side = The Kitchen</h4>
+        <p style="font-size:14px;color:var(--text2)">The kitchen <em>changes</em> things — it cooks, modifies, creates. It has its own strict processes (business rules), and when a dish is done, it rings a bell (domain event).</p>
+      </div>
+      <div class="concept-box">
+        <h4>🖥️ Read Side = The Menu</h4>
+        <p style="font-size:14px;color:var(--text2)">The menu <em>shows</em> what's available. It never cooks anything — it's optimized to be read quickly. It gets updated when the kitchen announces changes.</p>
+      </div>
+    </div>
+    <p style="margin-top:.75rem"><strong>Eventual Consistency</strong> = When the kitchen adds a new dish, the menu doesn't update instantly. The waiter tells the host, the host updates the printed menu — eventually they match.</p>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-blue">COMPARISON TABLE</div>
+    <h2>CQRS vs Kafka vs CDC — Side by Side</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Aspect</th><th>CQRS + Kafka Only</th><th>CQRS + Kafka + CDC</th></tr>
+        <tr><td><strong>Event Publishing</strong></td><td>Manual (code in service)</td><td>Automatic (Debezium)</td></tr>
+        <tr><td><strong>Event Type</strong></td><td>Rich domain events</td><td>Low-level row changes</td></tr>
+        <tr><td><strong>Consistency</strong></td><td>Risk of dual writes</td><td>Strong (DB is source of truth)</td></tr>
+        <tr><td><strong>Complexity</strong></td><td>Medium</td><td>High (extra infra)</td></tr>
+        <tr><td><strong>Domain Intent</strong></td><td>✅ Clear</td><td>❌ Hard to express</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Business event-driven systems</td><td>Legacy systems, minimal code changes</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-red">COMMON EXAM TRAPS</div>
+    <h2>Mistakes to Avoid</h2>
+    <ul>
+      <li>❌ <strong>CQRS is NOT the same as Event Sourcing</strong> — they're complementary, not the same. CQRS separates models; Event Sourcing persists state as events. They're often used together.</li>
+      <li>❌ <strong>The Query model CAN use different data stores</strong> — not just SQL. NoSQL, Elasticsearch, etc. are all valid.</li>
+      <li>❌ <strong>CDC doesn't express domain intent</strong> — it captures what changed (row-level), not why (business logic).</li>
+      <li>❌ <strong>Eventual consistency is a TRADE-OFF</strong>, not just a feature — it introduces lag, which may not be acceptable in some use cases.</li>
+      <li>❌ <strong>CQRS is NOT suitable for simple CRUD apps</strong> — it introduces unnecessary complexity.</li>
+      <li>❌ <strong>Commands go through message brokers asynchronously</strong> — they're not always synchronous like HTTP calls.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-amber">SPACED REPETITION HINTS</div>
+    <h2>Study Schedule</h2>
+    <ul>
+      <li><strong>Day 1:</strong> Read all explanations. Draw the CQRS architecture on paper.</li>
+      <li><strong>Day 2:</strong> Do all MCQs. Review wrong answers.</li>
+      <li><strong>Day 3:</strong> Write out the comparison table from memory. Answer the written questions.</li>
+      <li><strong>Day 5:</strong> Quick revision sheet only. Try to explain CQRS to someone without notes.</li>
+      <li><strong>Night before exam:</strong> Cheat sheet only. Focus on: definition, command vs query model, eventual consistency, CDC vs Kafka-only.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ==================== SECTION 4: MCQ ==================== -->
+<section id="mcq">
+  <div class="hero">
+    <div class="sub">PHASE 4 — EXAM TRAINING</div>
+    <h1>MCQ Practice — 30 Questions</h1>
+    <p>Easy, medium, and hard questions with explanations. Click an option to check your answer.</p>
+  </div>
+
+  <div class="mcq-controls">
+    <button class="btn btn-primary" onclick="revealAll()">👁️ Reveal All Answers</button>
+    <button class="btn" onclick="resetAll()">🔄 Reset Quiz</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div class="score-info">Score: <span id="scoreDisplay">0 / 0</span></div>
+    </div>
+  </div>
+  <div class="score-bar"><div class="score-fill" id="scoreBar" style="width:0%"></div></div>
+
+  <div id="mcqContainer"></div>
+</section>
+
+<!-- ==================== SECTION 5: WRITTEN ==================== -->
+<section id="written">
+  <div class="hero">
+    <div class="sub">PHASE 4 — EXAM TRAINING (WRITTEN)</div>
+    <h1>Written Questions</h1>
+    <p>Short and long-form questions with model answers. Think before you reveal!</p>
+  </div>
+  <div id="writtenContainer"></div>
+</section>
+
+<!-- ==================== SECTION 6: REVISION ==================== -->
+<section id="revision">
+  <div class="hero">
+    <div class="sub">PHASE 5 — RAPID REVISION</div>
+    <h1>⚡ Night-Before Cheat Sheet</h1>
+    <p>Everything you need on exam day — in one page</p>
+  </div>
+
+  <div class="cheat-sheet">
+    <h2>📌 CORE DEFINITION</h2>
+    <p style="font-size:14px;color:var(--text2)"><strong>CQRS</strong> = Command Query Responsibility Segregation — separates <strong>write operations (Commands)</strong> from <strong>read operations (Queries)</strong> using different models, handlers, and often different databases.</p>
+  </div>
+
+  <div class="revision-grid">
+    <div class="rev-box">
+      <h3>⚡ COMMAND MODEL</h3>
+      <ul>
+        <li>Changes application state</li>
+        <li>Creates, updates, deletes data</li>
+        <li>Uses command handlers</li>
+        <li>Emits domain events</li>
+        <li>Enforces business rules</li>
+        <li>Usually relational DB</li>
+        <li>Examples: CreateOrder, UpdateCustomer</li>
+      </ul>
+    </div>
+    <div class="rev-box">
+      <h3>🔍 QUERY MODEL</h3>
+      <ul>
+        <li>NEVER modifies state</li>
+        <li>Returns DTO / JSON</li>
+        <li>Optimized for fast reads</li>
+        <li>Can use NoSQL / Elasticsearch</li>
+        <li>Scaled independently</li>
+        <li>Denormalized views</li>
+        <li>Updated asynchronously</li>
+      </ul>
+    </div>
+    <div class="rev-box">
+      <h3>✅ BENEFITS (S.S.P.S.A.)</h3>
+      <ul>
+        <li><strong>S</strong>calability (independent scaling)</li>
+        <li><strong>S</strong>eparation of Concerns</li>
+        <li><strong>P</strong>erformance (optimized per model)</li>
+        <li><strong>S</strong>ecurity (different policies)</li>
+        <li><strong>A</strong>uditability (with Event Sourcing)</li>
+      </ul>
+    </div>
+    <div class="rev-box">
+      <h3>❌ CHALLENGES (I.M.L.N.)</h3>
+      <ul>
+        <li><strong>I</strong>ncreased complexity</li>
+        <li><strong>M</strong>aintenance overhead</li>
+        <li><strong>L</strong>atency (eventual consistency)</li>
+        <li><strong>N</strong>ot needed for simple apps</li>
+      </ul>
+    </div>
+    <div class="rev-box">
+      <h3>📡 CQRS + KAFKA ONLY</h3>
+      <ul>
+        <li>Service manually publishes events</li>
+        <li>Full control over payload</li>
+        <li>Risk: dual write problem</li>
+        <li>Needs Outbox Pattern</li>
+        <li>Best: business event-driven systems</li>
+      </ul>
+    </div>
+    <div class="rev-box">
+      <h3>🔄 CQRS + KAFKA + CDC</h3>
+      <ul>
+        <li>Debezium captures DB changes</li>
+        <li>No manual event publishing</li>
+        <li>Events are low-level (row changes)</li>
+        <li>Strong DB-event consistency</li>
+        <li>Best: legacy systems</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.25rem">
+    <h2>🔑 Key Terms to Know</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Term</th><th>One-line Definition</th></tr>
+        <tr><td><strong>Command</strong></td><td>An instruction that changes state (write operation)</td></tr>
+        <tr><td><strong>Query</strong></td><td>A request that reads data without modifying it</td></tr>
+        <tr><td><strong>Command Handler</strong></td><td>Processes commands, validates, applies business rules, emits events</td></tr>
+        <tr><td><strong>DTO</strong></td><td>Data Transfer Object — the JSON response from a query</td></tr>
+        <tr><td><strong>Eventual Consistency</strong></td><td>Read model becomes consistent with write model after a delay</td></tr>
+        <tr><td><strong>CDC</strong></td><td>Change Data Capture — captures database changes as events (Debezium)</td></tr>
+        <tr><td><strong>Debezium</strong></td><td>Open-source CDC tool that streams DB changes to Kafka</td></tr>
+        <tr><td><strong>Domain Event</strong></td><td>An event emitted when business state changes</td></tr>
+        <tr><td><strong>Outbox Pattern</strong></td><td>Ensures reliable event publishing by storing events in DB before Kafka</td></tr>
+        <tr><td><strong>Dual Write Problem</strong></td><td>Risk that DB and Kafka become out of sync when writing to both</td></tr>
+        <tr><td><strong>Read-intensive</strong></td><td>An app with mostly read operations; CQRS greatly benefits this</td></tr>
+        <tr><td><strong>Materialized View</strong></td><td>A precomputed, denormalized data view used by the read model</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ====== DATA ======
+const mcqs = [
+  {q:"What does CQRS stand for?",opts:["Command Queue Responsibility System","Command Query Responsibility Segregation","Command Query Resource Segmentation","Concurrent Query Resource System"],ans:1,diff:"easy",exp:"CQRS stands for Command Query Responsibility Segregation — it separates write operations (commands) from read operations (queries) into separate models."},
+  {q:"Which of the following is a primary motivation for using CQRS?",opts:["To reduce the number of microservices","To improve scalability by scaling reads and writes independently","To eliminate the need for a database","To combine read and write models into one"],ans:1,diff:"easy",exp:"CQRS improves scalability by allowing the read side and write side to be scaled independently based on their specific workload demands."},
+  {q:"In CQRS, what does the Command Model do?",opts:["Only reads data and returns DTOs","Handles instructions that alter application state","Stores events as sequences","Manages API gateway routing"],ans:1,diff:"easy",exp:"The Command Model handles state-changing operations like CreateOrder or UpdateCustomer. It validates inputs, enforces business rules, and emits domain events."},
+  {q:"What does the Query Model in CQRS return?",opts:["Raw database rows","XML documents","DTO objects (JSON)","SQL result sets only"],ans:2,diff:"easy",exp:"The Query Model always returns DTO (Data Transfer Object) objects in JSON format. It never modifies any state."},
+  {q:"Which database type is commonly used for the READ side in CQRS?",opts:["Only relational databases","Only graph databases","NoSQL databases (e.g., Elasticsearch)","Only in-memory databases"],ans:2,diff:"easy",exp:"NoSQL databases like Elasticsearch or denormalized SQL tables are commonly used on the read side because they are optimized for fast data retrieval."},
+  {q:"What is 'Eventual Consistency' in a CQRS context?",opts:["The system is always instantly consistent","The write model mirrors the read model in real time","The system becomes consistent after some delay due to async propagation","A type of database transaction"],ans:2,diff:"medium",exp:"Eventual Consistency means that because write and read models are decoupled, changes propagate asynchronously and the read model may lag behind the write model for a short period, but will eventually catch up."},
+  {q:"Which tool is commonly used to implement CDC (Change Data Capture)?",opts:["Apache Spark","Debezium","Redis","Elasticsearch"],ans:1,diff:"medium",exp:"Debezium is the most common open-source CDC tool. It captures database changes at the row level and streams them as events to Kafka."},
+  {q:"What is the 'dual write problem' in CQRS + Kafka (manual)?",opts:["Writing to two tables in the same database","Risk that the DB and Kafka become out of sync","Having two Kafka topics","Using two separate NoSQL databases"],ans:1,diff:"medium",exp:"The dual write problem occurs when a service writes to the database AND manually publishes to Kafka. If one fails but the other succeeds, they become out of sync. The Outbox Pattern solves this."},
+  {q:"In CQRS + Kafka + CDC, who is responsible for publishing events to Kafka?",opts:["The application service code","A separate API gateway","Debezium / Kafka Connect automatically","The query model"],ans:2,diff:"medium",exp:"With CDC, the service ONLY writes to the DB. Debezium automatically detects changes and publishes them to Kafka — no manual event publishing code needed."},
+  {q:"What pattern is recommended to solve the dual write problem in CQRS + Kafka?",opts:["SAGA Pattern","Outbox Pattern","Circuit Breaker Pattern","Strangler Fig Pattern"],ans:1,diff:"medium",exp:"The Outbox Pattern solves the dual write problem by first storing events in a dedicated 'outbox' table in the same DB transaction, then reliably publishing them to Kafka."},
+  {q:"Which of the following is a DISADVANTAGE of using CDC (Debezium) in CQRS?",opts:["Events are rich domain business events","No extra infrastructure needed","Events are low-level (row changes) making domain intent hard to express","It cannot be used with Kafka"],ans:2,diff:"medium",exp:"CDC events capture what changed at the row level (e.g., order.status changed from 'pending' to 'confirmed'), but they don't express WHY — the business domain intent — making them less rich than manually published domain events."},
+  {q:"CQRS is MOST beneficial in which type of application?",opts:["Simple CRUD applications with few users","A personal to-do list app","High-performance systems with complex domain logic and separate read/write scaling needs","A static website"],ans:2,diff:"medium",exp:"CQRS is most valuable in systems requiring independent read/write scaling, different security policies, audit trails, or where domain complexity requires clear separation. Simple CRUD apps don't benefit."},
+  {q:"What format do Commands typically take in a CQRS system using a message broker?",opts:["HTTP GET requests","REST API calls with JSON","Task-based messages like 'add item to cart' processed asynchronously","Database stored procedures"],ans:2,diff:"medium",exp:"In CQRS, commands are task-based messages like 'add item to shopping cart' or 'checkout order'. They are processed asynchronously via a message broker system like Kafka."},
+  {q:"Which of the following statements about the Query Model in CQRS is TRUE?",opts:["It can modify the database if needed for caching","It never modifies the database","It must use the same database as the command model","It processes business rules before returning data"],ans:1,diff:"easy",exp:"The Query Model NEVER modifies the database. It is strictly read-only and always returns DTOs. This is one of the fundamental rules of CQRS."},
+  {q:"What is the role of Kafka in a CQRS architecture?",opts:["It acts as the primary write database","It serves as the backbone for event propagation between write and read sides","It replaces the query model","It handles authentication and authorization"],ans:1,diff:"medium",exp:"Kafka acts as the backbone for event propagation. It decouples the write and read sides, ensures event durability, and allows events to be replayed."},
+  {q:"Which CQRS architecture variation requires NO manual event publishing code in the service?",opts:["CQRS + Kafka only","CQRS with REST APIs","CQRS + Kafka + CDC (Debezium)","CQRS with shared database"],ans:2,diff:"hard",exp:"With CQRS + CDC (Debezium), the service only writes to the DB. Debezium automatically captures and publishes the changes to Kafka, requiring no manual event publishing code."},
+  {q:"A system that primarily performs reads (not many writes) is called:",opts:["Write-intensive","Event-driven","Read-intensive","Command-heavy"],ans:2,diff:"easy",exp:"A read-intensive application has mostly read operations. CQRS is especially beneficial here — the read-side database can be independently scaled and optimized for fast queries."},
+  {q:"When CQRS is combined with Event Sourcing, which benefit is MOST enhanced?",opts:["Performance","Scalability","Auditability and historical state reconstruction","Security"],ans:2,diff:"hard",exp:"Event Sourcing persists all changes as a sequence of events. Combined with CQRS, this enables full traceability of every state change, enabling complete audit trails and historical data reconstruction."},
+  {q:"If a query needs to JOIN more than 10 tables and it's causing database locking, which pattern would BEST address this?",opts:["Adding more indexes to the monolithic database","Using SAGA pattern","Implementing CQRS with a separate read model using denormalized NoSQL","Using a shared database pattern"],ans:2,diff:"hard",exp:"CQRS addresses the multi-join problem by maintaining a separate, denormalized read model (e.g., NoSQL) that has the data pre-joined and optimized. Queries never touch the write database."},
+  {q:"Which of the following is NOT a benefit of CQRS?",opts:["Independent scaling of reads and writes","Instant consistency between read and write models","Separate security policies for reads and writes","Auditability through event history"],ans:1,diff:"hard",exp:"Instant consistency is NOT a benefit of CQRS — it's actually a trade-off. CQRS introduces Eventual Consistency, which means the read model may lag behind the write model. This is one of the challenges."},
+  {q:"In the context of CQRS, what is a 'materialized view'?",opts:["A virtual table created by a JOIN","A precomputed, denormalized data view optimized for reading","A cache in Redis","A Kafka topic partition"],ans:1,diff:"hard",exp:"A materialized view is a precomputed, denormalized data view stored on the read side. It is designed for fast, efficient querying and avoids the need for complex joins at query time."},
+  {q:"Which of the following BEST describes the relationship between CQRS and Event Sourcing?",opts:["They are the same pattern with different names","CQRS cannot be used without Event Sourcing","They are different patterns that complement each other when used together","Event Sourcing replaces the need for CQRS"],ans:2,diff:"hard",exp:"CQRS and Event Sourcing are distinct patterns. CQRS separates read/write models; Event Sourcing stores state as event sequences. They are often used together because they complement each other, but neither requires the other."},
+  {q:"What security advantage does CQRS provide?",opts:["All users get the same access level","Encryption is applied automatically","Different security policies can be enforced for read operations vs. write operations","No authentication is needed for read operations"],ans:2,diff:"medium",exp:"CQRS allows different security models for the command side (writes) vs. the query side (reads). For example, reads may be open to more users, while writes are restricted to authorized users only."},
+  {q:"What does CDC stand for in the context of CQRS?",opts:["Command Data Capture","Change Data Capture","Concurrent Data Control","Command Distribution Channel"],ans:1,diff:"easy",exp:"CDC stands for Change Data Capture. It is a technique (implemented by tools like Debezium) that captures changes in a database and streams them as events to other systems like Kafka."},
+  {q:"Which statement about CQRS in microservices is MOST accurate?",opts:["CQRS eliminates the need for any database","CQRS is used to avoid complex queries and inefficient joins between microservices","CQRS always requires a monolithic database","CQRS prevents eventual consistency"],ans:1,diff:"medium",exp:"CQRS is particularly important in microservices to avoid complex cross-service queries and inefficient joins. Each service can maintain its own optimized read model."},
+  {q:"What happens to the query model when a command is executed in a typical CQRS system?",opts:["It is updated synchronously in the same transaction","It is updated immediately via a direct database call","It is updated asynchronously after the domain event propagates","It is never updated — only the command model changes"],ans:2,diff:"hard",exp:"After a command executes, domain events propagate asynchronously (via Kafka/CDC) to update the read/query model. This introduces eventual consistency — the read model lags behind the write model briefly."},
+  {q:"Which of the following is a recommended use case for CQRS?",opts:["A simple blog with 10 users","A personal to-do list application","A domain that needs audit trails and historical state reconstruction","Any application with a database"],ans:2,diff:"medium",exp:"CQRS is particularly recommended for domains requiring audit trails and historical state reconstruction — especially when combined with Event Sourcing. It's overkill for simple applications."},
+  {q:"In CQRS + Kafka (manual), what is the main advantage over CDC?",opts:["Simpler infrastructure","Full control over event content and domain-rich payloads","Events are automatically generated","No need for message brokers"],ans:1,diff:"hard",exp:"Manual Kafka publishing gives the developer full control over what events are published and their content. You can include rich domain data and express business intent clearly — something CDC cannot do since it only captures row-level changes."},
+  {q:"What type of database is typically used for the WRITE side in CQRS?",opts:["Document store (MongoDB)","Graph database (Neo4j)","Relational database for ACID guarantees","Time-series database"],ans:2,diff:"medium",exp:"The write side typically uses a relational database to take advantage of ACID transactions, which ensure data integrity during complex write operations and business rule enforcement."},
+  {q:"Which of the following describes the Outbox Pattern in relation to CQRS?",opts:["A separate UI for displaying historical data","A method to store events in the same DB transaction before publishing to Kafka","A Kafka consumer group for reading events","A CDC alternative to Debezium"],ans:1,diff:"hard",exp:"The Outbox Pattern stores events in an 'outbox' table within the SAME database transaction as the business data. A separate process then reliably reads from this outbox and publishes to Kafka, eliminating the dual write problem."},
+];
+
+const writtenQs = [
+  {type:"SHORT ANSWER",q:"Define CQRS and explain its primary purpose in microservices architecture.",model:`<strong>Definition:</strong> CQRS (Command Query Responsibility Segregation) is a design pattern that separates command operations (which change data) from query operations (which read data) into distinct models, handlers, and often separate databases.<br><br><strong>Primary Purpose in Microservices:</strong><ul><li>Eliminates the bottleneck of a single database handling both complex read queries (multi-table joins) and write operations</li><li>Enables independent scaling of the read and write sides</li><li>Allows different databases to be used for reads (e.g., NoSQL) and writes (e.g., relational DB)</li><li>Avoids complex, inefficient cross-service joins</li></ul>`},
+  {type:"SHORT ANSWER",q:"Explain the concept of Eventual Consistency as it applies to CQRS.",model:`<strong>Eventual Consistency</strong> in CQRS means that because the write and read models are decoupled and updates propagate asynchronously, the read model may not immediately reflect the latest writes.<br><br>After a command is executed and data is written to the command database, a domain event is published. This event propagates asynchronously (via Kafka or CDC) to update the query model. During this propagation delay, the read model may return slightly outdated data. However, given enough time and no new updates, the system will eventually reach a consistent state where both models reflect the same data.`},
+  {type:"SHORT ANSWER",q:"What is the difference between the Command Model and Query Model in CQRS?",model:`<table style='width:100%;border-collapse:collapse;font-size:13px'><tr><th style='border:1px solid var(--border);padding:8px;background:var(--surface2)'>Aspect</th><th style='border:1px solid var(--border);padding:8px;background:var(--surface2)'>Command Model</th><th style='border:1px solid var(--border);padding:8px;background:var(--surface2)'>Query Model</th></tr><tr><td style='border:1px solid var(--border);padding:8px'>Purpose</td><td style='border:1px solid var(--border);padding:8px'>Changes state</td><td style='border:1px solid var(--border);padding:8px'>Reads data only</td></tr><tr><td style='border:1px solid var(--border);padding:8px'>Database</td><td style='border:1px solid var(--border);padding:8px'>Usually relational (ACID)</td><td style='border:1px solid var(--border);padding:8px'>Often NoSQL / denormalized</td></tr><tr><td style='border:1px solid var(--border);padding:8px'>Returns</td><td style='border:1px solid var(--border);padding:8px'>Domain events</td><td style='border:1px solid var(--border);padding:8px'>DTO objects (JSON)</td></tr><tr><td style='border:1px solid var(--border);padding:8px'>Examples</td><td style='border:1px solid var(--border);padding:8px'>CreateOrder, UpdateCustomer</td><td style='border:1px solid var(--border);padding:8px'>GetOrderDetails, ListProducts</td></tr></table>`},
+  {type:"LONG ANSWER",q:"Compare and contrast CQRS + Kafka (Manual Event Publishing) vs. CQRS + Kafka + CDC (Debezium). Include: how each works, pros, cons, and when to use each.",model:`<strong>1. CQRS + Kafka (Manual Event Publishing)</strong><br><em>How it works:</em> After a command is executed and data is written to the database, the service explicitly publishes a domain event to Kafka using application code.<br><ul><li><strong>Pros:</strong> Full control over event content; can include rich domain data; no extra tooling (no CDC setup); expresses business intent clearly</li><li><strong>Cons:</strong> Risk of dual write problem (DB succeeds but Kafka fails, or vice versa); requires extra code; needs Outbox Pattern for reliability</li><li><strong>Best for:</strong> Business event-driven systems; teams comfortable managing Kafka and transactional integrity</li></ul><br><strong>2. CQRS + Kafka + CDC (Debezium)</strong><br><em>How it works:</em> The service only writes to the database. Debezium monitors the database transaction log and automatically captures every change, streaming it to Kafka as an event.<br><ul><li><strong>Pros:</strong> No manual event publishing code; strong consistency between DB and events; great for legacy systems</li><li><strong>Cons:</strong> Events are low-level row changes (not rich domain events); cannot express WHY a change happened; Debezium + Kafka Connect adds infrastructure complexity; cannot emit events before DB transaction commits</li><li><strong>Best for:</strong> Synchronizing read models from DB state; legacy systems; teams already using Debezium</li></ul><br><strong>Key Decision:</strong> If domain intent matters → use Kafka manual. If DB consistency is paramount and code changes should be minimal → use CDC.`},
+  {type:"LONG ANSWER",q:"List and explain all the benefits and challenges of CQRS. Conclude with when it is and is NOT appropriate to use.",model:`<strong>Benefits of CQRS:</strong><ol><li><strong>Scalability:</strong> The read and write sides can be scaled independently. If an app is read-heavy, only the query database/infrastructure needs scaling, saving cost and complexity.</li><li><strong>Separation of Concerns:</strong> Development teams can work independently on the command and query sides without interference.</li><li><strong>Performance:</strong> Each model is optimized for its workload — the write side for transactional integrity, the read side for fast retrieval.</li><li><strong>Security:</strong> Different security policies can be applied — writes may require strict authorization while reads may be more open.</li><li><strong>Auditability:</strong> When combined with Event Sourcing, every state change is traceable, enabling historical reconstruction.</li></ol><br><strong>Challenges of CQRS:</strong><ol><li><strong>Increased Complexity:</strong> Managing two models, event propagation systems (Kafka), and eventual consistency significantly raises system complexity.</li><li><strong>Maintenance Overhead:</strong> Data duplication between models must be managed. Keeping models synchronized requires robust event infrastructure.</li><li><strong>Latency:</strong> Asynchronous propagation means the read model may lag behind the write model, which is unacceptable for some use cases requiring immediate consistency.</li><li><strong>Not suitable for simple apps:</strong> If CRUD operations suffice, CQRS introduces far more complexity than benefit.</li></ol><br><strong>When to USE CQRS:</strong> High-performance systems with separate read/write scaling needs; complex domain logic; audit trail requirements; different security models for reads/writes; read-intensive applications.<br><br><strong>When NOT to use CQRS:</strong> Simple CRUD applications; small teams with limited infrastructure experience; applications where strong consistency is required (not eventual); early-stage projects where premature optimization should be avoided.`},
+  {type:"SHORT ANSWER",q:"What is the Outbox Pattern and why is it needed in CQRS with Kafka?",model:`<strong>The Outbox Pattern</strong> is a reliability pattern used to solve the dual write problem in CQRS + Kafka.<br><br><strong>Why it's needed:</strong> When a service writes to the database AND manually publishes an event to Kafka, there is a risk that one operation succeeds while the other fails — leaving the system in an inconsistent state.<br><br><strong>How it works:</strong> Instead of writing to DB and Kafka separately, the service writes the business data AND the event to an 'outbox' table in the SAME atomic database transaction. A separate process (or CDC) then reads from this outbox table and reliably publishes events to Kafka. This guarantees that events are only published after a successful DB commit.`},
+];
+
+// ====== RENDER MCQ ======
+let answered = 0, correct = 0;
+function renderMCQs(){
+  const c = document.getElementById('mcqContainer');
+  c.innerHTML = mcqs.map((q,i)=>`
+  <div class="mcq-card" id="mcq-${i}">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <div class="mcq-num">Q${i+1}</div>
+      <span class="mcq-diff diff-${q.diff==='easy'?'easy':q.diff==='medium'?'med':'hard'}">${q.diff.toUpperCase()}</span>
+    </div>
+    <div class="mcq-q">${q.q}</div>
+    ${q.opts.map((o,j)=>`<button class="option" onclick="checkAnswer(${i},${j},${q.ans})" id="opt-${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+    <div class="answer-exp" id="exp-${i}">✅ <strong>Correct Answer: ${String.fromCharCode(65+q.ans)}. ${q.opts[q.ans]}</strong><br><br>${q.exp}</div>
+  </div>`).join('');
+}
+
+function checkAnswer(qi,sel,correct_idx){
+  const card = document.getElementById(`mcq-${qi}`);
+  if(card.dataset.answered) return;
+  card.dataset.answered = '1';
+  const opts = card.querySelectorAll('.option');
+  opts.forEach((o,j)=>{
+    o.disabled = true;
+    if(j===correct_idx) o.classList.add('correct');
+    else if(j===sel) o.classList.add('wrong');
+  });
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  answered++;
+  if(sel===correct_idx) correct++;
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent = `${correct} / ${answered}`;
+  const pct = answered>0?(correct/answered)*100:0;
+  document.getElementById('scoreBar').style.width = pct+'%';
+}
+
+function revealAll(){
+  mcqs.forEach((_,i)=>{
+    const card = document.getElementById(`mcq-${i}`);
+    if(card.dataset.answered) return;
+    card.dataset.answered = '1';
+    const opts = card.querySelectorAll('.option');
+    opts.forEach((o,j)=>{
+      o.disabled=true;
+      if(j===mcqs[i].ans) o.classList.add('reveal');
+    });
+    document.getElementById(`exp-${i}`).classList.add('show');
+  });
+}
+
+function resetAll(){
+  answered=0; correct=0;
+  updateScore();
+  renderMCQs();
+}
+
+// ====== RENDER WRITTEN ======
+function renderWritten(){
+  const c = document.getElementById('writtenContainer');
+  c.innerHTML = writtenQs.map((q,i)=>`
+  <div class="wq-card">
+    <div class="wq-type">${q.type}</div>
+    <div class="wq-q">Q${i+1}: ${q.q}</div>
+    <button class="btn btn-sm show-ans-btn" onclick="toggleAns(${i})">👁️ Show Model Answer</button>
+    <div class="model-ans" id="wans-${i}">
+      <h4>📝 MODEL ANSWER</h4>
+      <div>${q.model}</div>
+    </div>
+  </div>`).join('');
+}
+
+function toggleAns(i){
+  const el = document.getElementById(`wans-${i}`);
+  el.classList.toggle('show');
+}
+
+// ====== NAVIGATION ======
+function showSection(id, tab){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(tab) tab.classList.add('active');
+}
+
+// ====== THEME ======
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme', isDark?'':'dark');
+  document.querySelector('.theme-btn').textContent = isDark?'🌙 Dark':'☀️ Light';
+}
+
+// ====== INIT ======
+renderMCQs();
+renderWritten();
+</script>
+</body>
+</html>
