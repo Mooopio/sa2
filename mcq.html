@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IS 352 — Lectures Quiz (L8, L9, L10)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090b0f;--bg2:#0f1116;--bg3:#13161d;
+  --surface:#181c27;--surface2:#1d2235;
+  --border:#252d45;--border2:#2e3855;
+  --accent:#4f8aed;--accent2:#7c5af6;--accent3:#2dd4bf;
+  --text:#e6e9f4;--text2:#8a95b2;--text3:#424e70;
+  --ok-bg:rgba(34,197,94,.12);--ok-bd:rgba(34,197,94,.4);--ok-tx:#4ade80;
+  --bad-bg:rgba(239,68,68,.12);--bad-bd:rgba(239,68,68,.4);--bad-tx:#f87171;
+  --lec8:#f59e0b;--lec9:#38bdf8;--lec10:#a78bfa;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.65}
+
+/* ── HEADER ── */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100}
+.hdr-in{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:1rem;flex-wrap:wrap}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:var(--accent);letter-spacing:-.02em;white-space:nowrap}
+.logo small{color:var(--text2);font-weight:400;font-size:.76rem;margin-left:6px}
+.pills{display:flex;gap:7px;flex-wrap:wrap}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:4px 13px;font-size:.78rem;display:flex;gap:5px;align-items:center}
+.pill .n{font-family:'Syne',sans-serif;font-weight:700;font-size:.98rem}
+.pill .n.g{color:var(--ok-tx)}.pill .n.r{color:var(--bad-tx)}.pill .n.b{color:var(--accent)}
+
+/* ── NAV TABS ── */
+.tabs{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs-in{max-width:880px;margin:0 auto;display:flex;gap:4px;padding:8px 1.5rem}
+.tab{padding:6px 16px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:all .18s}
+.tab:hover{border-color:var(--border2);color:var(--text)}
+.tab.active{font-weight:500;color:#fff}
+.tab.t-all.active{background:var(--accent);border-color:var(--accent)}
+.tab.t-l8.active{background:var(--lec8);border-color:var(--lec8)}
+.tab.t-l9.active{background:var(--lec9);border-color:var(--lec9)}
+.tab.t-l10.active{background:var(--lec10);border-color:var(--lec10)}
+.tab.t-mcq.active{background:var(--accent2);border-color:var(--accent2)}
+.tab.t-tf.active{background:var(--accent3);border-color:var(--accent3)}
+
+/* ── PROGRESS ── */
+.pbar-wrap{background:var(--bg2);padding:8px 1.5rem;border-bottom:1px solid var(--border)}
+.pbar-in{max-width:880px;margin:0 auto}
+.pbar-track{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s}
+.pbar-label{font-size:.7rem;color:var(--text3);margin-top:4px;display:flex;justify-content:space-between}
+
+/* ── MAIN ── */
+main{max-width:880px;margin:0 auto;padding:1.5rem 1.5rem 5rem}
+
+/* ── RESULT BANNER ── */
+.result{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;margin-bottom:1.5rem;display:none;animation:up .3s ease}
+.result.show{display:block}
+.result-big{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:var(--accent);line-height:1}
+.result-sub{font-size:.9rem;color:var(--text2);margin-top:6px}
+.result-grade{font-size:1.1rem;font-weight:600;margin-top:10px}
+.grade-a{color:var(--ok-tx)}.grade-b{color:var(--lec8)}.grade-c{color:var(--bad-tx)}
+.reset-btn{margin-top:1rem;padding:9px 26px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.86rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
+.reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── QUESTION CARD ── */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:.9rem;transition:border-color .2s;animation:up .22s ease both}
+.q-card:hover{border-color:var(--border2)}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.q-meta{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap}
+.q-num{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text3);font-weight:500}
+.lec-badge{padding:2px 9px;border-radius:100px;font-size:.66rem;font-weight:600;letter-spacing:.04em}
+.lb8{background:rgba(245,158,11,.14);color:var(--lec8);border:1px solid rgba(245,158,11,.28)}
+.lb9{background:rgba(56,189,248,.12);color:var(--lec9);border:1px solid rgba(56,189,248,.24)}
+.lb10{background:rgba(167,139,250,.14);color:var(--lec10);border:1px solid rgba(167,139,250,.28)}
+.type-badge{padding:2px 8px;border-radius:100px;font-size:.64rem;font-weight:600}
+.tb-mcq{background:rgba(124,90,246,.15);color:var(--accent2)}
+.tb-tf{background:rgba(45,212,191,.12);color:var(--accent3)}
+.q-text{font-size:.9rem;font-weight:500;color:var(--text);line-height:1.55;margin-bottom:.85rem}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:flex-start;gap:9px;padding:9px 13px;border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;background:var(--bg3)}
+.opt:hover:not(.locked){border-color:var(--border2);background:var(--surface2)}
+.opt.locked{cursor:default}
+.opt.correct{border-color:var(--ok-bd)!important;background:var(--ok-bg)!important}
+.opt.wrong{border-color:var(--bad-bd)!important;background:var(--bad-bg)!important;opacity:.72}
+.opt-l{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text3);min-width:17px;margin-top:2px;font-weight:500}
+.opt-t{font-size:.85rem;color:var(--text2);line-height:1.4}
+.opt.correct .opt-t,.opt.correct .opt-l{color:var(--ok-tx);font-weight:500}
+.opt.wrong .opt-t,.opt.wrong .opt-l{color:var(--bad-tx)}
+
+/* ── FEEDBACK ── */
+.fb{margin-top:9px;padding:9px 13px;border-radius:9px;font-size:.82rem;line-height:1.5;display:none;border-left:2px solid transparent}
+.fb.show{display:block;animation:up .18s ease}
+.fb.ok{border-left-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok-tx)}
+.fb.bad{border-left-color:var(--bad-bd);background:var(--bad-bg);color:#fca5a5}
+.fb-head{font-weight:600;font-size:.8rem;margin-bottom:3px}
+.fb-body{color:var(--text2);font-size:.8rem;margin-top:3px}
+.fb.ok .fb-body{color:#86efac}
+
+/* ── TF BUTTONS ── */
+.tf-row{display:flex;gap:8px;margin-top:.5rem}
+.tf-btn{flex:1;padding:9px 14px;border-radius:9px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:.86rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;font-weight:500}
+.tf-btn:hover:not(.locked){border-color:var(--border2);background:var(--surface2)}
+.tf-btn.locked{cursor:default}
+.tf-btn.correct{border-color:var(--ok-bd)!important;background:var(--ok-bg)!important;color:var(--ok-tx)!important}
+.tf-btn.wrong{border-color:var(--bad-bd)!important;background:var(--bad-bg)!important;color:var(--bad-tx)!important;opacity:.72}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:.88rem;display:none}
+.empty.show{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hdr{padding:0 1rem}.hdr-in{height:auto;padding:8px 0}
+  logo small{display:none}main{padding:1rem 1rem 4rem}
+  .q-card{padding:1rem 1rem}.result-big{font-size:2.2rem}
+  .tabs-in{padding:8px 1rem}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo">IS 352 <small>Lectures 8, 9, 10 — Full Quiz</small></div>
+    <div class="pills">
+      <div class="pill"><span class="n b" id="sA">0</span><span style="color:var(--text3);font-size:.7rem">/<span id="sT">0</span></span><span style="color:var(--text2);font-size:.7rem">done</span></div>
+      <div class="pill"><span class="n g" id="sC">0</span><span style="color:var(--text2);font-size:.7rem">✓</span></div>
+      <div class="pill"><span class="n r" id="sW">0</span><span style="color:var(--text2);font-size:.7rem">✗</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tabs-in">
+    <button class="tab t-all active" onclick="setFilter('all',this)">All</button>
+    <button class="tab t-l8" onclick="setFilter('l8',this)">Lec 8</button>
+    <button class="tab t-l9" onclick="setFilter('l9',this)">Lec 9</button>
+    <button class="tab t-l10" onclick="setFilter('l10',this)">Lec 10</button>
+    <button class="tab t-mcq" onclick="setFilter('mcq',this)">MCQ only</button>
+    <button class="tab t-tf" onclick="setFilter('tf',this)">True/False only</button>
+  </div>
+</div>
+
+<div class="pbar-wrap">
+  <div class="pbar-in">
+    <div class="pbar-track"><div class="pbar-fill" id="pf" style="width:0%"></div></div>
+    <div class="pbar-label"><span id="pl">0 answered</span><span id="pp">0%</span></div>
+  </div>
+</div>
+
+<main>
+  <div class="result" id="rb">
+    <div class="result-big" id="rs">0/0</div>
+    <div class="result-sub" id="rp"></div>
+    <div class="result-grade" id="rg"></div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset &amp; Try Again</button>
+  </div>
+  <div class="empty" id="em">No questions match this filter.</div>
+  <div id="qc"></div>
+</main>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+// type: 'mcq' | 'tf'
+// for tf: opts=['True','False'], ans=0 means True, ans=1 means False
+const QS = [
+
+/* ═══════════════════════ LECTURE 8 ═══════════════════════ */
+{id:1,src:'l8',type:'mcq',
+q:"Request/Response is:",
+opts:["One-to-one / Synchronous","One-to-many / Synchronous","One-to-one / Asynchronous","One-to-many / Asynchronous"],
+ans:0,
+exp:"Request/Response is one-to-one (one client ↔ one service) and synchronous (client blocks while waiting). This is the fundamental definition from the lecture."},
+
+{id:2,src:'l8',type:'mcq',
+q:"Asynchronous Request/Response is:",
+opts:["One-to-one / Synchronous","One-to-many / Synchronous","One-to-one / Asynchronous","One-to-many / Asynchronous"],
+ans:2,
+exp:"Async Request/Response is still one-to-one (one client ↔ one service) but asynchronous — the client sends and does NOT block while waiting. The service replies later."},
+
+{id:3,src:'l8',type:'mcq',
+q:"One-way notifications is:",
+opts:["One-to-one / Synchronous","One-to-many / Synchronous","One-to-one / Asynchronous","One-to-many / Asynchronous"],
+ans:2,
+exp:"One-way notification is one-to-one (one sender → one service) and asynchronous (no reply expected). The client fires and forgets — no response ever comes back."},
+
+{id:4,src:'l8',type:'mcq',
+q:"Publish/Subscribe and Publish/Async Response are:",
+opts:["One-to-one / Synchronous","One-to-many / Synchronous","One-to-one / Asynchronous","One-to-many / Asynchronous"],
+ans:3,
+exp:"Both Publish/Subscribe and Publish/Async Responses are one-to-many (one publisher → multiple services) and asynchronous — the publisher does not block waiting for consumers."},
+
+{id:5,src:'l8',type:'mcq',
+q:"In which technology must the interfaces be completely defined by the server and known on the client?",
+opts:["REST","SOAP","JMS"],
+ans:1,
+exp:"SOAP requires fully defined interfaces (WSDL) that must be known to the client upfront. This creates tight coupling. REST with HATEOAS allows dynamic discovery of actions."},
+
+{id:6,src:'l8',type:'mcq',
+q:"In which style is each client request processed by exactly one service?",
+opts:["Request/response","Publish/subscribe","Publish/async responses","None of the above"],
+ans:0,
+exp:"One-to-one patterns (Request/Response, Async Req/Res, One-way Notification) all process each request with exactly one service. Publish patterns are one-to-many."},
+
+{id:7,src:'l8',type:'mcq',
+q:"In which style is each request processed by multiple services?",
+opts:["Asynchronous request/response","Request/response","One-way notifications","Publish/subscribe"],
+ans:3,
+exp:"Publish/Subscribe is a one-to-many pattern — one publisher sends a message that can be consumed by zero or more interested services simultaneously."},
+
+{id:8,src:'l8',type:'mcq',
+q:"A service client makes a request to a service and waits for a response — it might even block while waiting. This is:",
+opts:["Asynchronous request/response","Request/response","One-way notifications","Publish/subscribe"],
+ans:1,
+exp:"Request/Response: synchronous, client blocks while waiting. This results in tight coupling because both client and service must be available simultaneously."},
+
+{id:9,src:'l8',type:'mcq',
+q:"A service client sends a request to a service; the client doesn't block while waiting. This is:",
+opts:["Asynchronous request/response","Request/response","One-way notifications","Publish/subscribe"],
+ans:0,
+exp:"Asynchronous Request/Response: client sends and continues executing. The service processes the request and sends a reply later — the client picks it up without having been blocked."},
+
+{id:10,src:'l8',type:'mcq',
+q:"A service client sends a request to a service, but no reply is expected or sent. This is:",
+opts:["Asynchronous request/response","Request/response","One-way notifications","Publish/subscribe"],
+ans:2,
+exp:"One-way notification: fire-and-forget. The client sends the message and the service processes it — but the service never sends a reply. Used for logging, audit events, etc."},
+
+{id:11,src:'l8',type:'mcq',
+q:"Which interaction style generally results in services being tightly coupled?",
+opts:["Asynchronous request/response","Request/response","One-way notifications","Publish/subscribe"],
+ans:1,
+exp:"Request/Response (synchronous) results in tight coupling because both client and service must be running simultaneously. If either is down, the request fails immediately."},
+
+{id:12,src:'l8',type:'mcq',
+q:"Which technology only uses POST messages to transfer data to a server?",
+opts:["REST","SOAP","JMS"],
+ans:1,
+exp:"SOAP only uses the HTTP POST method — it wraps everything in an XML envelope and POSTs it. This makes it an RPC mechanism. REST uses GET, POST, PUT, DELETE, PATCH appropriately."},
+
+{id:13,src:'l8',type:'mcq',
+q:"A client publishes a notification message consumed by zero or more interested services. This is:",
+opts:["Publish/subscribe","Publish/async responses","One-way notifications","Request/response"],
+ans:0,
+exp:"Publish/Subscribe: publisher sends to a topic; zero or more subscribers that are interested receive it. 'Zero or more' is key — no guarantee anyone consumes the message."},
+
+{id:14,src:'l8',type:'mcq',
+q:"A client publishes a request message and then waits a certain amount of time for responses from interested services. This is:",
+opts:["Publish/subscribe","Publish/async responses","One-way notifications","Request/response"],
+ans:1,
+exp:"Publish/Async Responses: client publishes to many, then waits a limited time window for replies. Used for aggregating responses from multiple services (e.g., price comparison)."},
+
+{id:15,src:'l8',type:'mcq',
+q:"Request/Response pattern is which type of communication?",
+opts:["Synchronous communication","Asynchronous communication"],
+ans:0,
+exp:"Request/Response = synchronous. The client blocks and waits for the response before continuing. Both parties must be available at the same time."},
+
+{id:16,src:'l8',type:'tf',
+q:"REST-based technologies also support forwarding of requests.",
+opts:["True","False"],ans:1,
+exp:"FALSE. It is SOAP-based technologies (not REST) that support forwarding of requests — for example, WS-Security can encrypt parts of a message and forward it through multiple stations. REST doesn't natively support this."},
+
+{id:17,src:'l8',type:'mcq',
+q:"Messaging pattern is which type of communication?",
+opts:["Synchronous communication","Asynchronous communication"],
+ans:1,
+exp:"Messaging pattern = asynchronous. The sender places a message in a channel and continues — it doesn't wait for the receiver to process it. This creates loose coupling."},
+
+{id:18,src:'l8',type:'mcq',
+q:"Which type of communication results in tight runtime coupling — both the client and service must be available for the duration of the request?",
+opts:["Synchronous communication","Asynchronous communication"],
+ans:0,
+exp:"Synchronous communication requires both parties to be online simultaneously. If the service is down, the client request fails immediately. This is called 'tight runtime coupling.'"},
+
+{id:19,src:'l8',type:'tf',
+q:"RESTful is the set of constraints while REST refers to an API adhering to those constraints.",
+opts:["True","False"],ans:1,
+exp:"FALSE — it's the OPPOSITE. REST is the set of architectural constraints. RESTful refers to an API that adheres to those constraints. REST = ruleset; RESTful = API following the ruleset."},
+
+{id:20,src:'l8',type:'mcq',
+q:"Which of the following is 'anything you want to expose to the outside world through your application'?",
+opts:["REST","RESTful","Resource","HTTP"],
+ans:2,
+exp:"A Resource is the key abstraction in REST — any entity you expose (user, order, product). Resources are identified by URLs. HTTP's entire design centers around resources."},
+
+{id:21,src:'l8',type:'tf',
+q:"REST is completely built on top of HTTP.",
+opts:["True","False"],ans:0,
+exp:"TRUE. REST is built entirely on top of HTTP and leverages its verbs (GET, POST, PUT, DELETE), status codes, and headers. It doesn't work without HTTP."},
+
+{id:22,src:'l8',type:'mcq',
+q:"Which is the key abstraction that HTTP centers around?",
+opts:["REST","RESTful","Resource","HTTP"],
+ans:2,
+exp:"Resource is HTTP's key abstraction. Every URL in HTTP identifies a resource. Operations on resources (GET, POST, PUT, DELETE) are the foundation of REST."},
+
+{id:23,src:'l8',type:'tf',
+q:"REST doesn't require an intermediate broker, which simplifies the system's architecture.",
+opts:["True","False"],ans:0,
+exp:"TRUE. This is explicitly listed as a REST advantage. Unlike messaging systems that need a broker (Kafka, RabbitMQ), REST communicates directly between client and service."},
+
+{id:24,src:'l8',type:'tf',
+q:"You can test an HTTP API from within a browser using curl.",
+opts:["True","False"],ans:0,
+exp:"TRUE. You can test REST APIs using browser plugins (like Postman), command-line curl, or directly in a browser URL bar for GET requests. This easy testability is a REST advantage."},
+
+{id:25,src:'l8',type:'tf',
+q:"An advantage of REST is that it increases availability.",
+opts:["True","False"],ans:1,
+exp:"FALSE. Reduced availability is actually a DISADVANTAGE of REST. Because REST is synchronous, both client and service must be online simultaneously. If the service is down, the request fails."},
+
+{id:26,src:'l8',type:'mcq',
+q:"Which technology lacks concepts such as HATEOAS that enable relationships between microservices to be handled flexibly?",
+opts:["REST","SOAP","JMS"],
+ans:1,
+exp:"SOAP lacks HATEOAS. Without HATEOAS, interfaces must be fully defined and hard-coded upfront — creating tight coupling. REST with HATEOAS enables dynamic discovery of actions."},
+
+{id:27,src:'l8',type:'tf',
+q:"It is not possible to build a microservices-based architecture using SOAP.",
+opts:["True","False"],ans:1,
+exp:"FALSE. It IS possible to build microservices using SOAP. The lecture explicitly states: 'It is possible to build a microservices-based architecture using SOAP.'"},
+
+{id:28,src:'l8',type:'tf',
+q:"SOAP doesn't use HTTP.",
+opts:["True","False"],ans:1,
+exp:"FALSE. SOAP DOES use HTTP. Additionally, SOAP can also use JMS and SMTP/POP — making it transport-flexible. But HTTP is its primary transport."},
+
+{id:29,src:'l8',type:'mcq',
+q:"Which technology can convey messages using different transport mechanisms — it's possible to receive via HTTP and send on via JMS or SMTP/POP?",
+opts:["REST","SOAP"],
+ans:1,
+exp:"SOAP supports multiple transport mechanisms: HTTP, JMS (Java Message Service), and SMTP/POP (email). REST only works over HTTP. This transport flexibility is SOAP's key differentiator."},
+
+{id:30,src:'l8',type:'tf',
+q:"HATEOAS is a component of SOAP architecture and design.",
+opts:["True","False"],ans:1,
+exp:"FALSE. HATEOAS is a component of RESTful API architecture and design — NOT SOAP. SOAP actually lacks HATEOAS, which is listed as one of SOAP's disadvantages."},
+
+{id:31,src:'l8',type:'tf',
+q:"With the use of HATEOAS, the client-side needs minimal knowledge about how to interact with a server.",
+opts:["True","False"],ans:0,
+exp:"TRUE. HATEOAS allows the server to dynamically send available actions and URLs in each response, so the client doesn't need pre-programmed knowledge of every endpoint."},
+
+{id:32,src:'l8',type:'tf',
+q:"The single most important reason for HATEOAS is loose coupling.",
+opts:["True","False"],ans:0,
+exp:"TRUE. The lecture states this explicitly: 'The single most important reason for HATEOAS is loose coupling.' By providing URLs dynamically, clients have no tight dependency on URI structure."},
+
+{id:33,src:'l8',type:'tf',
+q:"If a consumer of a REST service needs to hard-code all the resource URLs, then it is loosely coupled.",
+opts:["True","False"],ans:1,
+exp:"FALSE — it's the OPPOSITE. Hard-coding URLs creates TIGHT coupling. If the server changes a URL, all clients break. HATEOAS avoids this by providing URLs dynamically in responses."},
+
+{id:34,src:'l8',type:'tf',
+q:"If you return the URLs it could use for the actions, then it is loosely coupled.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Returning URLs dynamically (HATEOAS) means the client doesn't hard-code locations. If the server changes a URL, the client automatically receives the new URL and adapts — loose coupling."},
+
+{id:35,src:'l8',type:'tf',
+q:"When using HATEOAS, there is no tight dependency on the URI structure, as it is specified and used from the response.",
+opts:["True","False"],ans:0,
+exp:"TRUE. HATEOAS makes the URI structure transparent — the client reads URLs from server responses rather than having them hard-coded. Changes in URI structure don't break clients."},
+
+{id:36,src:'l8',type:'tf',
+q:"With HATEOAS, clients can use URLs from the response and be sure these URLs are the latest versions.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Since URLs are generated server-side and returned in responses, they are always current. The client always gets the latest URL — eliminating stale hard-coded references."},
+
+{id:37,src:'l8',type:'tf',
+q:"A disadvantage of the Request/Response pattern is that the client needs to discover locations of service instances.",
+opts:["True","False"],ans:0,
+exp:"TRUE. This is explicitly listed as a disadvantage: 'Clients must know the locations (URLs) of the service instances — this is a nontrivial problem.' It requires a service discovery mechanism."},
+
+/* ═══════════════════════ LECTURE 9 ═══════════════════════ */
+{id:38,src:'l9',type:'mcq',
+q:"Messaging pattern is which type of communication?",
+opts:["Synchronous communication","Asynchronous communication"],
+ans:1,
+exp:"Messaging is asynchronous — sender places message in a channel and continues without waiting. Receiver processes it independently. This enables loose coupling between services."},
+
+{id:39,src:'l9',type:'mcq',
+q:"A _______ reads messages from a channel.",
+opts:["Sender","Receiver"],
+ans:1,
+exp:"A Receiver (consumer/subscriber) reads messages from a channel. A Sender (producer/publisher) writes messages to a channel."},
+
+{id:40,src:'l9',type:'mcq',
+q:"A _______ writes a message to a channel.",
+opts:["Sender","Receiver"],
+ans:0,
+exp:"A Sender (producer/publisher) writes messages to a channel. The Receiver reads from the channel."},
+
+{id:41,src:'l9',type:'mcq',
+q:"Which part of a message is a collection of name-value pairs — metadata about the data being sent?",
+opts:["The header","Body"],
+ans:0,
+exp:"The Header contains metadata (name-value pairs) such as message ID, timestamp, content type, routing info. The Body contains the actual data payload."},
+
+{id:42,src:'l9',type:'tf',
+q:"A message consists of a header and a body.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Every message has two parts: the Header (metadata — name-value pairs describing the message) and the Body (the actual data being transmitted, in text or binary format)."},
+
+{id:43,src:'l9',type:'mcq',
+q:"Which part of a message is the actual data being sent, in either text or binary format?",
+opts:["The header","Body"],
+ans:1,
+exp:"The Body contains the actual data payload — the content being transferred. It can be in text format (JSON, XML) or binary format (Protocol Buffers, Avro)."},
+
+{id:44,src:'l9',type:'mcq',
+q:"Which message type is the equivalent of an RPC request — specifies the operation to invoke and its parameters?",
+opts:["Document","Command","Event"],
+ans:1,
+exp:"A Command message is like an RPC request — it tells the service WHAT to do and provides the parameters. Example: 'CreateOrder {customerId: 123, items: [...]}'"},
+
+{id:45,src:'l9',type:'mcq',
+q:"Which message type is generic and contains only data — the receiver decides how to interpret it?",
+opts:["Document","Command","Event"],
+ans:0,
+exp:"A Document message carries data only, with no instruction on what to do. The receiver interprets it. The reply to a command is an example of a document message."},
+
+{id:46,src:'l9',type:'mcq',
+q:"Which message type indicates that something notable has occurred in the sender?",
+opts:["Document","Command","Event"],
+ans:2,
+exp:"An Event message notifies that something happened (past tense) — e.g., 'OrderPlaced', 'PaymentProcessed', 'UserRegistered'. The sender doesn't tell anyone what to do; it just announces what happened."},
+
+{id:47,src:'l9',type:'mcq',
+q:"In a document message, who decides how to interpret it?",
+opts:["Sender","Receiver"],
+ans:1,
+exp:"In a Document message, the Receiver decides how to interpret the data. The sender just sends raw data without specifying the action. This is a key difference from Command messages."},
+
+{id:48,src:'l9',type:'mcq',
+q:"In an event message, something notable occurred in the ______.",
+opts:["Sender","Receiver"],
+ans:0,
+exp:"Events originate from the Sender — something happened in the sender's domain and it notifies others. E.g., the Order Service (sender) publishes 'OrderPlaced'; other services react."},
+
+{id:49,src:'l9',type:'tf',
+q:"Text-based formats include JSON and XML.",
+opts:["True","False"],ans:0,
+exp:"TRUE. JSON and XML are the primary text-based message formats. They are human-readable but larger in size compared to binary formats."},
+
+{id:50,src:'l9',type:'tf',
+q:"An advantage of text formats is they are ONLY human-readable (that's their only advantage).",
+opts:["True","False"],ans:1,
+exp:"FALSE. Text formats have multiple advantages: human-readable, self-describing, easy to debug, wide tooling support, language-agnostic. Saying it's their 'only' advantage is incorrect."},
+
+{id:51,src:'l9',type:'tf',
+q:"If efficiency and performance are important, we should use a text format.",
+opts:["True","False"],ans:1,
+exp:"FALSE — Binary formats should be used when efficiency and performance are critical. Text formats (JSON, XML) are larger and slower to parse. Binary formats (Protocol Buffers, Avro) are compact and fast."},
+
+{id:52,src:'l9',type:'tf',
+q:"In binary protocols, the bit stream is organized differently around data structures — you still have a sequence of bits corresponding to characters.",
+opts:["True","False"],ans:1,
+exp:"FALSE. In binary formats, bits do NOT simply correspond to a sequence of characters. Binary formats encode data in compact, typed binary representations — NOT as character strings. This is what makes them smaller and faster."},
+
+{id:53,src:'l9',type:'tf',
+q:"Binary formats are more compact and save bandwidth.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Binary formats (Protocol Buffers, Avro) use less space than text formats (JSON, XML) because they encode data in a compact binary representation without field name repetition or verbose tags."},
+
+{id:54,src:'l9',type:'mcq',
+q:"Which channel type is used for one-to-many interaction styles?",
+opts:["Point-to-point","Publish-subscribe"],
+ans:1,
+exp:"Publish-subscribe channels deliver messages to ALL subscribers (one-to-many). Point-to-point channels deliver to exactly ONE receiver (one-to-one). Events use pub-sub; commands use point-to-point."},
+
+{id:55,src:'l9',type:'mcq',
+q:"Which channel type is used for one-to-one interaction styles?",
+opts:["Point-to-point","Publish-subscribe"],
+ans:0,
+exp:"Point-to-point channels ensure exactly one receiver processes each message (one-to-one). Used for commands and request/response. Pub-sub is for one-to-many."},
+
+{id:56,src:'l9',type:'mcq',
+q:"An event message is usually sent over which type of channel?",
+opts:["Point-to-point","Publish-subscribe"],
+ans:1,
+exp:"Events are broadcast to all interested parties → publish-subscribe channel. Multiple services may react to the same event (e.g., 'OrderPlaced' triggers inventory, billing, and notification services simultaneously)."},
+
+{id:57,src:'l9',type:'mcq',
+q:"When implementing Asynchronous Request/Response, which type of channel is used?",
+opts:["Point-to-point","Publish-subscribe"],
+ans:0,
+exp:"Async Request/Response uses point-to-point channels — the request goes to one specific service, and the reply comes back to one specific client. Not broadcast to many."},
+
+{id:58,src:'l9',type:'mcq',
+q:"The client sends a _______ message specifying the operation and parameters to a point-to-point channel owned by a service.",
+opts:["Command","Reply"],
+ans:0,
+exp:"In async req/response: client sends a COMMAND message (specifies what to do) → service processes → service sends a REPLY message back. Commands go to the service; replies come back to the client."},
+
+{id:59,src:'l9',type:'mcq',
+q:"The service processes the request and sends a _______ message to a point-to-point channel owned by the client.",
+opts:["Command","Reply"],
+ans:1,
+exp:"After processing a command, the service sends a REPLY message back to the client's channel. The reply contains a correlation ID so the client matches it to the original request."},
+
+{id:60,src:'l9',type:'tf',
+q:"It's possible that different parts of your application will have different messaging requirements.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Different services may need different messaging patterns — some need pub-sub, others need point-to-point, some need high throughput, others need guaranteed delivery. One size doesn't fit all."},
+
+{id:61,src:'l9',type:'mcq',
+q:"The client sends a _______ message with a reply channel header; the server writes the _______ message containing a correlation ID.",
+opts:["Command / Reply","Reply / Command"],
+ans:0,
+exp:"Pattern: Client sends COMMAND (with reply-channel header) → Service sends REPLY (with correlation ID). Client uses the correlation ID to match the reply to the original request."},
+
+{id:62,src:'l9',type:'tf',
+q:"The client uses the correlation ID to match the reply message with the request.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Since multiple requests may be in flight simultaneously, the correlation ID (included in the reply) allows the client to match each reply to its corresponding request."},
+
+{id:63,src:'l9',type:'mcq',
+q:"In which style does the service subscribe to the channel, process the message, and NOT send back a reply?",
+opts:["Asynchronous Request/Response","One-way notification","Publish/subscribe","Publish/Async responses"],
+ans:1,
+exp:"One-way notification: client sends, service processes — but NO reply ever comes back. Used for fire-and-forget scenarios like logging, audit trails, or triggering background jobs."},
+
+{id:64,src:'l9',type:'mcq',
+q:"Which is a higher-level interaction style implemented by combining pub/subscribe and request/response?",
+opts:["Asynchronous Request/Response","One-way notification","Publish/subscribe","Publish/Async responses"],
+ans:3,
+exp:"Publish/Async Responses combines pub/sub (broadcast to many) with a time-limited wait for responses from interested services. It's a hybrid: publish widely, then collect replies within a time window."},
+
+{id:65,src:'l9',type:'tf',
+q:"The services in brokerless architecture communicate via a message broker.",
+opts:["True","False"],ans:1,
+exp:"FALSE — it's the OPPOSITE. In brokerless architecture, services communicate DIRECTLY without a central broker. ZeroMQ is an example. Broker-based architectures use a central broker (Kafka, RabbitMQ, ActiveMQ)."},
+
+{id:66,src:'l9',type:'mcq',
+q:"Which is a popular brokerless messaging technology — both a specification and a set of libraries for different languages?",
+opts:["ZeroMQ","ActiveMQ","RabbitMQ","Apache Kafka"],
+ans:0,
+exp:"ZeroMQ is broker-less — it's a socket library spec with implementations in many languages. Messages go directly between sockets. ActiveMQ, RabbitMQ, and Kafka all use a central broker."},
+
+{id:67,src:'l9',type:'tf',
+q:"A messaging broker that guarantees delivery and reliably stores messages on disk will probably have lower latency.",
+opts:["True","False"],ans:1,
+exp:"FALSE. A broker that guarantees delivery and stores to disk will have HIGHER latency (due to disk I/O and acknowledgment overhead). Brokers optimized for low latency may NOT persist to disk or guarantee delivery."},
+
+{id:68,src:'l9',type:'mcq',
+q:"Which allows lighter network traffic and better latency?",
+opts:["Broker-less","Broker-based"],
+ans:0,
+exp:"Brokerless (direct socket) communication eliminates the hop to a central broker, reducing network traffic and latency. Broker-based adds a network hop through the broker for every message."},
+
+{id:69,src:'l9',type:'tf',
+q:"An important benefit of using a message broker is that the sender doesn't need to know the network location of the consumer.",
+opts:["True","False"],ans:0,
+exp:"TRUE. The broker acts as an intermediary — the sender sends to the broker (known location), and the broker routes to consumers (unknown locations). This decouples producer from consumer."},
+
+{id:70,src:'l9',type:'mcq',
+q:"Which of the following is an example of a cloud-based messaging service?",
+opts:["ZeroMQ","AWS Kinesis","AWS SQS","Both b and c"],
+ans:3,
+exp:"AWS Kinesis and AWS SQS are both cloud-based managed messaging services (AP: Amazon AWS). ZeroMQ is a brokerless library — not cloud-based. So both b and c are correct → 'both b and c'."},
+
+{id:71,src:'l9',type:'mcq',
+q:"Examples of broker-based messaging are:",
+opts:["ActiveMQ","Apache Kafka","RabbitMQ","All of the above"],
+ans:3,
+exp:"ActiveMQ, Apache Kafka, and RabbitMQ are all broker-based messaging systems — they all have a central broker that stores and routes messages. ZeroMQ would be the brokerless alternative."},
+
+{id:72,src:'l9',type:'tf',
+q:"A very low latency broker might not preserve ordering, make no guarantees to deliver messages, and only store messages in memory.",
+opts:["True","False"],ans:0,
+exp:"TRUE. There's a trade-off: ultra-low latency brokers sacrifice durability (in-memory only), ordering guarantees, and delivery guarantees. High-durability brokers (disk-based, guaranteed delivery) have higher latency."},
+
+{id:73,src:'l9',type:'tf',
+q:"Which kind of message broker is the best fit depends on your application's requirements.",
+opts:["True","False"],ans:0,
+exp:"TRUE. No single broker is best for all cases. Requirements (latency, throughput, durability, ordering, pub-sub vs point-to-point) determine the best broker choice for each situation."},
+
+{id:74,src:'l9',type:'mcq',
+q:"Apache Kafka uses _______ in a point-to-point channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:0,
+exp:"Apache Kafka uses Topics for BOTH point-to-point (consumer group with one instance) and publish-subscribe (multiple consumer groups). A topic is Kafka's fundamental unit of organization."},
+
+{id:75,src:'l9',type:'mcq',
+q:"Apache Kafka uses _______ in a publish-subscribe channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:0,
+exp:"Apache Kafka uses Topics for publish-subscribe — multiple consumer groups can all read from the same topic independently. Each group gets its own copy of messages."},
+
+{id:76,src:'l9',type:'mcq',
+q:"JMS uses _______ in a point-to-point channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:1,
+exp:"JMS uses Queues for point-to-point messaging — messages go to exactly one consumer. JMS uses Topics for publish-subscribe (multiple subscribers receive each message)."},
+
+{id:77,src:'l9',type:'mcq',
+q:"JMS uses _______ in a publish-subscribe channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:0,
+exp:"JMS uses Topics for publish-subscribe — multiple subscribers can receive the same message from a topic. This is different from JMS Queues which are point-to-point."},
+
+{id:78,src:'l9',type:'mcq',
+q:"AWS Kinesis uses _______ in a point-to-point channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:2,
+exp:"AWS Kinesis uses Streams for data streaming. Kinesis Streams support both point-to-point (one consumer) and fan-out (multiple consumers/shards) patterns."},
+
+{id:79,src:'l9',type:'mcq',
+q:"AWS SQS uses _______ in a point-to-point channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:1,
+exp:"AWS SQS (Simple Queue Service) uses Queues for point-to-point messaging. Each message is delivered to exactly one consumer. SQS is specifically designed for point-to-point."},
+
+{id:80,src:'l9',type:'mcq',
+q:"RabbitMQ uses _______ in a publish-subscribe channel.",
+opts:["Topic","Queue","Fanout exchange + Queue","Exchange + Queue"],
+ans:2,
+exp:"RabbitMQ uses a Fanout Exchange + Queue for publish-subscribe. The exchange distributes copies of each message to all bound queues. Each subscriber has its own queue bound to the fanout exchange."},
+
+{id:81,src:'l9',type:'mcq',
+q:"RabbitMQ uses _______ in a point-to-point channel.",
+opts:["Topic","Queue","Stream","Exchange + Queue"],
+ans:1,
+exp:"RabbitMQ uses a Queue for point-to-point messaging. Messages go into the queue and exactly one consumer receives each message. For pub-sub, RabbitMQ uses exchanges (fanout/topic exchange)."},
+
+/* ═══════════════════════ LECTURE 10 ═══════════════════════ */
+{id:82,src:'l10',type:'mcq',
+q:"On which pattern does each service have its own private database?",
+opts:["Database per service","SAGA","CQRS","Domain event"],
+ans:0,
+exp:"Database per Service pattern: each microservice has its own private database that no other service can access directly. Services communicate only via APIs, ensuring loose coupling and independent deployability."},
+
+{id:83,src:'l10',type:'mcq',
+q:"On which pattern do services publish an event whenever data changes?",
+opts:["Database per service","Event sourcing","CQRS","Domain event"],
+ans:3,
+exp:"Domain Event pattern: services publish a domain event whenever a significant state change occurs (data changes). Other services subscribe to these events and react accordingly. This enables event-driven architectures."},
+
+{id:84,src:'l10',type:'mcq',
+q:"On which pattern — a sequence of local transactions — is data consistency maintained across services?",
+opts:["Database per service","SAGA","CQRS","Domain event"],
+ans:1,
+exp:"SAGA pattern: a sequence of local transactions where each service performs its transaction and publishes events/messages to trigger the next step. If a step fails, compensating transactions undo previous steps."},
+
+{id:85,src:'l10',type:'mcq',
+q:"On which pattern do services share a database?",
+opts:["Shared database","SAGA","CQRS","Domain event"],
+ans:0,
+exp:"Shared Database pattern: multiple services share a single database. While this simplifies cross-service queries, it creates coupling between services and undermines independent deployability."},
+
+{id:86,src:'l10',type:'mcq',
+q:"On which pattern are queries implemented by maintaining one or more materialized views that can be efficiently queried?",
+opts:["Shared database","SAGA","CQRS","Event sourcing"],
+ans:2,
+exp:"CQRS (Command Query Responsibility Segregation): separates read (query) and write (command) operations. Queries use optimized materialized views; commands update the write model. Enables efficient reads at scale."},
+
+{id:87,src:'l10',type:'mcq',
+q:"On which pattern are aggregates persisted as a sequence of events?",
+opts:["Shared database","SAGA","Domain event","Event sourcing"],
+ans:3,
+exp:"Event Sourcing: instead of storing the current state, you store the full sequence of events that led to that state. The current state is reconstructed by replaying events. Provides complete audit trail."},
+
+{id:88,src:'l10',type:'mcq',
+q:"In which approach does each service own a set of tables that must only be accessed by that service?",
+opts:["Private-tables-per-service","Schema-per-service","Database-server-per-service"],
+ans:0,
+exp:"Private-tables-per-service: services share a DB server and schema, but each service owns specific tables. Access is enforced by application logic (not DB-level). Lowest infrastructure overhead."},
+
+{id:89,src:'l10',type:'mcq',
+q:"In which approach does each service have its own database server?",
+opts:["Private-tables-per-service","Schema-per-service","Database-server-per-service"],
+ans:2,
+exp:"Database-server-per-service: each service has a completely separate database server instance. Strongest isolation (different credentials, different server), but highest infrastructure overhead and cost."},
+
+{id:90,src:'l10',type:'mcq',
+q:"In which approach does each service have a database schema that's private to that service?",
+opts:["Private-tables-per-service","Schema-per-service","Database-server-per-service"],
+ans:1,
+exp:"Schema-per-service: services share a database server but each has its own schema (namespace). Ownership is clear at the schema level. Middle ground between private-tables and separate servers."},
+
+{id:91,src:'l10',type:'mcq',
+q:"Which two approaches have the lowest overhead?",
+opts:["Private-tables-per-service / Schema-per-service","Private-tables-per-service / Database-server-per-service","Database-server-per-service / Private-tables-per-service","Database-server-per-service / Schema-per-service"],
+ans:0,
+exp:"Private-tables-per-service and Schema-per-service share the same DB server, minimizing infrastructure overhead. Database-server-per-service requires running separate server instances — much higher resource cost."},
+
+{id:92,src:'l10',type:'mcq',
+q:"Using which approach is appealing since it makes ownership clearer?",
+opts:["Private-tables-per-service","Schema-per-service","Database-server-per-service"],
+ans:1,
+exp:"Schema-per-service makes ownership explicit — the schema name clearly identifies which service owns it. Private-tables ownership relies on naming conventions and app-level enforcement, which is less clear."},
+
+{id:93,src:'l10',type:'mcq',
+q:"In which pattern are services loosely coupled and each service can use the type of database best suited for it?",
+opts:["Database per service","SAGA","CQRS","Domain event"],
+ans:0,
+exp:"Database per service enables polyglot persistence — each service can use the database type that best fits its needs (relational, document, graph, key-value). This is a primary benefit of this pattern."},
+
+{id:94,src:'l10',type:'tf',
+q:"CAP Theorem says it is impossible for a distributed computer system to simultaneously provide all three of the following guarantees: Consistency, Availability, and Partition Tolerance.",
+opts:["True","False"],ans:0,
+exp:"TRUE. This is the core statement of CAP Theorem (Brewer's Theorem): a distributed system can provide at most TWO of the three guarantees — Consistency, Availability, and Partition Tolerance — never all three simultaneously."},
+
+{id:95,src:'l10',type:'mcq',
+q:"CAP is short for:",
+opts:["Consistency / Availability / Performance","Consistency / Availability / Partition Tolerance"],
+ans:1,
+exp:"CAP = Consistency, Availability, Partition Tolerance. NOT Performance. This is a fundamental theorem in distributed systems by Eric Brewer (2000)."},
+
+{id:96,src:'l10',type:'mcq',
+q:"Which CAP property means all nodes see the same data at the same time?",
+opts:["Consistency","Availability","Performance","Partition tolerance"],
+ans:0,
+exp:"Consistency: every read receives the most recent write or an error. All nodes see identical data at the same moment. Strong consistency = no stale reads allowed."},
+
+{id:97,src:'l10',type:'mcq',
+q:"Which CAP property means the system continues to operate?",
+opts:["Consistency","Availability","Performance","Partition tolerance"],
+ans:1,
+exp:"Availability: every request receives a response (not an error) — though it might not be the most up-to-date data. The system is always operational and responsive."},
+
+{id:98,src:'l10',type:'mcq',
+q:"Which CAP property means every request definitely receives a response with success or failure?",
+opts:["Consistency","Availability","Performance","Partition tolerance"],
+ans:1,
+exp:"Availability: the system guarantees a response (success or failure) to every request. It doesn't guarantee the response contains the latest data — just that the system responds at all."},
+
+{id:99,src:'l10',type:'tf',
+q:"A distributed system can satisfy all three of CAP (Consistency, Availability, Partition Tolerance) at the same time.",
+opts:["True","False"],ans:1,
+exp:"FALSE. CAP Theorem proves you can only satisfy TWO of the three simultaneously: CA (no partitions), CP (sacrifice availability), or AP (sacrifice consistency). All three at once is mathematically impossible."},
+
+{id:100,src:'l10',type:'mcq',
+q:"Consistency and Availability are achieved in _______, which does not have Partition Tolerance.",
+opts:["NoSQL","RDBMS"],
+ans:1,
+exp:"Traditional RDBMS systems (single-node or small clusters) sacrifice Partition Tolerance for CA — they maintain consistency and availability but can't handle network partitions. NoSQL systems typically choose CP or AP."},
+
+{id:101,src:'l10',type:'mcq',
+q:"In NoSQL we want to have Partition Tolerance (P), so we Drop _______, which means we accept getting inconsistent data.",
+opts:["C (Consistency)","A (Availability)"],
+ans:0,
+exp:"If we drop C (Consistency) while keeping A and P → AP system. We accept that different nodes may have different data at a given moment (eventual consistency). Example: Cassandra, DynamoDB."},
+
+{id:102,src:'l10',type:'mcq',
+q:"In NoSQL we want to have Partition Tolerance (P), so we Drop _______, which means we accept waiting until data is consistent.",
+opts:["C (Consistency)","A (Availability)"],
+ans:1,
+exp:"If we drop A (Availability) while keeping C and P → CP system. The system refuses requests during a partition to maintain consistency. Clients wait. Example: HBase, Zookeeper, MongoDB (strong mode)."},
+
+{id:103,src:'l10',type:'mcq',
+q:"Scalability and better performance of NoSQL is achieved by sacrificing _______ compatibility.",
+opts:["ACID","BASE"],
+ans:0,
+exp:"NoSQL sacrifices ACID compatibility for scalability and performance. ACID (Atomicity, Consistency, Isolation, Durability) is expensive to maintain at scale across distributed nodes."},
+
+{id:104,src:'l10',type:'mcq',
+q:"NoSQL uses _______ compatibility instead of ACID.",
+opts:["ACID","BASE"],
+ans:1,
+exp:"NoSQL uses BASE (Basically Available, Soft state, Eventually consistent) instead of ACID. BASE trades strong consistency for availability and partition tolerance — enabling massive horizontal scaling."},
+
+{id:105,src:'l10',type:'mcq',
+q:"Available, Soft state, Eventual consistency describes which model?",
+opts:["ACID","BASE"],
+ans:1,
+exp:"BASE = Basically Available (system always responds), Soft state (state may change over time even without input), Eventual consistency (data will become consistent at some future point — not immediately)."},
+
+{id:106,src:'l10',type:'tf',
+q:"ACID compatibility stands for Availability, Consistent, Isolated, Durable.",
+opts:["True","False"],ans:1,
+exp:"FALSE. ACID stands for ATOMICITY (not Availability), Consistency, Isolation, Durability. The 'A' in ACID is Atomicity (all-or-nothing transactions) — NOT Availability. 'A' in BASE/CAP is Availability."},
+
+{id:107,src:'l10',type:'mcq',
+q:"In _______, all operations in the transaction will complete, or none will.",
+opts:["Atomic","Consistent","Isolated","Durable"],
+ans:0,
+exp:"Atomicity: transactions are all-or-nothing. Either ALL operations commit successfully, or ALL are rolled back. No partial transactions. Example: bank transfer — both debit and credit happen, or neither does."},
+
+{id:108,src:'l10',type:'mcq',
+q:"In _______, upon completion of the transaction, the operation will not be reversed.",
+opts:["Atomic","Consistent","Isolated","Durable"],
+ans:3,
+exp:"Durability: committed transactions are permanent — they survive system failures (crashes, power outages). Data is written to persistent storage (disk) so it's never lost after a successful commit."},
+
+{id:109,src:'l10',type:'mcq',
+q:"In _______, the transaction behaves as if it is the only operation being performed upon the database.",
+opts:["Atomic","Consistent","Isolated","Durable"],
+ans:2,
+exp:"Isolation: concurrent transactions don't interfere with each other. Each transaction executes as if it's the only one running. This prevents dirty reads, phantom reads, and non-repeatable reads."},
+
+{id:110,src:'l10',type:'mcq',
+q:"In _______, transactions never observe or result in inconsistent data.",
+opts:["Atomic","Consistent","Isolated","Durable"],
+ans:1,
+exp:"Consistency: a transaction brings the database from one valid state to another valid state. Business rules and integrity constraints are always maintained. No transaction can violate defined rules."},
+
+{id:111,src:'l10',type:'mcq',
+q:"In _______, committed transactions are permanent.",
+opts:["Atomic","Consistent","Isolated","Durable"],
+ans:3,
+exp:"Durability: once committed, data persists permanently. Even if the system crashes immediately after commit, the data is not lost. Typically implemented via write-ahead logging and disk persistence."},
+
+{id:112,src:'l10',type:'tf',
+q:"In Basically Available, replication and sharding are used to reduce the likelihood of data unavailability, and sharding makes any remaining failures partial.",
+opts:["True","False"],ans:0,
+exp:"TRUE. 'Basically Available' means: use replication (copies of data on multiple nodes) so losing one node doesn't lose data, and sharding (partitioning) so a failure only affects a portion of the data."},
+
+{id:113,src:'l10',type:'tf',
+q:"The result of Basically Available is a system that is always available. But if subsets of the data become unavailable for short periods, the system becomes completely unavailable.",
+opts:["True","False"],ans:1,
+exp:"FALSE. The second part is wrong. In Basically Available, if SUBSETS of data become unavailable, only THAT subset is affected — NOT the whole system. The system remains partially operational (partial failures, not total failure)."},
+
+{id:114,src:'l10',type:'tf',
+q:"The availability in BASE is achieved through supporting partial failures without total system failure.",
+opts:["True","False"],ans:0,
+exp:"TRUE. BASE availability = the system stays up even when parts fail. Partial failures are isolated. This is 'basically available' — not 100% ACID availability, but the system doesn't go completely down."},
+
+{id:115,src:'l10',type:'mcq',
+q:"Which systems enforce consistency at transaction commit?",
+opts:["ACID","NoSQL"],
+ans:0,
+exp:"ACID systems (RDBMS) enforce strict consistency at the end of every transaction. When a transaction commits, all consistency rules are guaranteed to hold. NoSQL systems relax this for performance."},
+
+{id:116,src:'l10',type:'mcq',
+q:"Which guarantees consistency only at some undefined future time?",
+opts:["ACID","NoSQL"],
+ans:1,
+exp:"NoSQL (BASE) guarantees eventual consistency — data will become consistent at some point in the future, but not necessarily immediately after a write. Different nodes may temporarily have different values."},
+
+{id:117,src:'l10',type:'mcq',
+q:"Which is optimistic and accepts that the database consistency will be in a state of flux?",
+opts:["ACID","BASE"],
+ans:1,
+exp:"BASE is optimistic — it accepts temporary inconsistency, trusting that the system will eventually converge to a consistent state. It can return 'optimistic' (possibly stale) answers to clients."},
+
+{id:118,src:'l10',type:'mcq',
+q:"Which is pessimistic and forces consistency at the end of every operation?",
+opts:["ACID","BASE"],
+ans:0,
+exp:"ACID is pessimistic — it assumes conflicts will happen and prevents any inconsistency before committing. Every operation must leave the database in a fully consistent state before the transaction ends."},
+
+{id:119,src:'l10',type:'mcq',
+q:"While _______ systems assume data consistency is a hard requirement, _______ systems allow data to be inconsistent.",
+opts:["NoSQL / ACID","ACID / NoSQL"],
+ans:1,
+exp:"ACID systems treat consistency as non-negotiable. NoSQL (BASE) systems explicitly allow temporary inconsistency in exchange for availability and partition tolerance. ACID is strict; BASE is flexible."},
+
+{id:120,src:'l10',type:'tf',
+q:"Soft state indicates that the state of the system may change over time even without input.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Soft state = system state is not guaranteed to stay the same even without new writes. This is because eventual consistency propagates changes across nodes in the background — state 'softly' evolves."},
+
+{id:121,src:'l10',type:'mcq',
+q:"In which pattern does each service freely access data owned by other services using local ACID transactions?",
+opts:["Shared database","SAGA","Database per service","Event sourcing"],
+ans:0,
+exp:"Shared Database pattern: all services share one database, so they can directly access each other's tables using ACID transactions. This creates coupling but simplifies cross-service queries."},
+
+{id:122,src:'l10',type:'tf',
+q:"A single (shared) database is complex to operate.",
+opts:["True","False"],ans:1,
+exp:"FALSE. A single shared database is actually SIMPLE to operate — one DB to manage, backup, and monitor. The complexity of operating multiple databases is a challenge of the 'database per service' pattern."},
+
+{id:123,src:'l10',type:'tf',
+q:"In the Shared Database pattern, developers use familiar and straightforward BASE transactions to enforce data consistency.",
+opts:["True","False"],ans:1,
+exp:"FALSE. In the Shared Database pattern, developers use ACID transactions (not BASE). A shared database is a relational DB that supports ACID. BASE is for distributed NoSQL systems."},
+
+{id:124,src:'l10',type:'mcq',
+q:"Which database type uses the concept of keyspace — which comprises column families?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:1,
+exp:"Column DB (e.g., Cassandra): uses keyspace as the top-level container (like a database), which contains column families (like tables). Each column family has rows identified by a unique row key."},
+
+{id:125,src:'l10',type:'mcq',
+q:"A simple NoSQL model consisting of key-value pairs is:",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:2,
+exp:"Key-value DB: simplest NoSQL model — data stored as key-value pairs like a hash map. Very fast for simple lookups by key. Examples: Redis, DynamoDB, Riak. Limited query capability (by key only)."},
+
+{id:126,src:'l10',type:'mcq',
+q:"Which DB consists of collections, each containing several documents with key-value pairs and a unique key per document?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:0,
+exp:"Document DB (e.g., MongoDB): collections contain documents. Each document is a set of key-value pairs with a unique _id. Documents can be nested and have flexible schemas. Supports rich queries."},
+
+{id:127,src:'l10',type:'mcq',
+q:"Which DB consists of nodes, edges, labels, and properties?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:3,
+exp:"Graph DB (e.g., Neo4j): data modeled as nodes (entities), edges (relationships), labels (categories), and properties (attributes). Purpose-built for traversing relationships — social networks, recommendation engines."},
+
+{id:128,src:'l10',type:'tf',
+q:"In Column DB, each column family contains a set of columns.",
+opts:["True","False"],ans:0,
+exp:"TRUE. In Column DB (like Cassandra), a column family is a container for columns. Each row in a column family has a unique row key and can have different columns. Column families group related data."},
+
+{id:129,src:'l10',type:'tf',
+q:"In Column DB, each row in a column-family database is identified by a unique row key.",
+opts:["True","False"],ans:0,
+exp:"TRUE. Every row in a column-family database has a unique row key (like a primary key). This row key is used for all lookups and determines data distribution across nodes in distributed column stores."},
+
+{id:130,src:'l10',type:'tf',
+q:"Document content is always simple.",
+opts:["True","False"],ans:1,
+exp:"FALSE. Document content can be complex — documents can be nested (documents within documents), contain arrays, and have varied structures. This flexibility and support for complex content is a Document DB strength."},
+
+{id:131,src:'l10',type:'mcq',
+q:"Which is an example of a Column DB?",
+opts:["Redis","MongoDB","Cassandra","Neo4j"],
+ans:2,
+exp:"Cassandra is a Column DB (wide-column store). Redis = Key-value. MongoDB = Document. Neo4j = Graph. Cassandra uses keyspaces and column families, optimized for high-volume writes and time-series data."},
+
+{id:132,src:'l10',type:'mcq',
+q:"Which is an example of a Key-value DB?",
+opts:["Redis","MongoDB","Cassandra","Neo4j"],
+ans:0,
+exp:"Redis is the classic Key-value DB — stores data as key-value pairs in memory with optional persistence. MongoDB = Document. Cassandra = Column. Neo4j = Graph."},
+
+{id:133,src:'l10',type:'mcq',
+q:"Which is an example of a Graph DB?",
+opts:["Redis","MongoDB","Cassandra","Neo4j"],
+ans:3,
+exp:"Neo4j is the most popular Graph DB — stores data as nodes and relationships with properties. Redis = Key-value. MongoDB = Document. Cassandra = Column."},
+
+{id:134,src:'l10',type:'mcq',
+q:"Which is an example of a Document DB?",
+opts:["Redis","MongoDB","Cassandra","Neo4j"],
+ans:1,
+exp:"MongoDB is the most popular Document DB — stores JSON-like documents (BSON) in collections. Redis = Key-value. Cassandra = Column. Neo4j = Graph."},
+
+{id:135,src:'l10',type:'mcq',
+q:"Which DB type is avoided for queries against varying aggregates?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:2,
+exp:"Key-value DB is avoided when you need to query by varying fields/aggregates — you can only query by key. If your query patterns change or you need flexible aggregation, Key-value is a poor fit."},
+
+{id:136,src:'l10',type:'mcq',
+q:"Which DB type is avoided when query patterns are updated frequently?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:1,
+exp:"Column DB is avoided when query patterns change frequently — column families are designed around specific access patterns. Changing query patterns requires restructuring column families, which is expensive."},
+
+{id:137,src:'l10',type:'mcq',
+q:"Which DB is suitable for large volumes of data requiring heavy write operations and supporting a high aggregation level?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:1,
+exp:"Column DB (like Cassandra) is optimized for high-volume writes and large-scale aggregation. It handles petabytes of data with high write throughput. Used for IoT data, time-series, analytics."},
+
+{id:138,src:'l10',type:'mcq',
+q:"Which DB type is suitable for storing session information?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:2,
+exp:"Key-value DB (like Redis) is perfect for session storage — sessions are accessed by session ID (key), the data is simple, and Redis's in-memory storage gives extremely fast read/write for session lookups."},
+
+{id:139,src:'l10',type:'mcq',
+q:"Which DB is used in applications requiring traversal between data and is very suitable for mining data from social media — supporting complex queries?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:3,
+exp:"Graph DB (like Neo4j) is purpose-built for relationship traversal — 'friends of friends', 'shortest path', 'recommendation' queries. Social networks, fraud detection, and knowledge graphs are ideal use cases."},
+
+{id:140,src:'l10',type:'mcq',
+q:"Which DB provides high read/write velocity without frequent updates?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:2,
+exp:"Key-value DB provides extremely high read/write velocity for simple lookups — but it's unsuitable when you need to frequently update parts of the value (you update the whole value). Best for immutable or rarely-updated data."},
+
+{id:141,src:'l10',type:'mcq',
+q:"Which DB provides a flexible schema for queries, high performance, and a balanced read/write ratio?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:0,
+exp:"Document DB (like MongoDB) offers schema flexibility (each document can have different fields), supports rich queries, and provides balanced read/write performance. It's the most versatile NoSQL type for general applications."},
+
+{id:142,src:'l10',type:'mcq',
+q:"Which DB is unsuitable when there's a need to operate on multiple unique keys, relationships between values, query by specific data, or when a part of the value is frequently updated?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:2,
+exp:"Key-value DB: you can only access data by its exact key. Multiple key lookups, joins, partial value updates, relationship traversal, and field-specific queries are all unsupported or very expensive."},
+
+{id:143,src:'l10',type:'mcq',
+q:"Storing relationships explicitly is the key feature that distinguishes _______ from other data stores.",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:3,
+exp:"Graph DB's defining feature is explicit relationship storage — relationships (edges) are first-class citizens, not derived via joins. This makes relationship queries orders of magnitude faster than relational JOIN operations."},
+
+{id:144,src:'l10',type:'mcq',
+q:"If connections within the data are not the primary focus and the data is of a transactional nature, which type of database is probably NOT the best fit?",
+opts:["Document DB","Column DB","Key-value DB","Graph DB"],
+ans:3,
+exp:"Graph DB is NOT suitable for transaction-heavy workloads where relationships aren't the primary concern. Its strength is traversing complex relationships — not high-volume transactional processing with simple data."},
+
+];
+
+// ── STATE ──
+let answered=0,correct=0,wrong=0,currentFilter='all',visibleQs=[];
+
+// ── FILTER ──
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQs();updateStats();
+}
+
+// ── RENDER ──
+function renderQs(){
+  const c=document.getElementById('qc');
+  const em=document.getElementById('em');
+  const sT=document.getElementById('sT');
+
+  visibleQs=QS.filter(q=>{
+    if(currentFilter==='all') return true;
+    if(currentFilter==='mcq') return q.type==='mcq';
+    if(currentFilter==='tf') return q.type==='tf';
+    return q.src===currentFilter;
+  });
+
+  sT.textContent=visibleQs.length;
+  if(!visibleQs.length){em.classList.add('show');c.innerHTML='';return;}
+  em.classList.remove('show');
+
+  c.innerHTML=visibleQs.map((q,idx)=>{
+    const lblMap={l8:'Lec 8',l9:'Lec 9',l10:'Lec 10'};
+    const clsMap={l8:'lb8',l9:'lb9',l10:'lb10'};
+    const isTF=q.type==='tf';
+
+    let optsHtml='';
+    if(isTF){
+      optsHtml=`<div class="tf-row">
+        <button class="tf-btn" id="tf-${q.id}-0" onclick="checkTF(${q.id},0)">✓ True</button>
+        <button class="tf-btn" id="tf-${q.id}-1" onclick="checkTF(${q.id},1)">✗ False</button>
+      </div>`;
+    } else {
+      const letters=['a','b','c','d'];
+      optsHtml=`<div class="opts">${q.opts.map((o,oi)=>`
+        <div class="opt" id="opt-${q.id}-${oi}" onclick="checkMCQ(${q.id},${oi})">
+          <span class="opt-l">${letters[oi]}.</span>
+          <span class="opt-t">${o}</span>
+        </div>`).join('')}</div>`;
+    }
+
+    return `<div class="q-card" id="qcard-${q.id}" style="animation-delay:${Math.min(idx*.02,.5)}s">
+      <div class="q-meta">
+        <span class="q-num">Q${String(idx+1).padStart(2,'0')}</span>
+        <span class="lec-badge ${clsMap[q.src]}">${lblMap[q.src]}</span>
+        <span class="type-badge ${isTF?'tb-tf':'tb-mcq'}">${isTF?'True/False':'MCQ'}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      ${optsHtml}
+      <div class="fb" id="fb-${q.id}"></div>
+    </div>`;
+  }).join('');
+}
+
+// ── CHECK MCQ ──
+function checkMCQ(qId,chosen){
+  const card=document.getElementById(`qcard-${qId}`);
+  if(card.dataset.answered) return;
+  card.dataset.answered='1';
+  const q=QS.find(x=>x.id===qId);
+  const isOk=chosen===q.ans;
+  const letters=['a','b','c','d'];
+  q.opts.forEach((_,i)=>{
+    const el=document.getElementById(`opt-${qId}-${i}`);
+    el.classList.add('locked');
+    if(i===q.ans) el.classList.add('correct');
+    else if(i===chosen) el.classList.add('wrong');
+  });
+  showFeedback(qId,isOk,q);
+  tally(isOk);
+}
+
+// ── CHECK TF ──
+function checkTF(qId,chosen){
+  const card=document.getElementById(`qcard-${qId}`);
+  if(card.dataset.answered) return;
+  card.dataset.answered='1';
+  const q=QS.find(x=>x.id===qId);
+  const isOk=chosen===q.ans;
+  [0,1].forEach(i=>{
+    const el=document.getElementById(`tf-${qId}-${i}`);
+    el.classList.add('locked');
+    if(i===q.ans) el.classList.add('correct');
+    else if(i===chosen) el.classList.add('wrong');
+  });
+  showFeedback(qId,isOk,q);
+  tally(isOk);
+}
+
+// ── FEEDBACK ──
+function showFeedback(qId,isOk,q){
+  const fb=document.getElementById(`fb-${qId}`);
+  const correctLabel=q.type==='tf'?(q.ans===0?'True':'False'):
+    `(${['a','b','c','d'][q.ans]}) ${q.opts[q.ans]}`;
+  fb.className=`fb show ${isOk?'ok':'bad'}`;
+  fb.innerHTML=`<div class="fb-head">${isOk?'✓ Correct!':
+    `✗ Wrong — Correct: ${correctLabel}`}</div>
+    <div class="fb-body">${q.exp}</div>`;
+}
+
+// ── TALLY ──
+function tally(isOk){
+  if(isOk) correct++; else wrong++;
+  answered++;
+  updateStats();
+  if(answered===visibleQs.length) showResult();
+}
+
+// ── STATS ──
+function updateStats(){
+  document.getElementById('sA').textContent=answered;
+  document.getElementById('sC').textContent=correct;
+  document.getElementById('sW').textContent=wrong;
+  const tot=visibleQs.length;
+  const pct=tot>0?Math.round(answered/tot*100):0;
+  document.getElementById('pf').style.width=pct+'%';
+  document.getElementById('pl').textContent=`${answered} answered`;
+  document.getElementById('pp').textContent=pct+'%';
+}
+
+// ── RESULT ──
+function showResult(){
+  const tot=visibleQs.length;
+  const pct=Math.round(correct/tot*100);
+  document.getElementById('rs').textContent=`${correct}/${tot}`;
+  document.getElementById('rp').textContent=`Score: ${pct}%`;
+  let g,cls;
+  if(pct>=85){g='🏆 Excellent — You are fully ready!';cls='grade-a';}
+  else if(pct>=65){g='👍 Good — Review your wrong answers.';cls='grade-b';}
+  else{g='📚 Keep studying — review all explanations.';cls='grade-c';}
+  const el=document.getElementById('rg');
+  el.textContent=g;el.className=`result-grade ${cls}`;
+  const rb=document.getElementById('rb');
+  rb.classList.add('show');
+  rb.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── RESET ──
+function resetAll(){
+  answered=0;correct=0;wrong=0;
+  document.getElementById('rb').classList.remove('show');
+  updateStats();renderQs();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── INIT ──
+renderQs();updateStats();
+</script>
+</body>
+</html>
