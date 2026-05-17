@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IS-352 | Microservices Design Patterns — Exam Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #131720;
+    --bg3: #1a2030;
+    --border: #252d40;
+    --accent: #4f9cf9;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --danger: #f87171;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --card: #161c2a;
+    --card2: #1e2638;
+    --highlight: rgba(79,156,249,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  .light-mode {
+    --bg: #f0f4ff;
+    --bg2: #ffffff;
+    --bg3: #e8edf8;
+    --border: #d0d9ee;
+    --text: #1a2040;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --card: #ffffff;
+    --card2: #f8faff;
+    --highlight: rgba(79,156,249,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+    transition: background 0.3s;
+  }
+  .light-mode header { background: rgba(240,244,255,0.92); }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    color: var(--accent);
+    padding: 16px 0;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--text2); font-weight: 400; font-size: 13px; display: block; }
+
+  nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; padding: 10px 0; }
+
+  nav button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 40px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  nav button:hover { background: var(--highlight); color: var(--accent); }
+  nav button.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .header-actions { display: flex; gap: 8px; padding: 10px 0; }
+  .theme-btn {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 8px;
+    padding: 7px 12px; cursor: pointer; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── MAIN ─── */
+  main { max-width: 1100px; margin: 0 auto; padding: 36px 20px 80px; }
+
+  .section { display: none; animation: fadeIn 0.35s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── PAGE TITLE ─── */
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .page-title .accent { color: var(--accent); }
+  .page-subtitle { color: var(--text2); margin-bottom: 36px; font-size: 15px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-title .icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--highlight);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+
+  h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin: 20px 0 8px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--accent2); margin: 14px 0 6px; }
+
+  p { color: var(--text2); margin-bottom: 10px; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* ─── PILLS / BADGES ─── */
+  .badge {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 40px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-blue { background: rgba(79,156,249,0.15); color: var(--accent); }
+  .badge-purple { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .badge-orange { background: rgba(251,146,60,0.15); color: var(--accent4); }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+  /* ─── LISTS ─── */
+  ul.styled, ol.styled {
+    padding-left: 20px; color: var(--text2);
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 10px;
+  }
+  ul.styled li::marker { color: var(--accent); }
+  ol.styled li::marker { color: var(--accent); font-weight: 700; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    background: var(--highlight);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+    color: var(--text2);
+  }
+  .highlight-box.green { background: rgba(52,211,153,0.1); border-color: var(--accent3); }
+  .highlight-box.purple { background: rgba(167,139,250,0.1); border-color: var(--accent2); }
+  .highlight-box.orange { background: rgba(251,146,60,0.1); border-color: var(--accent4); }
+  .highlight-box.red { background: rgba(248,113,113,0.1); border-color: var(--danger); }
+  .highlight-box strong { color: var(--text); }
+
+  /* ─── CODE ─── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg3); border-radius: 5px;
+    padding: 2px 7px; font-size: 13px; color: var(--accent3);
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    background: var(--bg3); color: var(--accent);
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    padding: 10px 14px; text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--highlight); }
+
+  /* ─── PROS/CONS GRID ─── */
+  .pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  @media(max-width:600px){ .pro-con { grid-template-columns: 1fr; } }
+  .pros { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); border-radius: var(--radius-sm); padding: 16px; }
+  .cons { background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.2); border-radius: var(--radius-sm); padding: 16px; }
+  .pros h4 { color: var(--accent3); margin-top: 0; }
+  .cons h4 { color: var(--danger); margin-top: 0; }
+  .pros li, .cons li { color: var(--text2); font-size: 13.5px; }
+
+  /* ─── COLLAPSIBLE ─── */
+  .collapsible-btn {
+    width: 100%; text-align: left;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 13px 18px;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.2s; margin-bottom: 4px;
+  }
+  .collapsible-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .collapsible-btn .arrow { transition: transform 0.25s; font-size: 12px; }
+  .collapsible-btn.open .arrow { transform: rotate(180deg); }
+  .collapsible-content {
+    overflow: hidden; max-height: 0;
+    transition: max-height 0.4s ease, padding 0.3s;
+    background: var(--card); border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    padding: 0 18px; margin-bottom: 10px;
+  }
+  .collapsible-content.open { max-height: 2000px; padding: 18px; }
+
+  /* ─── MCQ ─── */
+  .mcq-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .mcq-number { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
+  .mcq-question { font-weight: 500; color: var(--text); margin-bottom: 16px; font-size: 15px; }
+  .mcq-difficulty { float: right; }
+  .mcq-options { display: flex; flex-direction: column; gap: 8px; }
+  .mcq-option {
+    padding: 10px 16px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); cursor: pointer;
+    font-size: 14px; color: var(--text2);
+    transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+  }
+  .mcq-option:hover { border-color: var(--accent); color: var(--accent); background: var(--highlight); }
+  .mcq-option.correct { background: rgba(52,211,153,0.1); border-color: var(--accent3); color: var(--accent3); }
+  .mcq-option.wrong { background: rgba(248,113,113,0.1); border-color: var(--danger); color: var(--danger); }
+  .mcq-option.disabled { pointer-events: none; }
+  .mcq-option .opt-letter {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--bg3); font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+  }
+  .mcq-explanation {
+    display: none; margin-top: 14px; padding: 14px;
+    background: var(--highlight); border-radius: var(--radius-sm);
+    font-size: 13.5px; color: var(--text2); line-height: 1.6;
+  }
+  .mcq-explanation.show { display: block; }
+  .mcq-explanation strong { color: var(--accent3); }
+
+  .mcq-score-bar {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    margin-bottom: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .score-display { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent); }
+  .score-label { color: var(--text2); font-size: 14px; }
+  .reset-btn {
+    margin-left: auto; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm); padding: 10px 20px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .reset-btn:hover { opacity: 0.85; }
+
+  /* ─── WRITTEN ─── */
+  .written-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  }
+  .written-q { font-weight: 600; color: var(--text); margin-bottom: 14px; font-size: 15px; }
+  .show-answer-btn {
+    background: transparent; border: 1px solid var(--accent2);
+    color: var(--accent2); border-radius: 40px; padding: 7px 18px;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .show-answer-btn:hover { background: rgba(167,139,250,0.15); }
+  .answer-content { display: none; margin-top: 16px; }
+  .answer-content.show { display: block; }
+  .model-label { font-size: 12px; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+  /* ─── REVISION SHEET ─── */
+  .revision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .revision-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .revision-card h3 { font-size: 14px; color: var(--accent); margin-top: 0; margin-bottom: 12px; font-family: 'Syne', sans-serif; }
+  .revision-card li { font-size: 13px; color: var(--text2); margin-bottom: 5px; }
+  .revision-card strong { color: var(--text); }
+  .night-before {
+    background: linear-gradient(135deg, rgba(79,156,249,0.1), rgba(167,139,250,0.1));
+    border: 1px solid var(--accent2);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
+  }
+  .night-before h3 { color: var(--accent2); font-family: 'Syne', sans-serif; margin-bottom: 14px; }
+
+  /* ─── SUMMARY ─── */
+  .summary-tree { padding-left: 0; list-style: none; }
+  .summary-tree > li { margin-bottom: 18px; }
+  .summary-tree > li > strong { color: var(--accent); font-size: 15px; font-family: 'Syne', sans-serif; display: block; margin-bottom: 6px; }
+  .summary-tree ul { padding-left: 18px; list-style: disc; color: var(--text2); font-size: 14px; }
+  .summary-tree ul li { margin-bottom: 4px; }
+
+  /* ─── DIVIDER ─── */
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* ─── FILTER BAR ─── */
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .filter-btn {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 40px; padding: 6px 16px;
+    color: var(--text2); font-size: 13px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .filter-btn.easy.active { background: var(--accent3); border-color: var(--accent3); }
+  .filter-btn.medium.active { background: var(--accent4); border-color: var(--accent4); }
+  .filter-btn.hard.active { background: var(--danger); border-color: var(--danger); }
+
+  /* scroll */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .mnemonic-box {
+    background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(79,156,249,0.08));
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: var(--radius-sm); padding: 16px 20px; margin: 14px 0;
+  }
+  .mnemonic-box .mnemonic-label { font-size: 11px; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .mnemonic-box p { color: var(--text); font-size: 14px; margin: 0; }
+
+  .step-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .step-item { display: flex; gap: 14px; align-items: flex-start; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 13px; font-family: 'JetBrains Mono', monospace;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-num.red { background: var(--danger); }
+  .step-num.purple { background: var(--accent2); }
+  .step-num.green { background: var(--accent3); }
+  .step-content { color: var(--text2); font-size: 14px; line-height: 1.6; }
+  .step-content strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IS-352 <span>Microservices Design Patterns</span></div>
+  <nav id="mainNav">
+    <button class="active" onclick="showSection('explanation', this)">📖 Explanation</button>
+    <button onclick="showSection('summary', this)">📋 Summary</button>
+    <button onclick="showSection('memory', this)">🧠 Memory</button>
+    <button onclick="showSection('mcq', this)">❓ MCQs</button>
+    <button onclick="showSection('written', this)">✍️ Written</button>
+    <button onclick="showSection('revision', this)">⚡ Revision</button>
+  </nav>
+  <div class="header-actions">
+    <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 1 — EXPLANATION
+═══════════════════════════════════════════════ -->
+<div id="explanation" class="section active">
+  <div class="page-title">Deep <span class="accent">Explanation</span></div>
+  <div class="page-subtitle">Everything you need to understand — fully broken down. Lectures 8–12.</div>
+
+  <!-- ── L8: Communication Patterns Overview ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🔗</div> Interaction Styles in Microservices</div>
+    <p>Before picking a communication pattern, you must understand the two dimensions of interactions:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Dimension</th><th>Options</th><th>Meaning</th></tr>
+        <tr><td>Cardinality</td><td><strong>One-to-One</strong></td><td>One request → exactly one service handles it</td></tr>
+        <tr><td>Cardinality</td><td><strong>One-to-Many</strong></td><td>One request → multiple services handle it</td></tr>
+        <tr><td>Timing</td><td><strong>Synchronous</strong></td><td>Client waits (blocks) for a response</td></tr>
+        <tr><td>Timing</td><td><strong>Asynchronous</strong></td><td>Client does NOT block; may get response later or never</td></tr>
+      </table>
+    </div>
+    <p>These combine into five interaction styles:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Style</th><th>Type</th><th>Example</th></tr>
+        <tr><td>Request/Response</td><td>One-to-One, Sync</td><td>REST API call</td></tr>
+        <tr><td>Async Request/Response</td><td>One-to-One, Async</td><td>Send command, poll for reply</td></tr>
+        <tr><td>One-way Notification</td><td>One-to-One, Async</td><td>Fire-and-forget event</td></tr>
+        <tr><td>Publish/Subscribe</td><td>One-to-Many, Async</td><td>Kafka topic consumed by many</td></tr>
+        <tr><td>Publish/Async Responses</td><td>One-to-Many, Async</td><td>Scatter-gather pattern</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── L8: Request/Response ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🔄</div> Request/Response Pattern (Synchronous)</div>
+    <p><strong>Definition:</strong> The client sends a request and <em>blocks</em> until it receives a response. Both the client and service must be available simultaneously — this creates <strong>tight runtime coupling</strong>.</p>
+
+    <h3>Implementations</h3>
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">REST (REpresentational State Transfer) <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p><strong>REST</strong> is a set of architectural constraints built entirely on top of HTTP. A <strong>resource</strong> is the key abstraction — anything you expose to the outside world.</p>
+      <div class="pro-con">
+        <div class="pros"><h4>✅ Advantages</h4><ul class="styled"><li>Simple and familiar</li><li>Testable via browser/curl/Postman</li><li>Firewall friendly (uses HTTP)</li><li>No broker needed (simpler architecture)</li><li>Direct request/response support</li></ul></div>
+        <div class="cons"><h4>❌ Disadvantages</h4><ul class="styled"><li>Only supports request/response style</li><li>Both parties must be running simultaneously (reduced availability)</li><li>Clients must know service URLs (needs service discovery)</li></ul></div>
+      </div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">SOAP <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>SOAP uses HTTP and can use other transports (JMS, SMTP). It is an <strong>RPC mechanism</strong> (uses only POST). Supports WS-Security for message encryption and partial forwarding to different services.</p>
+      <div class="highlight-box red"><strong>Key drawback:</strong> Only POST messages, lacks HATEOAS, interfaces must be fully defined by server — very rigid.</div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">HATEOAS — Hypermedia as the Engine of Application State <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p><strong>HATEOAS</strong> is a REST constraint where the server dynamically includes links in responses, telling the client what actions are possible next.</p>
+      <div class="highlight-box green"><strong>Why it matters:</strong> Loose coupling — clients don't hardcode URLs. The server provides URLs dynamically, so changes on the server don't break clients.</div>
+      <p><strong>Without HATEOAS:</strong> Client hardcodes <code>/orders/123</code>. Any URL change breaks the client.<br/>
+      <strong>With HATEOAS:</strong> Response includes <code>"links": [{"rel":"cancel","href":"/orders/123/cancel"}]</code> — client follows the link without knowing the URL in advance.</p>
+    </div>
+
+    <h3>Benefits & Drawbacks of Request/Response</h3>
+    <div class="pro-con">
+      <div class="pros"><h4>✅ Benefits</h4><ul><li>Simple and familiar</li><li>Easy request/reply</li><li>No broker needed</li></ul></div>
+      <div class="cons"><h4>❌ Drawbacks</h4><ul><li>Reduced availability (both must be up)</li><li>Only request/reply style</li><li>Client needs service location (discovery needed)</li></ul></div>
+    </div>
+  </div>
+
+  <!-- ── L9: Messaging ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">📨</div> Messaging Pattern (Asynchronous)</div>
+    <p><strong>Core idea:</strong> Messages are exchanged via <strong>message channels</strong>. A sender writes to a channel; a receiver reads from it. They do NOT need to be available at the same time.</p>
+
+    <h3>Message Structure</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Part</th><th>Description</th></tr>
+      <tr><td><strong>Header</strong></td><td>Collection of name-value pairs — metadata (e.g., message ID, correlation ID, reply channel)</td></tr>
+      <tr><td><strong>Body</strong></td><td>The actual data — text or binary format</td></tr>
+    </table></div>
+
+    <h3>Types of Messages</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+      <tr><td><strong>Document</strong></td><td>Generic data; receiver decides how to interpret it</td><td>Reply to a command</td></tr>
+      <tr><td><strong>Command</strong></td><td>Equivalent of RPC — specifies operation + parameters</td><td>PlaceOrder command</td></tr>
+      <tr><td><strong>Event</strong></td><td>Signals something notable happened; usually a domain event</td><td>OrderCreatedEvent</td></tr>
+    </table></div>
+
+    <h3>Message Formats</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Format</th><th>Examples</th><th>Pros</th><th>Cons</th></tr>
+      <tr><td>Text</td><td>JSON, XML</td><td>Human-readable, self-describing</td><td>Larger size (attribute names included), slower parsing</td></tr>
+      <tr><td>Binary</td><td>Protocol Buffers, Avro</td><td>Compact, bandwidth-efficient, faster</td><td>Not human-readable</td></tr>
+    </table></div>
+
+    <h3>Channel Types</h3>
+    <div class="pro-con">
+      <div class="pros"><h4>Point-to-Point</h4><p style="color:var(--text2);font-size:13.5px;">Delivers message to <strong>exactly ONE</strong> consumer. Used for one-to-one interactions.</p></div>
+      <div class="cons" style="background:rgba(167,139,250,0.07);border-color:rgba(167,139,250,0.2);"><h4 style="color:var(--accent2);">Publish-Subscribe</h4><p style="color:var(--text2);font-size:13.5px;">Delivers message to <strong>ALL attached consumers</strong>. Used for one-to-many. Events typically use this.</p></div>
+    </div>
+
+    <h3>Implementing Interaction Styles via Messaging</h3>
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">1. Async Request/Response <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>Client sends a <strong>command message</strong> with a <code>reply channel</code> header. Service processes and sends a reply with a <strong>correlation ID</strong> matching the original message ID. Client matches reply to request using the correlation ID.</p>
+    </div>
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">2. One-way Notification <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>Client sends a command message to service's point-to-point channel. <strong>No reply is sent or expected</strong>. Simple and straightforward.</p>
+    </div>
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">3. Publish/Subscribe <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>Client publishes to a pub-sub channel. Multiple services subscribe and each receives the message. E.g., Order Service publishes to Order channel; Delivery Service also reads it.</p>
+    </div>
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">4. Publish/Async Responses <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>Combines pub/sub with request/response. Client publishes with a reply channel header. Consumers write replies with correlation IDs. Client gathers responses by matching correlation IDs.</p>
+    </div>
+
+    <h3>Brokerless vs. Broker-based Messaging</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Aspect</th><th>Brokerless (e.g., ZeroMQ)</th><th>Broker-based (e.g., Kafka, RabbitMQ)</th></tr>
+      <tr><td>Architecture</td><td>Services talk directly</td><td>Messages go through a central broker</td></tr>
+      <tr><td>Latency</td><td>Lower (direct)</td><td>Higher (extra hop)</td></tr>
+      <tr><td>Service Discovery</td><td>Required</td><td>Not required (broker handles routing)</td></tr>
+      <tr><td>Availability</td><td>Both must be up</td><td>Broker buffers — sender/receiver can be down</td></tr>
+      <tr><td>Complexity</td><td>Less operational overhead</td><td>Must install/configure broker</td></tr>
+      <tr><td>Bottleneck Risk</td><td>None from broker</td><td>Broker can be bottleneck</td></tr>
+    </table></div>
+
+    <h3>Broker Selection Factors</h3>
+    <ul class="styled"><li>Supported programming languages</li><li>Standards support (AMQP, STOMP)</li><li>Message ordering guarantees</li><li>Delivery guarantees</li><li>Persistence (survives crashes)</li><li>Durability (replayed after reconnect)</li><li>Scalability</li><li>Latency</li><li>Competing consumers support</li></ul>
+
+    <div class="pro-con">
+      <div class="pros"><h4>✅ Messaging Benefits</h4><ul><li>Loose runtime coupling</li><li>Improved availability (buffering)</li><li>Flexible — supports all interaction styles</li></ul></div>
+      <div class="cons"><h4>❌ Messaging Drawbacks</h4><ul><li>Broker can be performance bottleneck</li><li>Broker is potential single point of failure</li><li>Additional operational complexity</li></ul></div>
+    </div>
+  </div>
+
+  <!-- ── L10: Data Management ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🗄️</div> Data Management Patterns</div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">Database per Service Pattern <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>Each microservice has its <strong>own private database</strong>, accessible only via its API. Three implementation options for relational DBs:</p>
+      <ul class="styled"><li><strong>Private tables per service</strong> — shared server, service owns specific tables</li><li><strong>Schema per service</strong> — shared server, separate schema (most common)</li><li><strong>Database server per service</strong> — fully separate DB server (highest isolation)</li></ul>
+      <div class="pro-con">
+        <div class="pros"><h4>✅ Benefits</h4><ul><li>Loosely coupled services</li><li>Each service picks the best DB type (e.g., Neo4j for graphs, ElasticSearch for text)</li></ul></div>
+        <div class="cons"><h4>❌ Drawbacks</h4><ul><li>Cross-service transactions are complex</li><li>Joins across databases are challenging</li><li>Managing multiple DB types is complex</li></ul></div>
+      </div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">Shared Database Pattern <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>All services share a single database with free access to each other's tables using local ACID transactions.</p>
+      <div class="pro-con">
+        <div class="pros"><h4>✅ Benefits</h4><ul><li>Familiar ACID transactions</li><li>Simpler to operate</li></ul></div>
+        <div class="cons"><h4>❌ Drawbacks</h4><ul><li>Development-time coupling (schema changes affect all)</li><li>Runtime coupling (locks can block other services)</li><li>One DB may not fit all services</li></ul></div>
+      </div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">CAP Theorem <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p>A distributed system can guarantee at most <strong>2 of 3</strong>:</p>
+      <ul class="styled">
+        <li><strong>C</strong>onsistency — all nodes see same data at same time</li>
+        <li><strong>A</strong>vailability — every request gets a response (success or failure)</li>
+        <li><strong>P</strong>artition Tolerance — system continues despite network failures</li>
+      </ul>
+      <div class="highlight-box"><strong>RDBMS:</strong> Gives up P → achieves C + A. <strong>NoSQL:</strong> Must have P → choose C or A.</div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">ACID vs BASE <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <div class="table-wrap"><table>
+        <tr><th>Property</th><th>ACID (SQL)</th><th>BASE (NoSQL)</th></tr>
+        <tr><td>Model</td><td>Pessimistic — enforces consistency at each transaction</td><td>Optimistic — accepts temporary inconsistency</td></tr>
+        <tr><td>Atomicity</td><td>All or nothing</td><td>N/A — eventual</td></tr>
+        <tr><td>Consistency</td><td>Immediate, strict</td><td>Eventually consistent</td></tr>
+        <tr><td>Isolation</td><td>Transactions isolated from each other</td><td>Soft state — may change without input</td></tr>
+        <tr><td>Durability</td><td>Committed = permanent</td><td>Basically available</td></tr>
+      </table></div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">NoSQL Database Types <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <div class="table-wrap"><table>
+        <tr><th>Type</th><th>Structure</th><th>Example</th><th>Use Cases</th><th>Avoid When</th></tr>
+        <tr><td><strong>Document</strong></td><td>Collections → Documents (key-value pairs)</td><td>MongoDB</td><td>CMS, blogs, e-commerce, real-time analytics</td><td>Queries against varying aggregates</td></tr>
+        <tr><td><strong>Column</strong></td><td>Keyspace → Column Families → Rows (variable columns)</td><td>Cassandra</td><td>Heavy write operations, OLAP, analytics</td><td>Frequently updated query patterns</td></tr>
+        <tr><td><strong>Key-Value</strong></td><td>Simple key → value pairs</td><td>Redis</td><td>Sessions, profiles, caching, recommendations</td><td>Multi-key ops, joins, partial value updates</td></tr>
+        <tr><td><strong>Graph</strong></td><td>Nodes, Edges (Relationships), Labels, Properties</td><td>Neo4j</td><td>Social networks, fraud detection, recommendations</td><td>Transactional data without relationships</td></tr>
+      </table></div>
+      <div class="highlight-box"><strong>Key Graph insight:</strong> Relationships are "first-class citizens" — stored explicitly (not computed at query time like SQL joins). Traversal is therefore extremely fast.</div>
+    </div>
+  </div>
+
+  <!-- ── L11: 2PC, 3PC, Saga ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">⚙️</div> Distributed Transaction Protocols</div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">Two-Phase Commit (2PC) <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p><strong>Goal:</strong> Guarantee atomicity across distributed nodes — all commit or all abort.</p>
+      <p><strong>Roles:</strong> <code>Coordinator</code> (initiates, decides) + <code>Participants</code> (vote, execute)</p>
+      <div class="step-list">
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><strong>Phase 1 — Prepare (Voting):</strong> Coordinator sends PREPARE to all. Each participant executes up to commit point, writes to recovery log, replies VOTE-COMMIT or VOTE-ABORT.</div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Phase 2 — Commit/Abort:</strong> If ALL voted COMMIT → Coordinator sends COMMIT. Any VOTE-ABORT → Coordinator sends ABORT. Participants execute and release locks, send ACK.</div></div>
+      </div>
+      <div class="highlight-box red"><strong>Why 2PC fails for microservices:</strong> Blocking protocol (locks resources until all respond), coordinator = single point of failure, not supported by Kafka/RabbitMQ/REST, tight coupling, poor fault tolerance.</div>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapsible(this)">Three-Phase Commit (3PC) — Introduced by Dale Skeen, 1982 <span class="arrow">▼</span></button>
+    <div class="collapsible-content">
+      <p><strong>Problem it solves:</strong> In 2PC, if coordinator + a participant both fail during Commit phase, remaining participants block indefinitely. 3PC adds a <strong>PreCommit</strong> phase to allow safe recovery.</p>
+      <div class="step-list">
+        <div class="step-item"><div class="step-num purple">1</div><div class="step-content"><strong>CanCommit (Vote):</strong> Coordinator asks "Can you commit?" Participants reply YES/NO. Any NO → immediate ABORT.</div></div>
+        <div class="step-item"><div class="step-num purple">2</div><div class="step-content"><strong>PreCommit (Prepare):</strong> If all said YES → Coordinator sends PreCommit. Participants write to log, enter 'prepared' state, send ACK. <em>KEY: All participants now KNOW a commit is coming.</em></div></div>
+        <div class="step-item"><div class="step-num purple">3</div><div class="step-content"><strong>DoCommit (Commit):</strong> Coordinator sends DoCommit. Participants make changes permanent, release locks, send ACK. If coordinator fails here, participants can safely commit independently.</div></div>
+      </div>
+      <div class="table-wrap"><table>
+        <tr><th>Criterion</th><th>2PC</th><th>3PC</th></tr>
+        <tr><td>Phases</td><td>2</td><td>3</td></tr>
+        <tr><td>Blocking on failure</td><td>YES — blocks indefinitely</td><td>NO — recovers independently</td></tr>
+        <tr><td>Message rounds</td><td>2 RTTs</td><td>3 RTTs (more latency)</td></tr>
+        <tr><td>Fault tolerance</td><td>Low</td><td>Higher</td></tr>
+        <tr><td>Network partitions</td><td>Blocks</td><td>Can violate atomicity (split-brain)</td></tr>
+        <tr><td>Real-world use</td><td>Some RDBMS/XA</td><td>Rarely — mostly academic</td></tr>
+        <tr><td>Microservices fit</td><td>Poor</td><td>Still impractical</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ── Saga ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🔀</div> Saga Pattern</div>
+    <p><strong>Context:</strong> Database per Service means cross-service transactions need a different mechanism. 2PC/3PC are not viable.</p>
+    <p><strong>Definition:</strong> A saga is a sequence of <strong>local transactions</strong>. Each service executes its local transaction and publishes an event/message to trigger the next step. If any step fails, <strong>compensating transactions</strong> are executed to undo previous steps.</p>
+
+    <h3>Two Coordination Approaches</h3>
+    <div class="pro-con">
+      <div class="pros" style="background:rgba(79,156,249,0.07);border-color:rgba(79,156,249,0.2);">
+        <h4 style="color:var(--accent);">Choreography (Event-Driven)</h4>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>No central controller</li><li>Services react to events autonomously</li>
+          <li>Each publishes events, others subscribe</li><li>Loose coupling</li>
+          <li>No single point of failure</li>
+          <li style="color:var(--danger);">Hard to debug, flow is decentralized</li>
+          <li style="color:var(--danger);">Complex failure handling per service</li>
+        </ul>
+      </div>
+      <div class="pros" style="background:rgba(251,146,60,0.07);border-color:rgba(251,146,60,0.2);">
+        <h4 style="color:var(--accent4);">Orchestration (Centralized)</h4>
+        <ul class="styled" style="font-size:13.5px;">
+          <li>Central orchestrator manages the saga</li><li>Tells each service what to do</li>
+          <li>Clear business logic in one place</li><li>Easy to debug/monitor</li>
+          <li style="color:var(--danger);">Orchestrator = single point of failure</li>
+          <li style="color:var(--danger);">'God service' anti-pattern risk</li>
+          <li style="color:var(--danger);">Services dependent on orchestrator</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Choreography Example — Order Placement</h3>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num green">1</div><div class="step-content">Order Service creates order (PENDING) → publishes <code>OrderCreatedEvent</code></div></div>
+      <div class="step-item"><div class="step-num green">2</div><div class="step-content">Payment Service listens → charges customer → publishes <code>PaymentCompletedEvent</code></div></div>
+      <div class="step-item"><div class="step-num green">3</div><div class="step-content">Inventory Service listens → reserves stock → publishes <code>InventoryReservedEvent</code></div></div>
+    </div>
+    <div class="highlight-box red"><strong>Failure path:</strong> If Payment fails → emits <code>PaymentFailedEvent</code> → Order Service listens and cancels order (compensation). If Inventory fails → emits <code>InventoryFailedEvent</code> → Payment Service issues refund.</div>
+
+    <h3>Orchestration Example — CreateOrderSaga</h3>
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-content">Orchestrator sends <code>createOrder()</code> → Order Service sets PENDING, replies</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-content">Orchestrator sends <code>reserveCredit()</code> → Payment Service checks credit</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-content">Orchestrator sends <code>reserveInventory()</code> → Inventory Service reserves, saga complete (APPROVED)</div></div>
+    </div>
+    <div class="highlight-box red"><strong>Failure:</strong> If creditLimitExceeded → Orchestrator sends <code>rejectOrder()</code> to Order Service → REJECTED state.</div>
+
+    <h3>Saga API Design Challenges</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Option</th><th>How</th><th>Trade-off</th></tr>
+      <tr><td>Synchronous</td><td>Respond when saga completes</td><td>Specifies outcome, but reduced availability (client waits)</td></tr>
+      <tr><td>Asynchronous (Recommended)</td><td>Respond immediately after saga creation</td><td>Better availability, but client must poll/be notified</td></tr>
+    </table></div>
+
+    <p><strong>Saga Orchestrator:</strong> A persistent object that tracks saga state and invokes participants. Loads state from DB on each reply, determines next step, invokes participant, persists updated state.</p>
+  </div>
+
+  <!-- ── L12: CQRS ── -->
+  <div class="card">
+    <div class="card-title"><div class="icon">📊</div> CQRS — Command Query Responsibility Segregation</div>
+    <p><strong>Core Idea:</strong> Separate <strong>Commands</strong> (write/change data) from <strong>Queries</strong> (read data) into different models and even different databases.</p>
+
+    <div class="highlight-box"><strong>Problem it solves:</strong> In monolithic apps, one DB handles both complex joins AND CRUD. As complexity grows, this becomes unmanageable — long queries lock the DB, complex validations slow writes.</div>
+
+    <h3>Core Concepts</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Concept</th><th>Description</th></tr>
+      <tr><td><strong>Command Model</strong></td><td>Handles instructions that change state (CreateOrder, CancelInvoice). Command handlers validate, enforce business rules, emit domain events.</td></tr>
+      <tr><td><strong>Query Model</strong></td><td>Handles data retrieval only. Optimized for reads (denormalized tables, Elasticsearch). Never modifies state. Returns DTOs (JSON).</td></tr>
+      <tr><td><strong>Eventual Consistency</strong></td><td>Write and read models are decoupled. Changes propagate asynchronously via domain events or CDC. Read model may lag slightly.</td></tr>
+    </table></div>
+
+    <h3>CQRS with Kafka (Manual Event Publishing)</h3>
+    <ul class="styled"><li>Service explicitly emits events to Kafka after a command</li><li>Full control over event payload and content</li><li>Risk of dual-write inconsistency (DB + Kafka)</li><li>Requires outbox pattern for reliability</li></ul>
+
+    <h3>CQRS with Kafka + CDC (Debezium)</h3>
+    <ul class="styled"><li>Service only writes to DB; Debezium captures changes and emits events automatically</li><li>No manual event publishing needed</li><li>Events are low-level (row changes, not rich business events)</li><li>Cannot emit events before committing DB transaction</li></ul>
+
+    <div class="pro-con">
+      <div class="pros"><h4>✅ CQRS Benefits</h4><ul><li>Independent read/write scaling</li><li>Better performance (optimized models)</li><li>Separation of concerns</li><li>Different security per operation</li><li>Auditability (with event sourcing)</li></ul></div>
+      <div class="cons"><h4>❌ CQRS Challenges</h4><ul><li>Increased complexity</li><li>Data duplication and sync overhead</li><li>Eventual consistency lag</li><li>Overkill for simple CRUD apps</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 2 — SUMMARY
+═══════════════════════════════════════════════ -->
+<div id="summary" class="section">
+  <div class="page-title">Smart <span class="accent">Summary</span></div>
+  <div class="page-subtitle">High-yield, hierarchically organized. Every point that matters.</div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon">📋</div> Master Summary</div>
+    <ul class="summary-tree">
+      <li>
+        <strong>🔗 Communication Patterns Overview</strong>
+        <ul>
+          <li>Two dimensions: <strong>Cardinality</strong> (one-to-one / one-to-many) × <strong>Timing</strong> (sync / async)</li>
+          <li>5 styles: Request/Response, Async Req/Res, One-way Notification, Pub/Sub, Pub/Async Responses</li>
+          <li>Synchronous = tight coupling; Async = loose coupling</li>
+        </ul>
+      </li>
+      <li>
+        <strong>🔄 Request/Response (Sync)</strong>
+        <ul>
+          <li><strong>REST</strong>: built on HTTP, resource-centric, firewall-friendly, no broker, needs service discovery</li>
+          <li><strong>SOAP</strong>: HTTP + other transports, RPC-style (POST only), WS-Security support, lacks HATEOAS</li>
+          <li><strong>HATEOAS</strong>: server provides links dynamically → loose coupling → clients don't hardcode URLs</li>
+          <li>Benefits: simple, no broker | Drawbacks: both must be up, only req/res style, needs discovery</li>
+        </ul>
+      </li>
+      <li>
+        <strong>📨 Messaging (Async)</strong>
+        <ul>
+          <li>Message = <strong>Header</strong> (metadata) + <strong>Body</strong> (data)</li>
+          <li>Types: Document, Command, Event</li>
+          <li>Formats: Text (JSON/XML — readable, larger) | Binary (Protobuf/Avro — compact, faster)</li>
+          <li>Channels: Point-to-Point (one consumer) | Pub-Sub (all consumers)</li>
+          <li>Brokerless (ZeroMQ): lower latency, both must be up | Broker-based (Kafka/RabbitMQ): buffers, decoupled</li>
+          <li>Benefits: loose coupling, availability, flexible | Drawbacks: broker bottleneck/SPOF, operational complexity</li>
+        </ul>
+      </li>
+      <li>
+        <strong>🗄️ Data Management Patterns</strong>
+        <ul>
+          <li><strong>DB per Service</strong>: private DB per service, chosen per need, but cross-service joins/transactions hard</li>
+          <li><strong>Shared DB</strong>: ACID-easy, simple, but dev/runtime coupling, lock conflicts</li>
+          <li><strong>CAP</strong>: only 2 of 3 (C/A/P). SQL = C+A (no P). NoSQL = C+P or A+P</li>
+          <li><strong>ACID</strong> (SQL): strict | <strong>BASE</strong> (NoSQL): optimistic, eventual consistency</li>
+          <li>NoSQL types: Document (MongoDB), Column (Cassandra), Key-Value (Redis), Graph (Neo4j)</li>
+        </ul>
+      </li>
+      <li>
+        <strong>⚙️ Distributed Transactions</strong>
+        <ul>
+          <li><strong>2PC</strong>: Prepare → Commit/Abort. Blocking, SPOF coordinator, not for microservices</li>
+          <li><strong>3PC</strong>: CanCommit → PreCommit → DoCommit. Non-blocking recovery, but more RTTs, not partition-safe</li>
+          <li><strong>Saga</strong>: sequence of local transactions + compensating transactions for rollback</li>
+          <li>Choreography: event-driven, decentralized, no SPOF | Orchestration: central control, easy to debug, SPOF risk</li>
+          <li>Saga API: Async response recommended (better availability)</li>
+        </ul>
+      </li>
+      <li>
+        <strong>📊 CQRS</strong>
+        <ul>
+          <li>Separate Command (write) and Query (read) models</li>
+          <li>Can use different DBs: NoSQL for reads, RDBMS for writes</li>
+          <li>Eventual consistency between write and read sides</li>
+          <li>With Kafka (manual): full control | With Kafka+CDC (Debezium): automatic, low-level events</li>
+          <li>Benefits: scaling, performance, security | Drawbacks: complexity, sync overhead, latency</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 3 — MEMORY
+═══════════════════════════════════════════════ -->
+<div id="memory" class="section">
+  <div class="page-title">Memory <span class="accent">Optimization</span></div>
+  <div class="page-subtitle">Mnemonics, chunking, comparison tables, and common traps.</div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon">🧩</div> Mnemonics</div>
+
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 CAP Theorem</div>
+      <p><strong>"Can't Always Pick all three"</strong> — Consistency, Availability, Partition tolerance</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 ACID Properties</div>
+      <p><strong>"A Computer Is Durable"</strong> — <strong>A</strong>tomicity, <strong>C</strong>onsistency, <strong>I</strong>solation, <strong>D</strong>urability</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 BASE Properties</div>
+      <p><strong>"Basically A Soft Eventually"</strong> — <strong>B</strong>asically <strong>A</strong>vailable, <strong>S</strong>oft state, <strong>E</strong>ventual consistency</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 2PC Phases</div>
+      <p><strong>"Prepare then Commit"</strong> — Phase 1: PREPARE (vote), Phase 2: COMMIT or ABORT</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 3PC Phases</div>
+      <p><strong>"Can Pigs Dance?"</strong> — <strong>C</strong>anCommit, <strong>P</strong>reCommit, <strong>D</strong>oCommit</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 NoSQL Types</div>
+      <p><strong>"Dogs Can't Kick Goals"</strong> — <strong>D</strong>ocument (MongoDB), <strong>C</strong>olumn (Cassandra), <strong>K</strong>ey-Value (Redis), <strong>G</strong>raph (Neo4j)</p>
+    </div>
+    <div class="mnemonic-box">
+      <div class="mnemonic-label">🔑 CQRS</div>
+      <p><strong>"Commands Change, Queries Question"</strong> — Commands write/change state, Queries only read</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon">⚠️</div> Common Exam Traps & Mistakes</div>
+    <div class="highlight-box red"><strong>Trap 1:</strong> Confusing "synchronous" with "one-to-one." Synchronous means the client WAITS — it's about timing, not cardinality.</div>
+    <div class="highlight-box red"><strong>Trap 2:</strong> Thinking REST supports multiple interaction styles. REST only supports Request/Response.</div>
+    <div class="highlight-box red"><strong>Trap 3:</strong> Confusing "point-to-point" and "pub-sub." Point-to-point → ONE consumer. Pub-sub → ALL consumers.</div>
+    <div class="highlight-box red"><strong>Trap 4:</strong> 3PC is NOT the solution for microservices — it's still impractical (not partition-safe, rarely used in production).</div>
+    <div class="highlight-box red"><strong>Trap 5:</strong> CQRS does NOT mean two separate databases are mandatory — but they are recommended for performance.</div>
+    <div class="highlight-box red"><strong>Trap 6:</strong> Saga rollback is NOT like SQL ROLLBACK. It requires writing compensating transactions at the application level.</div>
+    <div class="highlight-box red"><strong>Trap 7:</strong> Choreography has NO single point of failure. Orchestration DOES (the orchestrator itself).</div>
+    <div class="highlight-box red"><strong>Trap 8:</strong> CDC (Debezium) captures row-level changes — NOT rich domain business events.</div>
+    <div class="highlight-box red"><strong>Trap 9:</strong> Graph databases store relationships explicitly — they do NOT compute them at query time (unlike SQL joins).</div>
+    <div class="highlight-box red"><strong>Trap 10:</strong> HATEOAS provides loose coupling by letting the SERVER control URL structure — not the client.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon">📊</div> Comparison Tables (Exam Favorites)</div>
+
+    <h3>Choreography vs. Orchestration</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Aspect</th><th>Choreography</th><th>Orchestration</th></tr>
+      <tr><td>Control</td><td>Decentralized (events)</td><td>Centralized (orchestrator)</td></tr>
+      <tr><td>Coupling</td><td>Loosely coupled</td><td>Services depend on orchestrator</td></tr>
+      <tr><td>Debug ease</td><td>Hard — flow is spread</td><td>Easy — one place to look</td></tr>
+      <tr><td>SPOF</td><td>None</td><td>Orchestrator is SPOF</td></tr>
+      <tr><td>Best for</td><td>Simple, linear workflows</td><td>Complex workflows needing visibility</td></tr>
+    </table></div>
+
+    <h3>Brokerless vs. Broker-based</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Aspect</th><th>Brokerless (ZeroMQ)</th><th>Broker-based (Kafka/RabbitMQ)</th></tr>
+      <tr><td>Latency</td><td>Lower</td><td>Higher</td></tr>
+      <tr><td>Availability</td><td>Both must be up</td><td>Broker buffers — decoupled</td></tr>
+      <tr><td>Complexity</td><td>Lower ops overhead</td><td>Must manage broker</td></tr>
+      <tr><td>Discovery</td><td>Required</td><td>Not required</td></tr>
+    </table></div>
+
+    <h3>Request/Response vs. Messaging</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Aspect</th><th>Request/Response</th><th>Messaging</th></tr>
+      <tr><td>Timing</td><td>Synchronous (blocks)</td><td>Asynchronous (non-blocking)</td></tr>
+      <tr><td>Coupling</td><td>Tight runtime coupling</td><td>Loose coupling</td></tr>
+      <tr><td>Availability</td><td>Both must be up simultaneously</td><td>Broker buffers messages</td></tr>
+      <tr><td>Interaction styles</td><td>Only req/response</td><td>All styles supported</td></tr>
+      <tr><td>Broker</td><td>Not needed</td><td>Optional (broker-based) or direct</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 4 — MCQ
+═══════════════════════════════════════════════ -->
+<div id="mcq" class="section">
+  <div class="page-title">MCQ <span class="accent">Practice</span></div>
+  <div class="page-subtitle">35 questions — Easy, Medium, and Hard. Click an option to see the answer.</div>
+
+  <div class="mcq-score-bar">
+    <div>
+      <div class="score-display" id="scoreDisplay">0 / 35</div>
+      <div class="score-label">Questions answered correctly</div>
+    </div>
+    <button class="reset-btn" onclick="resetMCQ()">↺ Reset All</button>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterMCQ('all', this)">All (35)</button>
+    <button class="filter-btn easy" onclick="filterMCQ('easy', this)">Easy</button>
+    <button class="filter-btn medium" onclick="filterMCQ('medium', this)">Medium</button>
+    <button class="filter-btn hard" onclick="filterMCQ('hard', this)">Hard</button>
+  </div>
+
+  <div id="mcqContainer"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 5 — WRITTEN
+═══════════════════════════════════════════════ -->
+<div id="written" class="section">
+  <div class="page-title">Written <span class="accent">Questions</span></div>
+  <div class="page-subtitle">Short-answer and long-form questions with model answers.</div>
+  <div id="writtenContainer"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 6 — REVISION
+═══════════════════════════════════════════════ -->
+<div id="revision" class="section">
+  <div class="page-title">⚡ Rapid <span class="accent">Revision</span></div>
+  <div class="page-subtitle">Night-before-exam cheat sheet. Everything essential at a glance.</div>
+
+  <div class="night-before">
+    <h3>🌙 Night Before Exam — Key Rules</h3>
+    <ul class="styled">
+      <li><strong>Sync = blocks client</strong>. Async = non-blocking.</li>
+      <li><strong>REST</strong> = HTTP only, resource-based, no broker needed, only req/response style.</li>
+      <li><strong>HATEOAS</strong> = server provides URLs dynamically → loose coupling.</li>
+      <li><strong>Message</strong> = Header (metadata) + Body (data). Types: Document / Command / Event.</li>
+      <li><strong>Point-to-Point</strong> = one consumer. <strong>Pub-Sub</strong> = all consumers.</li>
+      <li><strong>CAP</strong>: pick 2 of 3. SQL = C+A. NoSQL must pick C or A (always has P).</li>
+      <li><strong>ACID</strong> = SQL (pessimistic). <strong>BASE</strong> = NoSQL (optimistic, eventually consistent).</li>
+      <li><strong>2PC</strong>: PREPARE → COMMIT/ABORT. Blocking, SPOF, NOT for microservices.</li>
+      <li><strong>3PC</strong>: CanCommit → PreCommit → DoCommit. Non-blocking but not partition-safe.</li>
+      <li><strong>Saga</strong> = sequence of local transactions + compensating transactions for rollback.</li>
+      <li><strong>Choreography</strong> = events, decentralized, no SPOF. <strong>Orchestration</strong> = central, easier debug, SPOF.</li>
+      <li><strong>CQRS</strong> = Commands write, Queries read. Separate models. Eventual consistency between them.</li>
+      <li><strong>CDC (Debezium)</strong> = captures DB row changes automatically for event streaming.</li>
+      <li>Graph DB: relationships stored explicitly (not computed). Neo4j. Very fast traversal.</li>
+    </ul>
+  </div>
+
+  <div class="revision-grid">
+    <div class="revision-card">
+      <h3>📦 NoSQL Quick Reference</h3>
+      <ul class="styled">
+        <li><strong>MongoDB</strong> — Document DB</li>
+        <li><strong>Cassandra</strong> — Column DB (heavy writes)</li>
+        <li><strong>Redis</strong> — Key-Value (sessions, caching)</li>
+        <li><strong>Neo4j</strong> — Graph DB (social, fraud)</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>🔗 Interaction Styles</h3>
+      <ul class="styled">
+        <li>Request/Response — 1:1, Sync</li>
+        <li>Async Req/Res — 1:1, Async</li>
+        <li>One-way Notification — 1:1, Async</li>
+        <li>Pub/Sub — 1:Many, Async</li>
+        <li>Pub/Async Responses — 1:Many, Async</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>📝 CQRS Keys</h3>
+      <ul class="styled">
+        <li>Commands = task-based, write state</li>
+        <li>Queries = return DTOs, never write</li>
+        <li>Eventual consistency between models</li>
+        <li>With Kafka: manual event publish</li>
+        <li>With Debezium: auto CDC capture</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>⚙️ 2PC vs 3PC vs Saga</h3>
+      <ul class="styled">
+        <li>2PC: 2 phases, blocking, SPOF</li>
+        <li>3PC: 3 phases, non-blocking recovery, not partition-safe</li>
+        <li>Saga: local txns + compensations, microservices-native</li>
+        <li>Both 2PC and 3PC: NOT suitable for microservices</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>🔄 REST Characteristics</h3>
+      <ul class="styled">
+        <li>Built on HTTP entirely</li>
+        <li>Resource is key abstraction</li>
+        <li>Firewall friendly</li>
+        <li>No intermediate broker</li>
+        <li>Needs service discovery</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>📨 Broker Selection Factors</h3>
+      <ul class="styled">
+        <li>Language support</li>
+        <li>Standards (AMQP/STOMP)</li>
+        <li>Message ordering</li>
+        <li>Delivery guarantees</li>
+        <li>Persistence / Durability</li>
+        <li>Scalability / Latency</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>🏛️ DB per Service Options</h3>
+      <ul class="styled">
+        <li>Private tables per service</li>
+        <li>Schema per service (most common)</li>
+        <li>Database server per service (highest isolation)</li>
+      </ul>
+    </div>
+    <div class="revision-card">
+      <h3>🧩 Saga Orchestrator Role</h3>
+      <ul class="styled">
+        <li>Persistent object tracking saga state</li>
+        <li>Persists state in DB after each step</li>
+        <li>Loads state on each reply</li>
+        <li>Determines & invokes next participant</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ─── Theme Toggle ───
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  const btn = document.querySelector('.theme-btn');
+  btn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+}
+
+// ─── Section Navigation ───
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ─── Collapsible ───
+function toggleCollapsible(btn) {
+  btn.classList.toggle('open');
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+}
+
+// ─── MCQ Data ───
+const mcqs = [
+  // EASY
+  { q: "What does REST stand for?", options: ["Remote Entity State Transfer","REpresentational State Transfer","Resource Entity State Technology","Reliable Endpoint Service Transfer"], ans: 1, diff: "easy", exp: "REST = REpresentational State Transfer. It is a set of architectural constraints built entirely on top of HTTP." },
+  { q: "Which interaction style results in TIGHT RUNTIME COUPLING?", options: ["One-way Notification","Publish/Subscribe","Request/Response","Asynchronous Request/Response"], ans: 2, diff: "easy", exp: "Synchronous Request/Response requires BOTH the client and service to be available simultaneously, creating tight runtime coupling." },
+  { q: "What does a message's Header contain?", options: ["Binary data payload","The body of the message","Collection of name-value metadata pairs","Encryption keys only"], ans: 2, diff: "easy", exp: "The Header contains metadata as name-value pairs (e.g., message ID, correlation ID, reply channel). The body contains the actual data." },
+  { q: "Which NoSQL database is a Graph database?", options: ["MongoDB","Redis","Cassandra","Neo4j"], ans: 3, diff: "easy", exp: "Neo4j is the most popular graph database. It stores relationships explicitly as first-class citizens alongside node data." },
+  { q: "In the CAP theorem, what does 'P' stand for?", options: ["Performance","Persistence","Partition Tolerance","Primary Key"], ans: 2, diff: "easy", exp: "P = Partition Tolerance — the system continues to operate despite network partition failures." },
+  { q: "Which message channel delivers a message to ALL attached consumers?", options: ["Point-to-Point channel","Direct channel","Publish-Subscribe channel","Command channel"], ans: 2, diff: "easy", exp: "A Publish-Subscribe channel delivers each message to ALL attached consumers. Used for one-to-many interactions." },
+  { q: "What type of message signals that something notable occurred?", options: ["Command","Document","Event","Reply"], ans: 2, diff: "easy", exp: "An Event message signals a notable occurrence (e.g., OrderCreated). It is often a domain event representing a state change." },
+  { q: "Which database is an example of a Key-Value store?", options: ["Neo4j","Cassandra","MongoDB","Redis"], ans: 3, diff: "easy", exp: "Redis is a key-value database, ideal for sessions, caching, user profiles, and recommendations." },
+
+  // MEDIUM
+  { q: "Which of the following is NOT an advantage of REST?", options: ["It is simple and familiar","It supports publish/subscribe communication","It does not require an intermediate broker","HTTP is firewall friendly"], ans: 1, diff: "medium", exp: "REST only supports Request/Response style. It does NOT support publish/subscribe, one-way notifications, or async patterns." },
+  { q: "What is the purpose of the Correlation ID in asynchronous messaging?", options: ["Encrypts the message body","Identifies the message channel","Matches reply messages to their original requests","Specifies the message format"], ans: 2, diff: "medium", exp: "The Correlation ID links a reply message back to its original request. The server sets it to the same value as the original message's ID." },
+  { q: "In 2PC, what happens if any participant votes ABORT?", options: ["Only that participant aborts","The coordinator retries the prepare phase","The coordinator sends ABORT to ALL participants","The transaction is put on hold for 60 seconds"], ans: 2, diff: "medium", exp: "In 2PC, if ANY participant votes ABORT, the coordinator sends ABORT to ALL participants — ensuring atomicity (all or nothing)." },
+  { q: "What is the 'Database per Service' problem that Saga solves?", options: ["Services cannot use NoSQL","Joins across service databases are slow","Cross-service business transactions cannot use simple ACID transactions","Services cannot share schemas"], ans: 2, diff: "medium", exp: "When each service has its own database, a business transaction spanning multiple services cannot use a single ACID transaction. Saga provides an alternative via local transactions + compensating transactions." },
+  { q: "Which is true about HATEOAS?", options: ["It requires clients to hardcode all service URLs","The server provides URLs dynamically in responses","It only works with SOAP services","It requires a message broker"], ans: 1, diff: "medium", exp: "With HATEOAS, the server dynamically generates and includes URLs in JSON/XML responses. Clients follow these links instead of hardcoding URLs — achieving loose coupling." },
+  { q: "In the Choreography saga approach, what triggers the next step?", options: ["A central orchestrator sends a command","The previous service directly calls the next","An event is published and consumed by the next service","A timer fires after a delay"], ans: 2, diff: "medium", exp: "In Choreography, each service publishes a domain event after completing its local transaction. The next service subscribes and reacts to that event autonomously." },
+  { q: "Which of the following is a disadvantage of broker-based messaging?", options: ["Services must know each other's locations","Reduced availability for senders","The broker can be a performance bottleneck or SPOF","It does not support pub/sub"], ans: 2, diff: "medium", exp: "The message broker could be a performance bottleneck or single point of failure. This is mitigated by using highly available, scalable brokers like Kafka." },
+  { q: "What does CQRS stand for?", options: ["Command Queue Request Segregation","Command Query Responsibility Segregation","Centralized Query and Response System","Command Query Replication Service"], ans: 1, diff: "medium", exp: "CQRS = Command Query Responsibility Segregation. Commands change state; Queries read state. They use separate optimized models." },
+  { q: "In a CQRS setup, what type of consistency exists between the write and read models?", options: ["Strong consistency","Immediate consistency","Eventual consistency","ACID consistency"], ans: 2, diff: "medium", exp: "Because updates propagate asynchronously from the write model to the read model (via domain events or CDC), the system is eventually consistent — not immediately consistent." },
+  { q: "Which phase was added in 3PC that does not exist in 2PC?", options: ["DoCommit phase","Voting phase","PreCommit phase","Abort phase"], ans: 2, diff: "medium", exp: "3PC adds the PreCommit phase between CanCommit and DoCommit. This phase ensures all participants know a commit is coming, allowing safe independent recovery if the coordinator fails." },
+  { q: "What key advantage does the Orchestration saga approach have over Choreography?", options: ["No single point of failure","Services are more loosely coupled","Centralized visibility and easier debugging","It requires no message broker"], ans: 2, diff: "medium", exp: "With Orchestration, the saga logic lives in one place (the orchestrator), making the flow easy to trace, debug, audit, and modify." },
+  { q: "Why is 2PC NOT suitable for microservices?", options: ["It requires too many databases","It is a blocking protocol, creates tight coupling, and isn't supported by standard brokers","It cannot handle more than 2 participants","It requires SOAP for communication"], ans: 1, diff: "medium", exp: "2PC is blocking (locks resources), creates tight coupling, has a coordinator as SPOF, adds latency, and isn't supported natively by Kafka, RabbitMQ, or REST — the standard microservices stack." },
+  { q: "Which NoSQL type is best suited for heavy WRITE operations and OLAP queries?", options: ["Document (MongoDB)","Graph (Neo4j)","Column (Cassandra)","Key-Value (Redis)"], ans: 2, diff: "medium", exp: "Column databases like Cassandra are designed for large volumes of data requiring heavy write operations and are suitable for OLAP queries and analytics." },
+
+  // HARD
+  { q: "A service client sends a request with a 'reply channel' header and the service replies with a 'correlation ID'. Which interaction style is this?", options: ["One-way Notification","Synchronous Request/Response","Asynchronous Request/Response via Messaging","Publish/Subscribe"], ans: 2, diff: "hard", exp: "This describes Async Request/Response over messaging. The reply channel tells the service where to send the reply, and the correlation ID links the reply to the original request — all without blocking the client." },
+  { q: "In 3PC, if the coordinator fails AFTER sending PreCommit but BEFORE sending DoCommit, what can participants do?", options: ["They block indefinitely like in 2PC","They abort the transaction","They can safely commit independently because they all know a commit is coming","They elect a new participant as coordinator"], ans: 2, diff: "hard", exp: "This is the key advantage of 3PC's PreCommit phase. Since all participants are in 'prepared' state, they KNOW a commit was decided. A new coordinator can safely infer this and proceed to DoCommit." },
+  { q: "A company uses a single database for all microservices. A developer changes the Order table schema. What is the MAIN problem with the Shared Database pattern here?", options: ["Partition tolerance is violated","Development-time coupling — other services using the Order table are affected","ACID transactions cannot be used","The database cannot scale horizontally"], ans: 1, diff: "hard", exp: "The Shared Database pattern causes development-time coupling. Schema changes to shared tables require coordination with all teams whose services access those tables, slowing development." },
+  { q: "Which of the following BEST describes the difference between a 'Command' message and a 'Document' message?", options: ["Commands are binary; Documents are text","A Command specifies an operation and parameters (RPC-like); a Document is generic data the receiver interprets","Documents trigger events; Commands do not","They are identical in structure but differ in channel type"], ans: 1, diff: "hard", exp: "A Command message specifies the operation to invoke and its parameters — equivalent to an RPC request. A Document message is generic data where the receiver decides how to interpret it." },
+  { q: "Why does SOAP lack the flexibility of REST in microservices?", options: ["SOAP uses binary format by default","SOAP lacks HATEOAS and requires fully predefined interfaces","SOAP cannot use HTTP","SOAP does not support security features"], ans: 1, diff: "hard", exp: "SOAP lacks HATEOAS — interfaces must be completely defined by the server and known to the client. This creates tight coupling. REST with HATEOAS allows the server to guide clients dynamically." },
+  { q: "In CQRS with CDC (Debezium), what is a key limitation compared to manual Kafka event publishing?", options: ["Debezium cannot work with Kafka","CDC events are row-level changes, not rich domain business events","Debezium requires the outbox pattern","CDC increases write latency significantly"], ans: 1, diff: "hard", exp: "CDC captures low-level database row changes. These are NOT rich domain business events — they don't express WHY a change happened (domain intent). Manual publishing gives you full control over event payloads." },
+  { q: "What fundamental problem with 3PC makes it unsuitable for microservices in real-world systems?", options: ["It requires too many round trips","It assumes bounded network delays, which don't exist in real distributed systems, and is not partition-safe","It cannot handle more than 10 participants","It requires a central coordinator like 2PC"], ans: 1, diff: "hard", exp: "3PC assumes bounded network delays — an assumption that rarely holds in real distributed systems. Also, in network partitions, 3PC can violate atomicity (split-brain risk). Hence, even 3PC is impractical for microservices." },
+  { q: "Why is Graph database traversal faster than SQL JOIN for relationship queries?", options: ["Graph databases use indexing not available in SQL","Relationships are stored EXPLICITLY as data, not calculated at query time","Graph databases use binary storage format","Graph databases use parallel processing by default"], ans: 1, diff: "hard", exp: "In graph databases, relationships are first-class citizens stored explicitly alongside node data. SQL must compute relationships (JOIN) at query time using foreign keys and junction tables — much more expensive for deeply connected data." },
+  { q: "A saga rolls back after 3 steps have completed. What is required?", options: ["A SQL ROLLBACK TRANSACTION statement","An ABORT message to all participants","Three compensating transactions executed in reverse order","Restarting all involved microservices"], ans: 2, diff: "hard", exp: "Unlike ACID ROLLBACK, saga rollback requires APPLICATION-LEVEL compensating transactions for each committed local transaction. Each completed step needs a corresponding compensating action that semantically reverses it." },
+  { q: "Which statement about the Outbox Pattern in relation to CQRS is MOST accurate?", options: ["It replaces the need for a message broker","It solves the dual-write inconsistency risk when manually publishing events to Kafka after a command","It is used to store queries separately from commands","It is used instead of CDC for reading data"], ans: 1, diff: "hard", exp: "When manually publishing events to Kafka after writing to DB (CQRS with Kafka), there's a risk of inconsistency (dual-write problem). The Outbox Pattern stores events in the DB atomically with the command, then a separate process publishes them to Kafka — ensuring reliability." },
+  { q: "In the Publish/Async Responses interaction style, what distinguishes it from basic Publish/Subscribe?", options: ["It uses point-to-point channels instead of pub-sub","The publisher includes a reply channel header and consumers send correlated responses back","All consumers must respond before the publisher proceeds","It is synchronous, not asynchronous"], ans: 1, diff: "hard", exp: "Publish/Async Responses combines pub/sub with request/response: the publisher sends to a pub-sub channel WITH a reply channel header. Consumers write replies with correlation IDs. The publisher gathers responses using correlation IDs — like a scatter-gather pattern." },
+  { q: "What is the PRIMARY reason asynchronous API response (rather than synchronous) is recommended for Saga?", options: ["Synchronous responses cannot carry error information","Asynchronous improves availability — the client doesn't need to block while the entire saga completes","Asynchronous responses support HATEOAS better","Synchronous APIs cannot be used with message brokers"], ans: 1, diff: "hard", exp: "A saga can involve many steps taking considerable time. Making the client wait (synchronous) reduces availability. Responding immediately with the saga ID and having the client poll or receive a notification when complete improves system availability." },
+  { q: "A NoSQL system drops Consistency to gain Partition Tolerance. According to BASE, what does this mean for clients?", options: ["Clients will never receive stale data","Clients may receive inconsistent data momentarily, but the system will eventually become consistent","Clients must explicitly request consistency checks","All write operations will fail during partitions"], ans: 1, diff: "hard", exp: "Dropping C for P means accepting eventual consistency. Clients may read stale/inconsistent data temporarily. However, BASE guarantees the system will eventually reach a consistent state — accepting this trade-off for higher availability and partition tolerance." },
+  { q: "In 2PC, if BOTH the coordinator AND a participant fail during the Commit phase, what happens to the remaining participants?", options: ["They automatically commit based on majority vote","They block indefinitely — unable to determine whether to commit or abort","They abort after a timeout period","They elect a new coordinator from among themselves"], ans: 1, diff: "hard", exp: "This is the fundamental blocking problem of 2PC. If both coordinator and a participant fail during Commit phase, the remaining participants are stuck — they cannot determine the correct decision. This indefinite blocking is exactly what 3PC's PreCommit phase was designed to address." },
+  { q: "Which statement BEST distinguishes 'Database Server per Service' from 'Schema per Service'?", options: ["Schema per service uses different database technologies; server per service does not","Database server per service provides the highest isolation with completely separate servers; schema per service shares a server but uses separate schemas","Schema per service is for NoSQL only","Database server per service cannot use ACID transactions"], ans: 1, diff: "hard", exp: "Schema per service: same DB server, but each service has its own schema (good isolation, lower cost). Database server per service: completely separate DB servers (highest isolation, but highest operational overhead and cost)." },
+];
+
+let score = 0;
+let answered = 0;
+let currentFilter = 'all';
+
+function buildMCQ() {
+  const container = document.getElementById('mcqContainer');
+  container.innerHTML = '';
+  const filtered = currentFilter === 'all' ? mcqs : mcqs.filter(q => q.diff === currentFilter);
+  filtered.forEach((q, i) => {
+    const idx = mcqs.indexOf(q);
+    const diffColors = { easy: 'badge-green', medium: 'badge-orange', hard: 'badge-red' };
+    const card = document.createElement('div');
+    card.className = 'mcq-card';
+    card.dataset.index = idx;
+    card.innerHTML = `
+      <div class="mcq-number">Question ${i+1} <span class="badge ${diffColors[q.diff]} mcq-difficulty">${q.diff}</span></div>
+      <div class="mcq-question">${q.q}</div>
+      <div class="mcq-options">
+        ${q.options.map((opt, oi) => `
+          <div class="mcq-option" data-opt="${oi}" onclick="selectMCQ(this, ${idx}, ${oi})">
+            <span class="opt-letter">${['A','B','C','D'][oi]}</span>${opt}
+          </div>`).join('')}
+      </div>
+      <div class="mcq-explanation" id="exp-${idx}"><strong>✅ Explanation:</strong> ${q.exp}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectMCQ(el, qIdx, optIdx) {
+  const card = el.closest('.mcq-card');
+  if (card.classList.contains('answered')) return;
+  card.classList.add('answered');
+  const q = mcqs[qIdx];
+  const opts = card.querySelectorAll('.mcq-option');
+  opts.forEach(o => o.classList.add('disabled'));
+  if (optIdx === q.ans) {
+    el.classList.add('correct');
+    score++;
+  } else {
+    el.classList.add('wrong');
+    opts[q.ans].classList.add('correct');
+  }
+  card.querySelector(`#exp-${qIdx}`).classList.add('show');
+  answered++;
+  document.getElementById('scoreDisplay').textContent = `${score} / 35`;
+}
+
+function resetMCQ() {
+  score = 0; answered = 0;
+  document.getElementById('scoreDisplay').textContent = '0 / 35';
+  buildMCQ();
+}
+
+function filterMCQ(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildMCQ();
+}
+
+// ─── Written Questions ───
+const writtenQs = [
+  {
+    type: 'short',
+    q: "What is the difference between synchronous and asynchronous communication in microservices? Give one example of each.",
+    ans: `<strong>Synchronous communication:</strong> The client sends a request and BLOCKS (waits) until it receives a response. Both the client and service must be available simultaneously, creating tight runtime coupling. Example: REST API call — the client waits for the HTTP response before proceeding.<br><br>
+<strong>Asynchronous communication:</strong> The client sends a message and does NOT block. It continues processing and may receive a response later (or never, in the case of one-way notifications). This creates loose coupling. Example: Messaging via Kafka — the client publishes a message to a topic and continues; the service processes it when available.`
+  },
+  {
+    type: 'short',
+    q: "Explain HATEOAS and why it promotes loose coupling in REST APIs.",
+    ans: `<strong>HATEOAS</strong> (Hypermedia as the Engine of Application State) is a REST constraint where the server dynamically includes hypermedia links in its responses, telling clients what actions are available next.<br><br>
+<strong>Why it promotes loose coupling:</strong> Without HATEOAS, clients must hardcode all service URLs. If the URL structure changes, every client application breaks. With HATEOAS, the server provides the correct URLs in each response — clients simply follow the links. The URL structure is controlled by the server, so changes don't break clients. Clients only need minimal knowledge of the initial entry point URL.`
+  },
+  {
+    type: 'short',
+    q: "Compare point-to-point channels and publish-subscribe channels in messaging.",
+    ans: `<strong>Point-to-Point Channel:</strong> Delivers a message to exactly ONE consumer reading from the channel. Used for one-to-one interaction styles. Ensures a command or request is processed by a single service instance.<br><br>
+<strong>Publish-Subscribe Channel:</strong> Delivers each message to ALL attached consumers (subscribers). Used for one-to-many interaction styles. Events (like OrderCreatedEvent) are typically sent over pub-sub channels so multiple services can react to the same event independently.`
+  },
+  {
+    type: 'short',
+    q: "What is the CAP Theorem and how does it apply to SQL vs NoSQL databases?",
+    ans: `The <strong>CAP Theorem</strong> states that a distributed system can simultaneously guarantee at most 2 of these 3 properties:<br><ul class="styled"><li><strong>Consistency (C)</strong> — all nodes see the same data at the same time</li><li><strong>Availability (A)</strong> — every request receives a response</li><li><strong>Partition Tolerance (P)</strong> — system continues despite network failures</li></ul>
+<strong>SQL (RDBMS):</strong> Typically gives up P (assumes no network partitions within a single server), achieving C + A. Uses ACID properties.<br>
+<strong>NoSQL:</strong> Must have P (designed for distributed environments). Must choose between C (strong consistency, may be unavailable during partition) or A (always available, may return stale data). Uses BASE properties.`
+  },
+  {
+    type: 'long',
+    q: "Explain the Two-Phase Commit (2PC) protocol. Why is it unsuitable for microservices architectures? What alternative is used instead?",
+    ans: `<strong>2PC Overview:</strong><br>
+2PC is a distributed algorithm ensuring all participating nodes either commit or abort a transaction (atomicity). It involves a Coordinator and multiple Participants.<br><br>
+<strong>Phase 1 — Prepare (Voting):</strong> The coordinator sends PREPARE to all participants. Each executes the transaction up to the commit point, writes to its recovery log, and replies VOTE-COMMIT or VOTE-ABORT.<br><br>
+<strong>Phase 2 — Commit/Abort:</strong> If all voted COMMIT, the coordinator sends COMMIT to all; if any voted ABORT, it sends ABORT. Participants execute accordingly and release locks, then send ACK.<br><br>
+<strong>Why 2PC is unsuitable for microservices:</strong><br>
+<ol class="styled"><li><strong>Blocking protocol:</strong> Participants hold locks on resources until all respond, reducing scalability</li><li><strong>Single Point of Failure:</strong> If the coordinator crashes during commit, participants are stuck — unable to determine whether to commit or rollback</li><li><strong>Poor fault tolerance:</strong> Cannot handle network failures and node crashes gracefully</li><li><strong>Performance bottleneck:</strong> Adds latency in high-throughput environments</li><li><strong>Tight coupling:</strong> Microservices must be independent; 2PC creates hard cross-service dependencies</li><li><strong>No native broker support:</strong> Kafka, RabbitMQ, and REST don't support distributed 2PC</li></ol><br>
+<strong>Alternative — Saga Pattern:</strong><br>
+The Saga pattern implements cross-service transactions as a sequence of local transactions. Each service executes its own local transaction and publishes an event to trigger the next step. If any step fails, compensating transactions are executed to undo all previously completed steps. This achieves eventual consistency without distributed locks, using either Choreography (event-driven, decentralized) or Orchestration (central coordinator).`
+  },
+  {
+    type: 'long',
+    q: "Compare Choreography and Orchestration approaches in the Saga pattern. Include an example, pros, cons, and when to use each.",
+    ans: `<strong>Choreography:</strong><br>
+Each service reacts to events autonomously. There is no central controller. Services communicate exclusively through an event channel (message broker).<br><br>
+<em>Example — Order Placement:</em><br>
+Order Service creates order → publishes OrderCreatedEvent → Payment Service listens, charges customer → publishes PaymentCompletedEvent → Inventory Service listens, reserves stock → publishes InventoryReservedEvent.<br>
+If Payment fails → publishes PaymentFailedEvent → Order Service cancels order (compensation).<br><br>
+<em>Pros:</em> Loosely coupled services, no SPOF, natural for event-driven architectures, good for small workflows.<br>
+<em>Cons:</em> Hard to debug (flow is decentralized), complex failure handling per service, no central business logic, event ordering challenges.<br><br>
+
+<strong>Orchestration:</strong><br>
+A central orchestrator (saga object) manages the entire workflow, sending commands to each service in sequence.<br><br>
+<em>Example — CreateOrderSaga:</em><br>
+Orchestrator → sends createOrder() to Order Service (PENDING) → sends reserveCredit() to Payment Service → sends reserveInventory() to Inventory Service (APPROVED). If credit fails → Orchestrator sends rejectOrder() to Order Service (REJECTED).<br><br>
+<em>Pros:</em> Centralized visibility, clear business logic flow, easier debugging/monitoring, better error handling coordination.<br>
+<em>Cons:</em> Orchestrator is a SPOF, services coupled to orchestrator, scalability bottleneck risk, 'god service' anti-pattern.<br><br>
+
+<strong>When to use:</strong><br>
+Use <em>Choreography</em> for simple, linear workflows with well-isolated teams. Use <em>Orchestration</em> for complex workflows requiring strong monitoring, debugging, and auditability.`
+  },
+  {
+    type: 'long',
+    q: "What is CQRS? Explain its core concepts, why it is used in microservices, and the difference between implementing it with Kafka (manual) vs. Kafka + CDC (Debezium).",
+    ans: `<strong>CQRS (Command Query Responsibility Segregation)</strong> is a design pattern that separates write operations (Commands) from read operations (Queries) into separate models, and often separate databases.<br><br>
+<strong>Core Concepts:</strong><br>
+<ul class="styled"><li><strong>Command Model:</strong> Handles state-changing operations (CreateOrder, CancelInvoice). Command handlers validate inputs, enforce business rules, and apply changes — often emitting domain events.</li><li><strong>Query Model:</strong> Handles data retrieval only. Optimized for reads using denormalized tables or Elasticsearch. Returns DTOs (JSON). Never modifies state.</li><li><strong>Eventual Consistency:</strong> Changes propagate asynchronously from write to read side. The read model may temporarily lag behind.</li></ul><br>
+<strong>Why use CQRS in microservices?</strong><br>
+In complex microservices, queries joining 10+ tables lock the database. CQRS solves this by maintaining separate optimized read models. It allows using different database technologies (e.g., NoSQL for reads, RDBMS for writes) and independent scaling of read/write sides.<br><br>
+<strong>CQRS with Kafka (Manual Event Publishing):</strong><br>
+After a command executes, the service explicitly publishes an event to Kafka. Pros: full control over event payload, no extra tooling. Cons: dual-write risk (DB + Kafka may get out of sync), requires Outbox pattern for reliability.<br><br>
+<strong>CQRS with Kafka + CDC (Debezium):</strong><br>
+Service only writes to DB; Debezium captures database row changes and emits them as Kafka events automatically. Pros: no manual event publishing, strong DB-event consistency, great for legacy systems. Cons: events are low-level row changes (not rich domain events), cannot express domain intent (why a change happened), more infrastructure complexity.`
+  },
+  {
+    type: 'short',
+    q: "What is the difference between the 'Database per Service' and 'Shared Database' patterns? When would you choose each?",
+    ans: `<strong>Database per Service:</strong> Each microservice has its own private database, accessible only via its API. Services cannot directly access each other's data.<br>
+Benefits: Loose coupling, each service chooses the best DB type for its needs.<br>
+Drawbacks: Cross-service transactions and joins are complex; managing multiple DB types adds operational overhead.<br>
+Use when: Services need to evolve independently, use different DB technologies, or have high isolation requirements.<br><br>
+<strong>Shared Database:</strong> Multiple services share a single database and can access each other's data using local ACID transactions.<br>
+Benefits: Simple ACID transactions, easier to operate.<br>
+Drawbacks: Development-time coupling (schema changes affect all services), runtime coupling (locks can block services), one DB cannot satisfy all services' needs.<br>
+Use when: Migrating from a monolith (transitional), or for small systems where simplicity outweighs coupling concerns.`
+  },
+];
+
+function buildWritten() {
+  const container = document.getElementById('writtenContainer');
+  writtenQs.forEach((q, i) => {
+    const typeLabel = q.type === 'short' ? '<span class="badge badge-blue">Short Answer</span>' : '<span class="badge badge-purple">Long Answer</span>';
+    const div = document.createElement('div');
+    div.className = 'written-card';
+    div.innerHTML = `
+      <div class="mcq-number">Question ${i+1} ${typeLabel}</div>
+      <div class="written-q">${q.q}</div>
+      <button class="show-answer-btn" onclick="toggleAnswer(this)">Show Model Answer</button>
+      <div class="answer-content">
+        <div class="model-label">📝 Model Answer</div>
+        <div style="color:var(--text2);font-size:14px;line-height:1.7;">${q.ans}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function toggleAnswer(btn) {
+  const content = btn.nextElementSibling;
+  content.classList.toggle('show');
+  btn.textContent = content.classList.contains('show') ? 'Hide Answer' : 'Show Model Answer';
+}
+
+// ─── Init ───
+buildMCQ();
+buildWritten();
+</script>
+</body>
+</html>
